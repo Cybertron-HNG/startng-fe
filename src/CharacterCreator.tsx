@@ -1,4 +1,5 @@
 import { FormEvent, useState } from "react";
+import MyGames from "./MyGames";
 import Viewer from "./three/Viewer";
 import { Body, BOTTOMS, Character, CharacterStyle, HAIR_COLORS, HATS, SECTIONS, SKINS, TOPS, withBody } from "./character";
 
@@ -79,7 +80,7 @@ export default function CharacterCreator({ initial, editing, email, onSave, onCa
 
   return (
     <div className="overlay creator-overlay">
-      <form className="creator" onSubmit={submit}>
+      <form className={`creator ${editing ? "creator-profile" : ""}`} onSubmit={submit}>
         <div className="creator-preview">
           <Viewer style={style} className="creator-viewer" />
           <strong>{name.trim() || "Your character"}</strong>
@@ -109,6 +110,8 @@ export default function CharacterCreator({ initial, editing, email, onSave, onCa
           <div className="field"><span>Bottoms</span>{swatches("secondaryColor", BOTTOMS)}</div>
           <div className="field"><span>Hat</span>{chips("hat", HATS)}</div>
           <div className="field"><span>Extra</span>{chips("accessory", section.accessory)}</div>
+
+          {editing && <MyGames />}
 
           {error && <p className="error">{error}</p>}
           <div className="creator-actions">
