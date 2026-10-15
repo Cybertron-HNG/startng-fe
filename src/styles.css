@@ -95,6 +95,7 @@ input:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
 .note { margin: 0; font-size: .9rem; opacity: .8; }
 .empty { margin: 8px 0 0; padding: 28px; border: 1px dashed var(--line); border-radius: 18px; color: var(--muted); text-align: center; }
 .empty a { color: inherit; font-weight: 600; }
+.empty .retry { color: inherit; font: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 .divider { text-align: center; color: var(--muted); font-size: .85rem; }
 .email-form { display: grid; gap: 12px; } /* TEMPORARY: email sign-in for testing */
 .google { display: flex; justify-content: center; }

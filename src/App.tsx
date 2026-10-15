@@ -27,6 +27,8 @@ export default function App() {
   const menuRef = useRef<HTMLDivElement>(null);
   // Published games from the API; null while loading.
   const [games, setGames] = useState<Game[] | null>(null);
+  // True when the games couldn't be loaded and there's no earlier list to keep showing.
+  const [gamesFailed, setGamesFailed] = useState(false);
   // The game whose shared leaderboard is open, if any.
   const [board, setBoard] = useState<Game | null>(null);
   // The signed-in builder's newest game, for the example address in the hero.
@@ -36,10 +38,13 @@ export default function App() {
   // (after an upload or a new cover), when you come back to the tab, and every 30 seconds.
   const refreshGames = useCallback(() => {
     listGames()
-      .then((list) => setGames(list.map(toCard)))
-      .catch(() => setGames((g) => g ?? []));
+      .then((list) => {
+        setGames(list.map(toCard));
+        setGamesFailed(false);
+      })
+      .catch(() => setGamesFailed(true)); // a list we already have stays on screen; the next refresh tries again
     const token = localStorage.getItem("token");
-    if (user && token) myGames(token).then((mine) => setMyLatest(mine[0] ? toCard(mine[0]) : null));
+    if (user && token) myGames(token).then((mine) => setMyLatest(mine[0] ? toCard(mine[0]) : null)).catch(() => {});
     else setMyLatest(null);
   }, [user]);
 
@@ -232,7 +237,12 @@ export default function App() {
             <h2>Games</h2>
             {games && <span className="count">{cards.length} to play</span>}
           </div>
-          {games === null && <p className="empty">Loading games…</p>}
+          {games === null && !gamesFailed && <p className="empty">Loading games…</p>}
+          {games === null && gamesFailed && (
+            <p className="empty">
+              Couldn't load games. <button type="button" className="link retry" onClick={refreshGames}>Try again</button>
+            </p>
+          )}
           {games && community.length === 0 && (
             <p className="empty">
               No community games yet. The first ones are on their way. <a href="#how">Put yours here.</a>
