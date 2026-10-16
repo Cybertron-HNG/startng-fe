@@ -186,3 +186,61 @@ export async function removeCover(token: string | null, name: string): Promise<P
   if (!res.ok) throw new Error(typeof data.detail === "string" ? data.detail : "Could not remove the picture");
   return data;
 }
+
+// ---- Explore games: games other people host on their own sites. Anyone can list one, no sign-in.
+
+export type ExploreGame = {
+  id: number; name: string; creator: string; url: string; host: string; description: string;
+  cover_url: string; // a path on the API: use exploreCover()
+  created_at: string;
+};
+/** The card picture's address. */
+export const exploreCover = (g: ExploreGame) => `${API_URL}${g.cover_url}`;
+
+export async function listExploreGames(): Promise<ExploreGame[]> {
+  const res = await fetch(`${API_URL}/explore/games`);
+  if (!res.ok) throw new Error("Could not load the games");
+  return res.json();
+}
+
+/** A listing start.ng refused. `fields` has the message for each form field that was wrong. */
+export class ExploreRefused extends Error {
+  constructor(message: string, readonly status: number, readonly fields: Record<string, string>) {
+    super(message);
+  }
+}
+
+const toBase64 = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(",")[1] ?? "");
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+
+/** List a game that lives on someone else's site. The reply's key is the only way to remove it later: show it once. */
+export async function submitExploreGame(entry: { name: string; creator: string; url: string; description: string; cover: File }): Promise<{ game: ExploreGame; status: string; manage_key: string }> {
+  const body = JSON.stringify({ name: entry.name, creator: entry.creator, url: entry.url, description: entry.description, cover: await toBase64(entry.cover) });
+  let res: Response;
+  try {
+    res = await fetch(`${API_URL}/explore/games`, { method: "POST", headers: { "Content-Type": "application/json" }, body });
+  } catch {
+    throw new ExploreRefused("Couldn't reach start.ng. Check your connection and try again.", 0, {});
+  }
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const fields: Record<string, string> = {};
+    for (const p of Array.isArray(data.errors) ? data.errors : []) if (p.field && !fields[p.field]) fields[p.field] = p.message;
+    throw new ExploreRefused(typeof data.detail === "string" ? data.detail : "Could not list that game", res.status, fields);
+  }
+  return data;
+}
+
+/** Take a listing down with the key from when it was listed. */
+export async function removeExploreGame(id: number, key: string): Promise<void> {
+  const res = await fetch(`${API_URL}/explore/games/${id}`, { method: "DELETE", headers: { "X-Manage-Key": key } });
+  if (!res.ok && res.status !== 404) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(typeof data.detail === "string" ? data.detail : "Could not remove that game");
+  }
+}

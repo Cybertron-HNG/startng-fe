@@ -2,6 +2,7 @@ import { FormEvent, lazy, Suspense, useCallback, useEffect, useRef, useState } f
 import { GoogleLogin } from "@react-oauth/google";
 import { approvePendingGame, getGameSession, getPendingGame, googleLogin, listGames, login, me, myGames, PendingGameInfo, register, saveCharacter, TokenResponse, User } from "./api";
 import AccountMenu from "./AccountMenu";
+import Explore, { ExploreBand } from "./Explore";
 import Pagination from "./Pagination";
 import ScrollJump from "./ScrollJump";
 import { Character, styleFor } from "./character";
@@ -35,9 +36,12 @@ type Approval =
 
 /** The homepage, and /games (every game, PER_PAGE at a time). They share sign-in, the profile
  *  and the "sign in or play as a guest?" question. */
-export default function App({ view = "home" }: { view?: "home" | "games" }) {
+export default function App({ view = "home" }: { view?: "home" | "games" | "explore" }) {
   const allGames = view === "games";
+  const explore = view === "explore";
+  const home = view === "home";
   const [page, setPage] = useState(pageFromUrl);
+  const [query, setQuery] = useState(""); // /games: the search box
   const [user, setUser] = useState<User | null>(null);
   const [checking, setChecking] = useState(() => !!localStorage.getItem("token"));
   // Google sign-in; the first Google sign-in creates the account.
@@ -108,7 +112,11 @@ export default function App({ view = "home" }: { view?: "home" | "games" }) {
 
   // The Hangout is always first; the rest come from the API.
   const community = (games ?? []).filter((g) => g.slug !== HANGOUT.slug);
-  const cards = [HANGOUT, ...community];
+  const everyGame = [HANGOUT, ...community];
+  // /games has a search box: it keeps the games whose name or maker contains every word typed.
+  const fold = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const words = fold(query).split(/\s+/).filter(Boolean);
+  const cards = allGames && words.length ? everyGame.filter((g) => words.every((w) => fold(g.title).includes(w) || fold(g.by).includes(w))) : everyGame;
   // What this page shows: the first HOME_GAMES on the homepage, one page of them on /games.
   const pages = Math.max(1, Math.ceil(cards.length / PER_PAGE));
   const current = Math.min(page, pages); // a page past the end shows the last one
@@ -239,7 +247,8 @@ export default function App({ view = "home" }: { view?: "home" | "games" }) {
         <a className="logo" href="/"><b>start<span>.ng</span></b></a>
         <nav>
           <a href="/games" aria-current={allGames ? "page" : undefined}>Games</a>
-          <a href={allGames ? "/#how" : "#how"}>How it works</a>
+          <a href="/explore" aria-current={explore ? "page" : undefined}>Explore<span className="tag">New</span></a>
+          <a href={home ? "#how" : "/#how"}>How it works</a>
           <a href="/docs">Docs</a>
           {user ? (
             <AccountMenu user={user} onProfile={() => setEditing(true)} onSignOut={signOut} />
@@ -250,7 +259,8 @@ export default function App({ view = "home" }: { view?: "home" | "games" }) {
       </header>
 
       <main>
-        {!allGames && (
+        {explore && <Explore />}
+        {home && (
         <section className="container hero">
           <p className="eyebrow">Big imagination. Played everywhere.</p>
           <h1>Good vibes.<br /><mark>Good games.</mark></h1>
@@ -270,6 +280,7 @@ export default function App({ view = "home" }: { view?: "home" | "games" }) {
         </section>
         )}
 
+        {!explore && (
         <section id="games" className={allGames ? "container all-games" : "container"}>
           <div className="section-head">
             {allGames ? <h1>All games</h1> : <h2>Games</h2>}
@@ -282,6 +293,15 @@ export default function App({ view = "home" }: { view?: "home" | "games" }) {
             )}
           </div>
           {games === null && <p className="empty">Loading games…</p>}
+          {allGames && (
+            <div className="toolbar">
+              <div className="search">
+                <input type="search" placeholder="Search games by name or maker" aria-label="Search games" autoComplete="off" value={query} onChange={(e) => setQuery(e.target.value)} />
+                {query && <button type="button" className="clear" aria-label="Clear search" onClick={() => setQuery("")}>&#10005;</button>}
+              </div>
+            </div>
+          )}
+          {allGames && games && words.length > 0 && cards.length === 0 && <p className="empty">No games match &ldquo;{query.trim()}&rdquo;.</p>}
           {games && community.length === 0 && (
             <p className="empty">
               No community games yet. The first ones are on their way. <a href={allGames ? "/#how" : "#how"}>Put yours here.</a>
@@ -317,8 +337,11 @@ export default function App({ view = "home" }: { view?: "home" | "games" }) {
             )
           )}
         </section>
+        )}
 
-        {!allGames && (
+        {home && <ExploreBand />}
+
+        {home && (
         <section id="how" className="container how">
           <h2>Got a game? Put it on start.ng</h2>
           <ol>

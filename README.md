@@ -4,6 +4,8 @@ React + Vite + TypeScript frontend for start.ng. Homepage with the games list, p
 
 To add a game to the homepage, add it to `src/games.ts` (it links to `https://<slug>.start.ng`).
 
+`/explore` lists games that other people host on their own sites (`src/Explore.tsx`). Anyone can submit one there without signing in: the form checks each field as you go, and startng-be checks it all again. The homepage has a band that points to it. A game's creator gets a removal key once, and this browser keeps it so the creator can take the game down later.
+
 ```bash
 cp .env.example .env   # set VITE_API_URL and VITE_GOOGLE_CLIENT_ID
 npm install && npm run dev

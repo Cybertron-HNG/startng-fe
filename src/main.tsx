@@ -16,6 +16,7 @@ const HANGOUT_PATH = "/hangout";
 const APPROVE_PATH = /^\/approve\/[\w-]{8,40}\/?$/; // the homepage, with "put this game live?" on top
 const DOCS_PATHS = ["/docs", "/docs/"];
 const GAMES_PATHS = ["/games", "/games/"]; // every game, a page at a time
+const EXPLORE_PATHS = ["/explore", "/explore/"]; // games other people host on their own sites
 
 // /connect is loaded invisibly by games, so it renders nothing.
 if (location.pathname === "/connect") {
@@ -24,9 +25,9 @@ if (location.pathname === "/connect") {
   const path = location.pathname;
   ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
-      {HOME_PATHS.includes(path) || APPROVE_PATH.test(path) || GAMES_PATHS.includes(path) ? (
+      {HOME_PATHS.includes(path) || APPROVE_PATH.test(path) || GAMES_PATHS.includes(path) || EXPLORE_PATHS.includes(path) ? (
         <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID ?? ""}>
-          <App view={GAMES_PATHS.includes(path) ? "games" : "home"} />
+          <App view={GAMES_PATHS.includes(path) ? "games" : EXPLORE_PATHS.includes(path) ? "explore" : "home"} />
         </GoogleOAuthProvider>
       ) : path === HANGOUT_PATH ? (
         <Suspense fallback={null}>
