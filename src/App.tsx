@@ -2,6 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react"
 import { GoogleLogin } from "@react-oauth/google";
 import { approvePendingGame, getGameSession, trackPlay, getPendingGame, googleLogin, listGames, me, myGames, PendingGameInfo, saveCharacter, TokenResponse, User } from "./api";
 import AccountMenu from "./AccountMenu";
+import ThemeToggle from "./ThemeToggle";
 import Pagination from "./Pagination";
 import ScrollJump from "./ScrollJump";
 import { Character, styleFor } from "./character";
@@ -236,6 +237,7 @@ export default function App({ view = "home" }: { view?: "home" | "games" | "crea
           <a href="/creators" aria-current={creatorsPage ? "page" : undefined}>Creators</a>
           <a href={view === "home" ? "#how" : "/#how"}>How it works</a>
           <a href="/docs">Docs</a>
+          <ThemeToggle />
           {user ? (
             <AccountMenu user={user} onProfile={() => setEditing(true)} onSignOut={signOut} />
           ) : (

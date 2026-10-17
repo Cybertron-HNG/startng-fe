@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import ThemeToggle from "./ThemeToggle";
 
 // Shown for any address that isn't one of the app's pages. nginx serves it with a real
 // 404 status (see nginx.conf); the Vite dev server shows it too, with a 200.
@@ -15,6 +16,7 @@ export default function NotFound() {
           <a href="/games">Games</a>
           <a href="/#how">How it works</a>
           <a href="/docs">Docs</a>
+          <ThemeToggle />
         </nav>
       </header>
       <main>

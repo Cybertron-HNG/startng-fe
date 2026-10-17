@@ -6,6 +6,18 @@
     <title>Start.ng</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#f6f5ee" />
+    <script>
+      // Pick light or dark before the page paints. Keep in step with src/theme.ts.
+      (function () {
+        var theme;
+        try { theme = localStorage.getItem("theme"); } catch (e) {}
+        if (theme !== "light" && theme !== "dark") {
+          theme = window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.dataset.theme = theme;
+        if (theme === "dark") document.querySelector('meta[name="theme-color"]').setAttribute("content", "#121310");
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

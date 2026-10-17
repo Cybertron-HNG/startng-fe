@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { me, User } from "./api";
 import AccountMenu from "./AccountMenu";
+import ThemeToggle from "./ThemeToggle";
 import { Markdown, slug } from "./markdown";
 import ScrollJump from "./ScrollJump";
 
@@ -56,6 +57,7 @@ export default function Docs() {
           <a href="/games">Games</a>
           <a href="/#how">How it works</a>
           <a href="/docs">Docs</a>
+          <ThemeToggle />
           {user ? (
             <AccountMenu user={user} onProfile={() => location.assign("/?profile")} onSignOut={signOut} />
           ) : (
