@@ -58,6 +58,12 @@ button.link:hover { color: var(--ink); }
 .hero { padding: 72px 24px 80px; text-align: center; }
 .eyebrow { font-family: var(--mono); text-transform: uppercase; letter-spacing: .28em; font-size: .8rem; margin: 0 0 22px; }
 .hero h1 { font-size: clamp(2.8rem, 9vw, 6.2rem); line-height: .98; letter-spacing: -.055em; font-weight: 800; margin: 0 0 32px; }
+/* Dark mode: light letters over the lime line read weakly, so ring them in the page's own dark. */
+:root[data-theme="dark"] .hero h1 {
+  text-shadow:
+    -.035em 0 var(--bg), .035em 0 var(--bg), 0 -.035em var(--bg), 0 .035em var(--bg),
+    -.025em -.025em var(--bg), .025em -.025em var(--bg), -.025em .025em var(--bg), .025em .025em var(--bg);
+}
 mark { background: linear-gradient(transparent 62%, var(--lime) 62%, var(--lime) 92%, transparent 92%); color: inherit; padding: 0 .06em; }
 .lead { color: var(--muted); font-size: 1.2rem; line-height: 1.7; margin: 0 auto 36px; }
 .actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
