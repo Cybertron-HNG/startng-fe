@@ -58,8 +58,8 @@ button.link:hover { color: var(--ink); }
 .hero { padding: 72px 24px 80px; text-align: center; }
 .eyebrow { font-family: var(--mono); text-transform: uppercase; letter-spacing: .28em; font-size: .8rem; margin: 0 0 22px; }
 .hero h1 { font-size: clamp(2.8rem, 9vw, 6.2rem); line-height: .98; letter-spacing: -.055em; font-weight: 800; margin: 0 0 32px; }
-/* Dark mode: light letters over the lime line read weakly, so ring them in the page's own dark. */
-:root[data-theme="dark"] .hero h1 {
+/* Dark mode: light letters over a lime line read weakly, so ring them in the page's own dark (the hero headline and any highlighted word). */
+:root[data-theme="dark"] .hero h1, :root[data-theme="dark"] mark {
   text-shadow:
     -.035em 0 var(--bg), .035em 0 var(--bg), 0 -.035em var(--bg), 0 .035em var(--bg),
     -.025em -.025em var(--bg), .025em -.025em var(--bg), -.025em .025em var(--bg), .025em .025em var(--bg);
@@ -159,7 +159,7 @@ input:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
 .creator-overlay { align-items: start; overflow-y: auto; }
 .creator { width: 100%; max-width: 860px; margin: 24px auto; background: var(--card); border: 1px solid var(--line); border-radius: 22px; box-shadow: 8px 8px 0 var(--lime); display: grid; grid-template-columns: 300px 1fr; overflow: hidden; }
 .creator-preview { background: var(--lime); color: var(--on-lime); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 28px; }
-.creator-preview strong { font-size: 1.3rem; letter-spacing: -.02em; background: var(--card); padding: 6px 14px; border-radius: 999px; border: 2px solid var(--ink); }
+.creator-preview strong { font-size: 1.3rem; letter-spacing: -.02em; color: var(--ink); background: var(--card); padding: 6px 14px; border-radius: 999px; border: 2px solid var(--ink); }
 .creator-controls { padding: 28px 30px; display: grid; gap: 14px; align-content: start; }
 .creator-controls .eyebrow { margin: 0; }
 .creator-controls h2 { margin: 0; font-size: 2rem; letter-spacing: -.04em; }
@@ -203,7 +203,7 @@ input:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
 .viewer.grabbing { cursor: grabbing; }
 .creator-viewer { height: 440px; }
 .pick-viewer { height: 280px; pointer-events: none; }
-.viewer-hint { font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; color: var(--muted); }
+.viewer-hint { font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; color: var(--on-lime); opacity: .7; }
 @media (max-width: 720px) {
   .creator-viewer { height: 300px; }
   .pick-viewer { height: 210px; }
@@ -398,7 +398,7 @@ button.game-link:hover { background: none; }
 .indie-tag { justify-self: start; text-transform: none; letter-spacing: .02em; }
 .indie-description { margin: 0; line-height: 1.65; white-space: pre-line; overflow-wrap: anywhere; }
 .indie-url { overflow-wrap: anywhere; }
-.indie-url code { background: var(--bg); border: 1px solid var(--line); }
+.indie-url code { color: var(--ink); background: var(--bg); border: 1px solid var(--line); }
 .indie-actions { display: flex; align-items: center; gap: 16px; margin-top: 4px; }
 .indie-form { max-width: 480px; margin: 24px auto; }
 .indie-fields { display: grid; gap: 14px; }
