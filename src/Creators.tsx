@@ -279,7 +279,6 @@ export function CreatorsPage({ user, onSignIn }: { user: User | null; onSignIn: 
     <section className="container all-games creators-page">
       <div className="section-head">
         <h1>Games by independent creators</h1>
-        {games && <span className="count">{searching ? `${found.length} ${found.length === 1 ? "result" : "results"}` : `${games.length} to play`}</span>}
       </div>
       <div className="creators-intro">
         <p>Made and hosted by creators outside start.ng. Tap a card to read about a game, or play it on the creator's own site.</p>
@@ -288,6 +287,7 @@ export function CreatorsPage({ user, onSignIn }: { user: User | null; onSignIn: 
       <div className="list-tools">
         <SearchBox value={q} onChange={search} label="Search independent games" placeholder="Search games or creators"
           suggestions={(games ?? []).flatMap((g) => [g.name, g.by])} />
+        {games && <span className="count">{searching ? `${found.length} ${found.length === 1 ? "result" : "results"}` : `${games.length} ${games.length === 1 ? "game" : "games"}`}</span>}
       </div>
       {games && games.length === 0 && (
         <p className="empty">No games from independent creators yet. <button type="button" className="link" onClick={startSubmit}>Be the first to add yours.</button></p>

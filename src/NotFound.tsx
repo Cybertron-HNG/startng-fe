@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import ThemeToggle from "./ThemeToggle";
 import { PAGES, setSeo } from "./seo";
 
 // Shown for any address that isn't one of the app's pages. nginx serves it with a real
@@ -12,12 +13,13 @@ export default function NotFound() {
     <>
       <header className="container nav">
         <a className="logo" href="/"><b>start<span>.ng</span></b></a>
-        <nav>
+        <nav aria-label="Pages">
           <a href="/games">Games</a>
           <a href="/creators">Creators</a>
           <a href="/#how">How it works</a>
           <a href="/docs">Docs</a>
         </nav>
+        <div className="nav-account"><ThemeToggle /></div>
       </header>
       <main>
         <section className="container hero">

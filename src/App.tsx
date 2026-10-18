@@ -4,6 +4,7 @@ import { approvePendingGame, getGameSession, trackPlay, getPendingGame, googleLo
 import AccountMenu from "./AccountMenu";
 import Favorites, { FavoriteButton, gameKey, useFavorites } from "./Favorites";
 import Pagination from "./Pagination";
+import ThemeToggle from "./ThemeToggle";
 import SearchBox, { matches, queryFromUrl, urlFor } from "./SearchBox";
 import { setSeo, PAGES } from "./seo";
 import { SkeletonCards } from "./Skeleton";
@@ -256,17 +257,20 @@ export default function App({ view = "home" }: { view?: "home" | "games" | "crea
     <>
       <header className="container nav">
         <a className="logo" href="/"><b>start<span>.ng</span></b></a>
-        <nav>
+        <nav aria-label="Pages">
           <a href="/games" aria-current={allGames ? "page" : undefined}>Games</a>
           <a href="/creators" aria-current={creatorsPage ? "page" : undefined}>Creators</a>
           <a href={view === "home" ? "#how" : "/#how"}>How it works</a>
           <a href="/docs">Docs</a>
+        </nav>
+        <div className="nav-account">
+          <ThemeToggle />
           {user ? (
             <AccountMenu user={user} onProfile={() => setEditing(true)} onFavorites={() => setFavoritesOpen(true)} onSignOut={signOut} />
           ) : (
             <button onClick={() => setSignInOpen(true)}>Sign in</button>
           )}
-        </nav>
+        </div>
       </header>
 
       <main>
@@ -301,19 +305,19 @@ export default function App({ view = "home" }: { view?: "home" | "games" | "crea
                 {popular.some((g) => g.plays > 0) && <p className="most-played"><span className="tag">Most played</span> What everyone's playing this week</p>}
               </div>
             )}
-            {games && (
-              <span className="count">
-                {searching
-                  ? `${cards.length} ${cards.length === 1 ? "result" : "results"}`
-                  : allGames && pages > 1
-                  ? `${(current - 1) * PER_PAGE + 1}–${(current - 1) * PER_PAGE + shown.length} of ${cards.length}`
-                  : `${cards.length} to play`}
-              </span>
-            )}
           </div>
           {allGames && (
             <div className="list-tools">
               <SearchBox value={q} onChange={search} label="Search games" placeholder="Search games by name or creator" suggestions={suggestions} />
+              {games && (
+                <span className="count">
+                  {searching
+                    ? `${cards.length} ${cards.length === 1 ? "result" : "results"}`
+                    : pages > 1
+                    ? `${(current - 1) * PER_PAGE + 1}–${(current - 1) * PER_PAGE + shown.length} of ${cards.length}`
+                    : `${cards.length} ${cards.length === 1 ? "game" : "games"}`}
+                </span>
+              )}
             </div>
           )}
           {games && !searching && community.length === 0 && (

@@ -1,6 +1,29 @@
 :root {
   --bg: #f6f5ee; --card: #fffefa; --ink: #292a23; --muted: #6b6c63; --line: #e4e2d6;
   --lime: #d8fd71; --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --text-2: #3c3d35; --on-solid: #fff; --on-solid-accent: var(--lime); --on-lime: #292a23; --solid-hover: #000;
+  --scrim: rgba(41, 42, 35, .45); --shimmer: #efede2; --code-bg: #292a23; --legendary-bg: #fafff0; --banner-tint: #f1fbd2;
+  --dot: rgba(41, 42, 35, .16); --danger: #c0392b; --ok: #2e7d32; --warn-ink: #8a6d00;
+  --warn-bg: #fff7d6; --warn-line: #f0d77a; --bad-bg: #fdecea; --bad-line: #f3b8b0;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --bg: #292a23; --card: #33342c; --ink: #f6f5ee; --muted: #b0b1a6; --line: #4a4b41;
+  --text-2: #dedcd0; --on-solid: #292a23; --on-solid-accent: #292a23; --solid-hover: #fff;
+  --scrim: rgba(20, 21, 17, .65); --shimmer: #44453b; --code-bg: #1f201b; --legendary-bg: #38402a; --banner-tint: #343b27;
+  --dot: rgba(246, 245, 238, .12); --danger: #ff8a7d; --ok: #7fd884; --warn-ink: #e6c34d;
+  --warn-bg: #4a4220; --warn-line: #7a6a2a; --bad-bg: #4a2a26; --bad-line: #7d4a43;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #292a23; --card: #33342c; --ink: #f6f5ee; --muted: #b0b1a6; --line: #4a4b41;
+    --text-2: #dedcd0; --on-solid: #292a23; --on-solid-accent: #292a23; --solid-hover: #fff;
+    --scrim: rgba(20, 21, 17, .65); --shimmer: #44453b; --code-bg: #1f201b; --legendary-bg: #38402a; --banner-tint: #343b27;
+    --dot: rgba(246, 245, 238, .12); --danger: #ff8a7d; --ok: #7fd884; --warn-ink: #e6c34d;
+    --warn-bg: #4a4220; --warn-line: #7a6a2a; --bad-bg: #4a2a26; --bad-line: #7d4a43;
+    color-scheme: dark;
+  }
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -10,7 +33,9 @@ code { font-family: var(--mono); font-size: .88em; background: var(--lime); padd
 .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
 
 /* nav */
-.nav { display: flex; justify-content: space-between; align-items: center; padding: 22px 24px; }
+.nav { display: flex; align-items: center; padding: 22px 24px; }
+.nav .logo { margin-right: auto; }
+.nav-account { display: flex; align-items: center; margin-left: 24px; }
 .logo { font-weight: 800; font-size: 1.3rem; letter-spacing: -.03em; display: flex; align-items: center; gap: 8px; }
 .logo::before { content: ""; width: 26px; height: 26px; background: url(/favicon.svg) center / contain no-repeat; }
 .logo b { font-weight: 800; }
@@ -22,8 +47,8 @@ code { font-family: var(--mono); font-size: .88em; background: var(--lime); padd
 .avatar { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--lime); border: 2px solid var(--ink); font-weight: 700; }
 
 /* buttons */
-button, .btn { background: var(--ink); color: #fff; border: 0; border-radius: 10px; padding: 12px 22px; font: 700 1rem "Helvetica Neue", Helvetica, Arial, sans-serif; cursor: pointer; display: inline-block; }
-button:hover, .btn:hover { background: #000; }
+button, .btn { background: var(--ink); color: var(--on-solid); border: 0; border-radius: 10px; padding: 12px 22px; font: 700 1rem "Helvetica Neue", Helvetica, Arial, sans-serif; cursor: pointer; display: inline-block; }
+button:hover, .btn:hover { background: var(--solid-hover); }
 button.ghost, .btn.ghost { background: var(--card); color: var(--ink); border: 1px solid var(--line); }
 button.ghost:hover, .btn.ghost:hover { border-color: var(--ink); }
 button.link { background: none; color: var(--muted); padding: 0; font-weight: 500; }
@@ -47,7 +72,7 @@ mark { background: linear-gradient(transparent 62%, var(--lime) 62%, var(--lime)
 .game { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 10px; display: flex; flex-direction: column; gap: 12px; min-width: 0; transition: transform .15s, border-color .15s, box-shadow .15s; }
 .game:hover { transform: translateY(-2px); border-color: var(--ink); box-shadow: 4px 4px 0 var(--lime); }
 /* The Hangout is start.ng's own game, so its card is a legendary one: a glowing lime edge and a slow shine. */
-.game.legendary { position: relative; overflow: hidden; background: linear-gradient(180deg, #fafff0, var(--card)); border-color: #b5e63d; box-shadow: 0 0 0 1px rgba(216, 253, 113, .9), 0 0 16px 2px rgba(216, 253, 113, .6), 0 0 40px 6px rgba(216, 253, 113, .3); animation: legendary-glow 2.8s ease-in-out infinite; }
+.game.legendary { position: relative; overflow: hidden; background: linear-gradient(180deg, var(--legendary-bg), var(--card)); border-color: #b5e63d; box-shadow: 0 0 0 1px rgba(216, 253, 113, .9), 0 0 16px 2px rgba(216, 253, 113, .6), 0 0 40px 6px rgba(216, 253, 113, .3); animation: legendary-glow 2.8s ease-in-out infinite; }
 .game.legendary:hover { border-color: #8fc41a; }
 .game.legendary::before { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, .6) 50%, transparent 62%); transform: translateX(-130%); animation: legendary-shine 12s ease-in-out infinite; }
 .game.legendary .art { position: relative; box-shadow: inset 0 0 0 2px rgba(216, 253, 113, .85); }
@@ -86,29 +111,28 @@ mark { background: linear-gradient(transparent 62%, var(--lime) 62%, var(--lime)
 .footer > span:first-child { color: var(--ink); font-weight: 800; }
 
 /* sign-in popup */
-.overlay { position: fixed; inset: 0; background: rgba(41, 42, 35, .45); backdrop-filter: blur(4px); display: grid; place-items: center; padding: 16px; z-index: 10; }
+.overlay { position: fixed; inset: 0; background: var(--scrim); backdrop-filter: blur(4px); display: grid; place-items: center; padding: 16px; z-index: 10; }
 .card { width: 100%; max-width: 400px; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 26px; display: grid; gap: 12px; box-shadow: 6px 6px 0 var(--lime); }
 .card-head { display: flex; justify-content: space-between; align-items: center; }
 .card-head h3 { margin: 0; font-size: 1.4rem; letter-spacing: -.02em; }
 .close { font-size: 1.1rem; }
 input { padding: 13px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: inherit; font-size: 1rem; }
 input:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
-.error { color: #c0392b; margin: 0; }
+.error { color: var(--danger); margin: 0; }
 .note { margin: 0; font-size: .9rem; opacity: .8; }
 .empty { margin: 8px 0 0; padding: 28px; border: 1px dashed var(--line); border-radius: 18px; color: var(--muted); text-align: center; }
 .empty a { color: inherit; font-weight: 600; }
 .google { display: flex; justify-content: center; }
 
 @media (max-width: 600px) {
-  /* Logo and account on the first row, the page links on a row of their own (they used to be hidden). */
-  .nav { flex-wrap: wrap; justify-content: flex-start; padding: 14px 20px 10px; row-gap: 8px; }
-  .nav::after { content: ""; order: 3; flex-basis: 100%; height: 0; }
-  .logo { order: 1; }
-  .nav nav { display: contents; }
-  .nav nav > button, .nav nav > .me { order: 2; margin-left: auto; }
-  .nav nav > a { order: 4; font-size: .9rem; padding: 4px 0; margin-right: 14px; }
-  .nav nav > a:last-of-type { margin-right: 0; }
-  .nav nav > a[aria-current="page"] { color: var(--ink); font-weight: 700; }
+  /* Logo and account on the first row; the page links get a row of their own, as tabs that scroll if they must. */
+  .nav { flex-wrap: wrap; padding: 14px 20px 6px; row-gap: 10px; }
+  .nav-account { margin-left: 0; }
+  .nav nav { order: 3; flex-basis: 100%; gap: 4px; overflow-x: auto; scrollbar-width: none; margin: 0 -20px; padding: 0 20px 4px; }
+  .nav nav::-webkit-scrollbar { display: none; }
+  .nav nav { justify-content: space-between; }
+  .nav nav a { flex: none; padding: 7px 10px; border-radius: 999px; font-size: .82rem; border: 1px solid var(--line); background: var(--card); }
+  .nav nav a[aria-current="page"] { background: var(--ink); border-color: var(--ink); color: var(--on-solid-accent); }
   .hero { padding: 48px 20px 56px; }
   .lead br { display: none; }
   .lead { font-size: 1.05rem; line-height: 1.6; margin-bottom: 28px; }
@@ -173,7 +197,7 @@ input:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
 .body-option:hover { background: var(--lime); border-color: var(--ink); }
 .segmented { display: inline-flex; background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 4px; justify-self: start; }
 .segmented button { background: none; color: var(--muted); border-radius: 999px; padding: 7px 18px; font-size: .92rem; }
-.segmented button.on { background: var(--ink); color: #fff; }
+.segmented button.on { background: var(--ink); color: var(--on-solid); }
 
 /* 3D preview */
 .viewer { width: 100%; touch-action: pan-y; user-select: none; }
@@ -182,7 +206,7 @@ input:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
 .viewer.grabbing { cursor: grabbing; }
 .creator-viewer { height: 440px; }
 .pick-viewer { height: 280px; pointer-events: none; }
-.viewer-hint { font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; color: rgba(41, 42, 35, .7); }
+.viewer-hint { font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; color: var(--muted); }
 @media (max-width: 720px) {
   .creator-viewer { height: 300px; }
   .pick-viewer { height: 210px; }
@@ -196,7 +220,7 @@ input:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
 .my-games .lead-sm { margin: -4px 0 0; }
 .upload-row { display: flex; gap: 8px; }
 .upload-row input { flex: 1; min-width: 0; }
-.upload-row input[aria-invalid="true"] { border-color: #c0392b; }
+.upload-row input[aria-invalid="true"] { border-color: var(--danger); }
 .upload-row button:disabled { opacity: .55; cursor: default; }
 .game-cards { display: grid; gap: 12px; }
 .game-card { display: grid; grid-template-columns: 132px 1fr; gap: 14px; padding: 10px; border: 1px solid var(--line); border-radius: 16px; background: var(--bg); }
@@ -217,9 +241,9 @@ input:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
 .game-card-links { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; font-size: .82rem; margin-top: 2px; }
 .game-card-links a { font-weight: 700; white-space: nowrap; }
 .game-card-links span { font-family: var(--mono); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.game-card-links .remove { margin-left: auto; font-size: .82rem; color: #b03a2e; }
-.game-card-links .remove:hover { color: #7d2017; }
-.ok { margin: 0; color: #2e7d32; font-weight: 600; }
+.game-card-links .remove { margin-left: auto; font-size: .82rem; color: var(--danger); }
+.game-card-links .remove:hover { color: var(--danger); }
+.ok { margin: 0; color: var(--ok); font-weight: 600; }
 @media (max-width: 720px) {
   .creator-profile { height: auto; max-height: none; }
   .creator-profile .creator-controls { overflow: visible; padding-bottom: 0; }
@@ -276,11 +300,11 @@ input:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
 .docs-body h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); letter-spacing: -.04em; line-height: 1; margin: 0 0 18px; }
 .docs-body h2 { font-size: 1.7rem; letter-spacing: -.03em; margin: 48px 0 12px; padding-top: 20px; border-top: 1px solid var(--line); }
 .docs-body h3 { font-size: 1.2rem; margin: 28px 0 8px; }
-.docs-body p, .docs-body li { color: #3c3d35; }
+.docs-body p, .docs-body li { color: var(--text-2); }
 .docs-body ul, .docs-body ol { padding-left: 22px; }
 .docs-body li { margin: 4px 0; }
 .docs-body a { text-decoration: underline; text-underline-offset: 3px; }
-.docs-body pre { background: var(--ink); color: #f1f1ea; border-radius: 12px; padding: 16px 18px; overflow-x: auto; font-size: .85rem; line-height: 1.55; }
+.docs-body pre { background: var(--code-bg); color: #f1f1ea; border-radius: 12px; padding: 16px 18px; overflow-x: auto; font-size: .85rem; line-height: 1.55; }
 .docs-body pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
 .docs-body blockquote { margin: 16px 0; padding: 12px 16px; background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--lime); border-radius: 0; }
 .docs-body .table { overflow-x: auto; margin: 12px 0; }
@@ -294,17 +318,17 @@ input:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
 }
 
 /* the jump-to-top / jump-to-bottom button (ScrollJump.tsx) */
-.scroll-jump { position: fixed; right: 20px; bottom: 20px; z-index: 5; width: 48px; height: 48px; padding: 0; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: var(--lime); box-shadow: 0 6px 18px rgba(41, 42, 35, .25); transition: transform .15s; }
+.scroll-jump { position: fixed; right: 20px; bottom: 20px; z-index: 5; width: 48px; height: 48px; padding: 0; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: var(--on-solid-accent); box-shadow: 0 6px 18px rgba(41, 42, 35, .25); transition: transform .15s; }
 .scroll-jump:hover { transform: translateY(-2px); }
 .scroll-jump svg { transition: transform .2s; }
 @media (max-width: 600px) { .scroll-jump { right: 16px; bottom: 16px; width: 44px; height: 44px; } }
 
 /* what start.ng found in a game (MyGames.tsx) */
-.problems { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: .86rem; line-height: 1.45; color: #c0392b; overflow-wrap: anywhere; }
-.warnings { display: grid; gap: 4px; padding: 10px 12px; border-radius: 12px; background: #fff7d6; border: 1px solid #f0d77a; font-size: .86rem; }
+.problems { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: .86rem; line-height: 1.45; color: var(--danger); overflow-wrap: anywhere; }
+.warnings { display: grid; gap: 4px; padding: 10px 12px; border-radius: 12px; background: var(--warn-bg); border: 1px solid var(--warn-line); font-size: .86rem; }
 .warnings .problems { color: var(--ink); }
-.update-problem { grid-column: 1 / -1; display: grid; gap: 4px; padding: 10px 12px; border-radius: 12px; background: #fdecea; border: 1px solid #f3b8b0; font-size: .84rem; line-height: 1.45; }
-.update-problem b { color: #a93226; }
+.update-problem { grid-column: 1 / -1; display: grid; gap: 4px; padding: 10px 12px; border-radius: 12px; background: var(--bad-bg); border: 1px solid var(--bad-line); font-size: .84rem; line-height: 1.45; }
+.update-problem b { color: var(--danger); }
 .update-problem code { font-size: .8rem; }
 
 /* /games: every game, a page at a time (Pagination.tsx) */
@@ -319,7 +343,7 @@ input:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
 .pagination .slot { display: flex; align-items: center; gap: 6px; }
 .pagination .numbers a { min-width: 40px; height: 40px; padding: 0 10px; display: grid; place-items: center; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--ink); }
 .pagination .numbers a:hover { border-color: var(--ink); }
-.pagination .numbers a[aria-current="page"] { background: var(--ink); color: var(--lime); border-color: var(--ink); }
+.pagination .numbers a[aria-current="page"] { background: var(--ink); color: var(--on-solid-accent); border-color: var(--ink); }
 .pagination .gap { color: var(--muted); }
 @media (max-width: 600px) {
   .pagination { justify-content: space-between; }
@@ -329,7 +353,7 @@ input:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
 /* whether start.ng is picking up pushes to a game's repo (MyGames.tsx) */
 .update-status { margin: 2px 0 0; font-size: .78rem; color: var(--muted); }
 .update-status code { font-size: .74rem; }
-.update-status.paused { color: #8a6d00; }
+.update-status.paused { color: var(--warn-ink); }
 
 /* games by independent creators: the homepage banner + newest 4, the /creators page, the popups */
 .creators { padding-top: 64px; }
@@ -337,12 +361,12 @@ input:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
   background:
     radial-gradient(circle at 100% 0%, rgba(216, 253, 113, .9), rgba(216, 253, 113, 0) 45%),
     radial-gradient(circle at 70% 110%, rgba(216, 253, 113, .45), rgba(216, 253, 113, 0) 40%),
-    radial-gradient(rgba(41, 42, 35, .16) 1.2px, transparent 1.3px) right 0 top 0 / 18px 18px,
-    linear-gradient(120deg, var(--card) 40%, #f1fbd2);
+    radial-gradient(var(--dot) 1.2px, transparent 1.3px) right 0 top 0 / 18px 18px,
+    linear-gradient(120deg, var(--card) 40%, var(--banner-tint));
   border: 1.5px solid var(--ink); border-radius: 24px; padding: 40px; box-shadow: 8px 8px 0 var(--lime); }
-.indie-banner::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, var(--card) 34%, rgba(255, 254, 250, .35) 62%, transparent); }
+.indie-banner::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, var(--card) 34%, color-mix(in srgb, var(--card) 35%, transparent) 62%, transparent); }
 .indie-banner > * { position: relative; z-index: 1; }
-.indie-banner .eyebrow { display: inline-flex; align-items: center; gap: 8px; background: var(--ink); color: var(--lime); padding: 6px 12px; border-radius: 999px; font-size: .72rem; letter-spacing: .18em; margin-bottom: 18px; }
+.indie-banner .eyebrow { display: inline-flex; align-items: center; gap: 8px; background: var(--ink); color: var(--on-solid-accent); padding: 6px 12px; border-radius: 999px; font-size: .72rem; letter-spacing: .18em; margin-bottom: 18px; }
 .indie-banner .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 4px rgba(216, 253, 113, .25); }
 .indie-banner h2 { font-size: clamp(1.9rem, 4vw, 2.7rem); line-height: 1.05; letter-spacing: -.045em; margin: 0 0 14px; max-width: 17ch; }
 .indie-banner-text > p:not(.eyebrow) { color: var(--muted); line-height: 1.65; margin: 0 0 26px; max-width: 46ch; font-size: 1.05rem; }
@@ -392,7 +416,7 @@ textarea:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
 .indie-cover input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 @media (max-width: 760px) {
   .indie-banner { grid-template-columns: 1fr; padding: 26px 20px; }
-  .indie-banner::after { background: linear-gradient(180deg, var(--card) 45%, rgba(255, 254, 250, .4) 75%, transparent); }
+  .indie-banner::after { background: linear-gradient(180deg, var(--card) 45%, color-mix(in srgb, var(--card) 40%, transparent) 75%, transparent); }
   .indie-banner-art { height: 170px; }
 }
 
@@ -402,17 +426,17 @@ textarea:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
 
 /* search */
 .search { position: relative; display: flex; align-items: center; flex: 1; min-width: 0; max-width: 420px; }
+.list-tools .count { white-space: nowrap; }
 .search svg { position: absolute; left: 14px; fill: none; stroke: var(--muted); stroke-width: 2; stroke-linecap: round; pointer-events: none; }
 .search input { width: 100%; padding: 12px 40px 12px 42px; border-radius: 999px; background: var(--card); -webkit-appearance: none; appearance: none; }
 .search input::-webkit-search-cancel-button { display: none; }
 .search-clear { position: absolute; right: 8px; width: 28px; height: 28px; display: grid; place-items: center; font-size: .9rem; }
 .list-tools { display: flex; align-items: center; justify-content: space-between; gap: 12px 16px; flex-wrap: wrap; margin: -6px 0 22px; }
-.list-tools .creators-intro-actions { display: flex; gap: 12px; align-items: center; }
 .empty .link { font-weight: 600; color: var(--ink); font-size: inherit; }
 
 /* skeleton loaders */
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.skeleton { background: linear-gradient(100deg, var(--line) 30%, #efede2 50%, var(--line) 70%); background-size: 220% 100%; animation: skeleton-shimmer 1.4s ease-in-out infinite; }
+.skeleton { background: linear-gradient(100deg, var(--line) 30%, var(--shimmer) 50%, var(--line) 70%); background-size: 220% 100%; animation: skeleton-shimmer 1.4s ease-in-out infinite; }
 .skeleton.line { display: block; height: 12px; border-radius: 6px; }
 .skeleton.title { height: 18px; width: 70%; margin: 3px 0 8px; }
 .skeleton.host { width: 52%; margin-bottom: 12px; }
@@ -427,7 +451,7 @@ textarea:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
 .fav-btn { flex: none; width: 28px; height: 28px; padding: 0; display: grid; place-items: center; border-radius: 8px; background: none; color: var(--muted); opacity: .55; }
 .fav-btn:hover { background: var(--bg); color: var(--ink); opacity: 1; }
 .fav-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
-.fav-btn.on { background: none; color: #c0392b; opacity: 1; }
+.fav-btn.on { background: none; color: var(--danger); opacity: 1; }
 .fav-btn.on svg { fill: currentColor; }
 .card.favorites { max-width: 460px; max-height: calc(100dvh - 32px); overflow: auto; }
 .fav-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
@@ -451,7 +475,8 @@ textarea:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
   .section-head { flex-wrap: wrap; align-items: center; gap: 4px 12px; margin-bottom: 16px; }
   .section-head h2, .how h2 { font-size: 1.6rem; }
   .all-games h1 { font-size: 1.7rem; }
-  .section-head .count { font-size: .78rem; margin-left: auto; white-space: nowrap; }
+  .list-tools { gap: 10px; }
+  .list-tools .count { font-size: .8rem; }
   #games { padding-top: 40px; }
   .most-played { font-size: .85rem; gap: 8px; }
   .list-tools { margin: 0 0 16px; }
@@ -462,7 +487,7 @@ textarea:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
   .info p { margin-bottom: 6px; font-size: .72rem; }
   /* Play spans the card's width as a button, instead of hanging at one side. */
   .meta { flex-wrap: wrap; font-size: .78rem; padding: 0 4px 4px; gap: 8px; }
-  .meta .play { margin-left: 0; flex: 1 1 100%; text-align: center; background: var(--ink); color: var(--lime); border-radius: 10px; padding: 10px 12px; font-size: .9rem; }
+  .meta .play { margin-left: 0; flex: 1 1 100%; text-align: center; background: var(--ink); color: var(--on-solid-accent); border-radius: 10px; padding: 10px 12px; font-size: .9rem; }
   .meta .board-btn { margin-right: auto; }
   .meta .fav-btn { order: -1; }
   .docs-body h1 { font-size: 2rem; }
@@ -475,3 +500,26 @@ textarea:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
 .suggestions { position: absolute; z-index: 15; top: calc(100% + 6px); left: 0; right: 0; margin: 0; padding: 6px; list-style: none; background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: 4px 4px 0 var(--lime); }
 .suggestions li { padding: 10px 12px; border-radius: 10px; cursor: pointer; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .suggestions li.on, .suggestions li:hover { background: var(--bg); }
+
+/* dark mode: text on lime stays dark, and a few surfaces that inherit the light text colour */
+code { color: var(--on-lime); }
+.tag, .chips button.on, .body-option:hover, .ai-box, .tile-badge, .indie-banner-art .tile.first b, .avatar, .how li::before { color: var(--on-lime); }
+.ai-box code, .ai-box .btn.ghost, .ai-box button { color: var(--ink); }
+.ai-box button { color: var(--on-solid); }
+.docs-body pre code { color: inherit; }
+
+/* theme toggle in the top bar */
+.theme-toggle { width: 40px; height: 40px; padding: 0; margin-right: 10px; display: grid; place-items: center; border-radius: 50%; background: var(--card); color: var(--ink); border: 1px solid var(--line); }
+.theme-toggle:hover { background: var(--card); border-color: var(--ink); }
+.theme-toggle svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* dark mode: the heading is egg white on the dark brown page, so it gets a brown outline to stay
+   readable where the lime underline runs behind it */
+:root[data-theme="dark"] .hero h1, :root[data-theme="dark"] mark { -webkit-text-stroke: .075em var(--bg); paint-order: stroke fill; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hero h1, :root:not([data-theme="light"]) mark { -webkit-text-stroke: .075em var(--bg); paint-order: stroke fill; }
+}
+
+/* The Hangout is a game scene with its own overlay colours: it stays on the light palette in both modes. */
+.hangout { --bg: #f6f5ee; --card: #fffefa; --ink: #292a23; --muted: #6b6c63; --line: #e4e2d6; --on-solid: #fff; --on-solid-accent: var(--lime); --on-lime: #292a23; color-scheme: light; }
+.hangout .hangout-brand, .hangout h1, .hangout mark { -webkit-text-stroke: 0; }

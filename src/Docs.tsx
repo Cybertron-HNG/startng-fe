@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { me, User } from "./api";
 import AccountMenu from "./AccountMenu";
 import { Markdown, slug } from "./markdown";
+import ThemeToggle from "./ThemeToggle";
 import ScrollJump from "./ScrollJump";
 import { PAGES, setSeo } from "./seo";
 
@@ -53,17 +54,20 @@ export default function Docs() {
     <>
       <header className="container nav">
         <a className="logo" href="/"><b>start<span>.ng</span></b></a>
-        <nav>
+        <nav aria-label="Pages">
           <a href="/games">Games</a>
           <a href="/creators">Creators</a>
           <a href="/#how">How it works</a>
-          <a href="/docs">Docs</a>
+          <a href="/docs" aria-current="page">Docs</a>
+        </nav>
+        <div className="nav-account">
+          <ThemeToggle />
           {user ? (
             <AccountMenu user={user} onProfile={() => location.assign("/?profile")} onFavorites={() => location.assign("/?favorites")} onSignOut={signOut} />
           ) : (
             <button onClick={() => location.assign("/?signin")}>Sign in</button>
           )}
-        </nav>
+        </div>
       </header>
       <main className="container docs">
         <aside className="docs-side">
