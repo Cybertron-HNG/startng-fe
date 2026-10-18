@@ -107,6 +107,40 @@ export const GUEST_STYLE: CharacterStyle = {
 const gameFromOrigin = (origin: string) => new URL(origin).hostname.split(".")[0];
 const errorText = (err: unknown, fallback: string) => (err instanceof Error ? err.message : fallback);
 
+// The answer to "who is signed in?" takes real work: ask the API who the token belongs to, load three.js
+// and draw the character's face. Games ask in a hidden frame with short timeouts (one polls every half
+// second), and a phone can take longer than that, so the game wrongly decided nobody was signed in and
+// offered "sign in or guest" again. So it's prepared once, as soon as /connect loads, and every question
+// is answered from that. A failed attempt (offline) isn't kept, so the next question tries again.
+let prepared: Promise<object> | null = null;
+
+async function buildWhoami(): Promise<object> {
+  const user = await me(localStorage.getItem("token")); // throws if the API can't be reached: not kept
+  const { faceImage } = await import("./three/snapshot");
+  const style = user ? user.character?.style ?? styleFor(user.id) : null;
+  return {
+    type: "startng:user",
+    user: user && style && {
+      id: user.id,
+      name: user.character?.name ?? user.name ?? "Player",
+      account: user.name ?? null,
+      style,
+      face: faceImage(style),
+    },
+    guest: { name: "Guest", style: GUEST_STYLE, face: faceImage(GUEST_STYLE) },
+  };
+}
+
+function whoami(): Promise<object> {
+  const attempt = (prepared ??= buildWhoami());
+  attempt.catch(() => { if (prepared === attempt) prepared = null; });
+  // If the API can't be reached, say signed out for now (as before) but retry on the next question.
+  return attempt.catch(async () => {
+    const { faceImage } = await import("./three/snapshot");
+    return { type: "startng:user", user: null, guest: { name: "Guest", style: GUEST_STYLE, face: faceImage(GUEST_STYLE) } };
+  });
+}
+
 // What /connect answers. Every reply echoes the request's requestId.
 type Message = { type: string; requestId?: unknown; score?: unknown; stats?: unknown; limit?: unknown };
 const handlers: Record<string, (msg: Message, game: string) => Promise<object>> = {
@@ -114,22 +148,7 @@ const handlers: Record<string, (msg: Message, game: string) => Promise<object>> 
   //   -> { type: "startng:user", user: { id, name, account, style, face } | null, guest: { name, style, face } }
   // face is a picture of the character's face (a PNG data URL) for games that show a profile card.
   // guest is start.ng's one look for players who aren't signed in, so every game shows the same.
-  "startng:whoami": async () => {
-    const user = await me(localStorage.getItem("token")).catch(() => null);
-    const { faceImage } = await import("./three/snapshot"); // three.js loads only when a game asks
-    const style = user ? user.character?.style ?? styleFor(user.id) : null;
-    return {
-      type: "startng:user",
-      user: user && style && {
-        id: user.id,
-        name: user.character?.name ?? user.name ?? "Player",
-        account: user.name ?? null,
-        style,
-        face: faceImage(style),
-      },
-      guest: { name: "Guest", style: GUEST_STYLE, face: faceImage(GUEST_STYLE) },
-    };
-  },
+  "startng:whoami": () => whoami(),
 
   // { type: "startng:score", score } or { type: "startng:score", stats: { ... } } (the game's startng.json stats)
   //   -> { type: "startng:scoreSaved", ok, result: { best, improved, rank, stats } | error }
@@ -173,6 +192,9 @@ const handlers: Record<string, (msg: Message, game: string) => Promise<object>> 
 
 /** Runs on /connect: answers games (and nobody else) about the signed-in player, scores and live rooms. */
 export function serveConnect() {
+  void whoami(); // start preparing now, before the first question arrives
+  // Signing in or out in another tab changes the answer.
+  window.addEventListener("storage", (e) => { if (e.key === "token") { prepared = null; void whoami(); } });
   window.addEventListener("message", async (e) => {
     const handle = handlers[e.data?.type];
     if (!isGameOrigin(e.origin) || !handle) return;
