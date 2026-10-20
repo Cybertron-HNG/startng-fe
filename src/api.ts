@@ -380,7 +380,8 @@ export type ActivityKind = "player" | "developer" | "admin" | "system";
 export type LogEntry = { id: number; actor: string | null; kind: ActivityKind; action: string; target: string | null; detail: Record<string, unknown> | null; at: string };
 export type Overview = { open_reports: number; games_waiting: number; hidden_games: number; blocked_developers: number; admins: number };
 
-async function call<T>(token: string | null, path: string, init: RequestInit = {}): Promise<T> {
+/** A signed-in call to the API. Features use this (and send) from their own folder: src/features/<feature>/api.ts. */
+export async function call<T>(token: string | null, path: string, init: RequestInit = {}): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     ...init,
     headers: { ...(init.body ? { "Content-Type": "application/json" } : {}), ...authHeader(token), ...(init.headers ?? {}) },
@@ -390,7 +391,7 @@ async function call<T>(token: string | null, path: string, init: RequestInit = {
   if (!res.ok) throw new Error(typeof data.detail === "string" ? data.detail : "Something went wrong");
   return data;
 }
-const send = (method: string, body?: unknown): RequestInit => ({ method, body: body === undefined ? undefined : JSON.stringify(body) });
+export const send = (method: string, body?: unknown): RequestInit => ({ method, body: body === undefined ? undefined : JSON.stringify(body) });
 
 /** Report a game (signed in). It's hidden from start.ng until an admin looks at it. */
 export const reportGame = (token: string | null, game: string, reason: ReportReason, details: string) =>

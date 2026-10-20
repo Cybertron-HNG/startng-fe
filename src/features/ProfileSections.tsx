@@ -1,3 +1,4 @@
+import Boundary from "./Boundary";
 import { allProfileSections } from "./registry";
 import { useFeatures } from "./flags";
 
@@ -9,7 +10,9 @@ export default function ProfileSections({ userId, isMe }: { userId: number; isMe
       {allProfileSections().filter((s) => isOn(s.feature)).map((s) => (
         <section key={s.key} className="profile-section" aria-label={s.title}>
           <h2>{s.title}</h2>
-          <s.Component userId={userId} isMe={isMe} />
+          <Boundary name={s.title}>
+            <s.Component userId={userId} isMe={isMe} />
+          </Boundary>
         </section>
       ))}
     </>

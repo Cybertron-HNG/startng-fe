@@ -24,7 +24,8 @@ Every new feature lives in `src/features/<feature>/` with one owner (the PRD, se
      `go` and the shared confirm dialog `ask`. Register the permission on the API side (`PERMISSIONS`).
    - **Profile sections:** `registerProfileSection({ feature, key, title, Component })`. The profile page shows them
      with `<ProfileSections userId isMe />`.
-3. Your API calls live in your folder too, not in `src/api.ts`.
+3. Your API calls live in your folder too (`src/features/<feature>/api.ts`), using `call` and `send` from `src/api.ts`.
+   Admin tabs and profile sections are wrapped in an error boundary, so a crash in yours doesn't take down the page.
 
 ## Deploy (Coolify)
 Dockerfile build pack (nginx, port 80). VITE_API_URL and VITE_GOOGLE_CLIENT_ID are build-time, so mark them as

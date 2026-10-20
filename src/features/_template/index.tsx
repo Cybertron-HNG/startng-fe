@@ -11,7 +11,7 @@ registerPage({ feature: FEATURE, path: "/example", shell: "app", load: () => imp
 registerPage({ feature: FEATURE, path: /^\/example\/(?<id>\d+)\/?$/, shell: "app", load: () => import("./ExamplePage") });
 
 // Something on every game card: "badges" (on the picture), "stats" (under the title) or "actions" (next to Play).
-// Return null to leave a card alone.
+// Return null to leave a card alone. Your API calls go in this folder too (see call and send in src/api.ts).
 registerCardPart({ feature: FEATURE, key: "example-hot", slot: "badges", render: (game) => (game.plays > 100 ? <span className="tag">Hot</span> : null) });
 
 // A tab on start.ng/admin, for admins with the permission the back end registered (PERMISSIONS in __init__.py).
