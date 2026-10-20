@@ -2,7 +2,7 @@
 // A feature lives in src/features/<feature>/ and registers itself from its own index.ts; src/features/index.ts
 // imports each feature with ONE line. Everything a feature registers is hidden while its flag is off (GET /features).
 import { lazy, type ComponentType, type LazyExoticComponent, type ReactNode } from "react";
-import type { AdminMe, User } from "../api";
+import type { AdminMe, PublishedGame, User } from "../api";
 import type { Game } from "../games";
 
 // ---- pages
@@ -95,3 +95,19 @@ export function registerProfileSection(s: Omit<ProfileSection, "order"> & { orde
   profileSections.sort((a, b) => a.order - b.order);
 }
 export const allProfileSections = () => profileSections;
+
+// ---- Your games (the owner's own game cards, in the profile)
+
+export type YourGameProps = { game: PublishedGame; reload: () => void };
+type YourGamePart = { feature: string; key: string; order: number; Component: ComponentType<YourGameProps> };
+const yourGameParts: YourGamePart[] = [];
+
+/** Something a feature adds to each of the owner's games in Your games (a note from admins, a category picker, a
+ *  checklist). Render nothing for a game it doesn't apply to. reload refreshes the list after a change. */
+export function registerYourGamePart(p: Omit<YourGamePart, "order"> & { order?: number }) {
+  const i = yourGameParts.findIndex((x) => x.key === p.key);
+  if (i >= 0) yourGameParts.splice(i, 1);
+  yourGameParts.push({ order: 100, ...p });
+  yourGameParts.sort((a, b) => a.order - b.order);
+}
+export const allYourGameParts = () => yourGameParts;

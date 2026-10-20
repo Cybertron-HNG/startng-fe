@@ -22,6 +22,8 @@ Every new feature lives in `src/features/<feature>/` with one owner (the PRD, se
      Return `null` to leave a card alone. Cards are `src/GameCard.tsx`; don't edit it for a feature.
    - **Admin tabs:** `registerAdminTab({ feature, key, label, permission, Component })`. You get `access`, `can`,
      `go` and the shared confirm dialog `ask`. Register the permission on the API side (`PERMISSIONS`).
+   - **Your games:** `registerYourGamePart({ feature, key, Component })`, shown on each of the owner's games (with
+     `game` and `reload`).
    - **Profile sections:** `registerProfileSection({ feature, key, title, Component })`. The profile page shows them
      with `<ProfileSections userId isMe />`.
 3. Your API calls live in your folder too (`src/features/<feature>/api.ts`), using `call` and `send` from `src/api.ts`.
