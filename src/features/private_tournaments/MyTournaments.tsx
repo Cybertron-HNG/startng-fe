@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { PageProps } from "../registry";
 import { listGames, PublishedGame } from "../../api";
 import { PAGES, setSeo } from "../../seo";
+import { getCrew } from "../crews/api";
 import { createTournament, myTournaments, Summary } from "./api";
 import { timeLeft } from "./time";
 
@@ -16,6 +17,12 @@ export default function MyTournaments({ user, onSignIn }: PageProps) {
   const [picked, setPicked] = useState<string[]>([]);
   const [hours, setHours] = useState(168);
   const [query, setQuery] = useState("");
+  // /friends?crew=12: a tournament for one of your crews (its members find it on the crew page)
+  const crewId = Number(new URLSearchParams(location.search).get("crew")) || null;
+  const [crewName, setCrewName] = useState("");
+  useEffect(() => {
+    if (crewId && user) getCrew(crewId).then((c) => setCrewName(c.name)).catch(() => setCrewName(""));
+  }, [crewId, user?.id]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -38,7 +45,7 @@ export default function MyTournaments({ user, onSignIn }: PageProps) {
     setBusy(true);
     setError("");
     try {
-      const t = await createTournament({ title, games: picked, hours });
+      const t = await createTournament({ title, games: picked, hours, ...(crewId && crewName ? { crew_id: crewId } : {}) });
       location.assign(`/friends/${t.code}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not start the tournament");
@@ -56,6 +63,7 @@ export default function MyTournaments({ user, onSignIn }: PageProps) {
       </div>
 
       <form className="private-form" onSubmit={submit}>
+        {crewName && <p className="note">For your crew <b>{crewName}</b>. Its members will find it on the crew page.</p>}
         <label className="field">
           <span>Name</span>
           <input value={title} onChange={(e) => setTitle(e.target.value)} minLength={3} maxLength={60} required placeholder="e.g. Family Cup" />

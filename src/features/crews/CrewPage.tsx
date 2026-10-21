@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import type { PageProps } from "../registry";
 import { shortName } from "../../BoardTable";
 import { PAGES, setSeo } from "../../seo";
+import { useFeature } from "../flags";
+import { crewTournaments, Summary } from "../private_tournaments/api";
+import { timeLeft } from "../private_tournaments/time";
 import { Crew, deleteCrew, getCrew, leaveCrew, newCrewLink, removeMember } from "./api";
 
 /** start.ng/crews/<id>: who is in the crew, its invite link, and leave or manage. */
@@ -11,6 +14,8 @@ export default function CrewPage({ user, onSignIn, params }: PageProps) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
+  const withTournaments = useFeature("private_tournaments");
+  const [cups, setCups] = useState<Summary[]>([]);
   const link = crew ? `${location.origin}/join/${crew.code}` : "";
   const canShare = typeof navigator.share === "function" && matchMedia("(pointer: coarse)").matches; // phones and tablets
 
@@ -19,6 +24,10 @@ export default function CrewPage({ user, onSignIn, params }: PageProps) {
     if (!user) { setCrew(null); return; }
     getCrew(id).then(setCrew).catch(() => setCrew(null));
   }, [id, user?.id]);
+
+  useEffect(() => {
+    if (withTournaments && crew) crewTournaments(id).then(setCups).catch(() => setCups([]));
+  }, [withTournaments, crew?.id]);
 
   async function act(fn: () => Promise<unknown>, after?: () => void) {
     setBusy(true);
@@ -83,6 +92,25 @@ export default function CrewPage({ user, onSignIn, params }: PageProps) {
           {error && <p className="error">{error}</p>}
         </div>
       </div>
+
+      {withTournaments && (
+        <section aria-labelledby="cups-heading">
+          <h2 id="cups-heading" className="private-heading">Tournaments</h2>
+          {cups.length === 0 && <p className="board-empty">None yet. Pick the games and a time, and everyone in the crew can join.</p>}
+          <ul className="private-list">
+            {cups.map((t) => (
+              <li key={t.code}>
+                <a href={`/friends/${t.code}`}>
+                  <b>{t.title}</b>
+                  <span>{t.games.length} {t.games.length === 1 ? "game" : "games"} · {t.members} {t.members === 1 ? "player" : "players"}{t.joined ? " · you're in" : ""}</span>
+                </a>
+                <span className={`tag ${t.finished ? "done" : ""}`}>{timeLeft(t.ends_at)}</span>
+              </li>
+            ))}
+          </ul>
+          <p><a className="btn" href={`/friends?crew=${crew.id}`}>Start a tournament for this crew</a></p>
+        </section>
+      )}
 
       <section aria-labelledby="people-heading">
         <h2 id="people-heading" className="private-heading">People</h2>

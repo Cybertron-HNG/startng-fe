@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { BoardStat, getLeaderboard, LeaderboardEntry } from "./api";
 import { Game } from "./games";
+import { scopedGame } from "./features/scoped_boards/api";
 
 /** A stat as players read it: times as m:ss, numbers with separators, "–" when missing. */
 export const formatStat = (stat: BoardStat, v: number | null | undefined) => {
@@ -19,7 +20,7 @@ export const shortName = (name: string, max = 14) => {
 
 /** A game's shared leaderboard table: the top players' best scores, saved in start.ng's database.
  *  Used in the leaderboard popup and on the game's own page. */
-export default function BoardTable({ game, playerId }: { game: Game; playerId: number | null }) {
+export default function BoardTable({ game, playerId, scope = "all" }: { game: Game; playerId: number | null; scope?: string }) {
   const [entries, setEntries] = useState<LeaderboardEntry[] | null>(null);
   const [error, setError] = useState("");
   // The game's own columns (startng.json); first one ranks, the rest break ties.
@@ -28,10 +29,13 @@ export default function BoardTable({ game, playerId }: { game: Game; playerId: n
   const cols = `28px minmax(0, 1fr) ${stats.map(() => "auto").join(" ")}`;
 
   useEffect(() => {
-    getLeaderboard(game.slug, 10)
+    setEntries(null);
+    setError("");
+    // "all": the main board. "crew:<id>": only that crew's players (src/features/scoped_boards).
+    (scope === "all" ? getLeaderboard(game.slug, 10) : scopedGame(game.slug, scope, 10))
       .then((rows) => setEntries(rows.slice(0, 10)))
       .catch(() => setError("Couldn't load the leaderboard. Try again in a moment."));
-  }, [game.slug]);
+  }, [game.slug, scope]);
 
   return (
     <>
