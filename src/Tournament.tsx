@@ -6,6 +6,9 @@ import {
 } from "./api";
 import { formatStat, shortName } from "./BoardTable";
 import { useFeature } from "./features/flags";
+import { scopedOverall } from "./features/scoped_boards/api";
+import ScopeTabs from "./features/scoped_boards/ScopeTabs";
+import { useCrewScopes } from "./features/scoped_boards/useCrewScopes";
 import { Game, toCard } from "./games";
 import { PAGES, setSeo, TOURNAMENT_IMAGE } from "./seo";
 
@@ -336,13 +339,16 @@ export function LeaderboardPage({ user }: { user: User | null }) {
   const [rows, setRows] = useState<OverallEntry[] | null>(null);
   const [error, setError] = useState("");
   const playerId = user?.id ?? null;
+  const crews = useCrewScopes(user); // crews whose boards this player can look at
+  const [scope, setScope] = useState("all"); // "all", or "crew:<id>" (src/features/scoped_boards)
 
   useEffect(() => setSeo(PAGES.leaderboard), []);
   useEffect(() => {
     setRows(null);
     setError("");
-    overallLeaderboard(period, 50).then(setRows).catch(() => setError("Couldn't load the leaderboard. Try again in a moment."));
-  }, [period]);
+    (scope === "all" ? overallLeaderboard(period, 50) : scopedOverall(scope, period, 50))
+      .then(setRows).catch(() => setError("Couldn't load the leaderboard. Try again in a moment."));
+  }, [period, scope]);
 
   function choose(next: "all" | "week") {
     setPeriod(next);
@@ -358,6 +364,7 @@ export function LeaderboardPage({ user }: { user: User | null }) {
           <p className="tournament-sub">Points from the daily tournaments. <a href="/tournament">Today's tournament →</a></p>
         </div>
       </div>
+      <ScopeTabs crews={crews} scope={scope} onChange={setScope} />
       <div className="segmented" role="group" aria-label="Period">
         <button type="button" className={period === "all" ? "on" : ""} aria-pressed={period === "all"} onClick={() => choose("all")}>All time</button>
         <button type="button" className={period === "week" ? "on" : ""} aria-pressed={period === "week"} onClick={() => choose("week")}>This week</button>

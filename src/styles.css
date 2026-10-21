@@ -753,3 +753,8 @@ button.small { padding: 7px 12px; font-size: .85rem; border-radius: 8px; }
 .tag.done { background: var(--line); color: var(--muted); }
 .private-share { display: flex; flex-wrap: wrap; gap: 8px; }
 .private-manage { padding-top: 8px; }
+.crew-link { word-break: break-all; font-family: var(--mono); font-size: .9rem; background: var(--bg); padding: 4px 8px; border-radius: 6px; }
+.private-list .nm { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+.private-list .dot { flex: none; width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, .15); }
+.private-list em { font-style: normal; color: var(--muted); }
+.private-manage { display: flex; gap: 18px; flex-wrap: wrap; }

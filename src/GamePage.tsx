@@ -6,6 +6,8 @@ import { User } from "./api";
 import { Game, isInAppGame } from "./games";
 import ReportDialog from "./Report";
 import { PAGES, setSeo } from "./seo";
+import ScopeTabs from "./features/scoped_boards/ScopeTabs";
+import { useCrewScopes } from "./features/scoped_boards/useCrewScopes";
 
 // start.ng/games/<name>: a game's own page on start.ng, shown before the game itself. Search engines
 // and shared links land here (the API serves this address with the text already in it, see
@@ -25,6 +27,8 @@ export default function GamePage({ name, game, loading, user, playerId, favorite
 }) {
   const [copied, setCopied] = useState(false);
   const [reporting, setReporting] = useState<"report" | "flag" | null>(null);
+  const crews = useCrewScopes(user); // crews whose boards this player can look at
+  const [scope, setScope] = useState("all");
   const found = !!game;
 
   useEffect(() => {
@@ -111,7 +115,8 @@ export default function GamePage({ name, game, loading, user, playerId, favorite
       {g.board && (
         <aside className="game-page-board" aria-labelledby="board-heading">
           <h2 id="board-heading">Leaderboard <span>Top 10</span></h2>
-          <BoardTable game={g} playerId={playerId} />
+          <ScopeTabs crews={crews} scope={scope} onChange={setScope} />
+          <BoardTable game={g} playerId={playerId} scope={scope} />
         </aside>
       )}
       {reporting && (

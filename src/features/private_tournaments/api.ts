@@ -4,7 +4,7 @@ const API_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").replac
 
 export type Summary = {
   code: string; title: string; owner: string; starts_at: string; ends_at: string; finished: boolean;
-  members: number; games: string[]; joined: boolean; mine: boolean;
+  members: number; games: string[]; joined: boolean; mine: boolean; crew_id: number | null;
 };
 export type Run = { rank: number; player_id: number; name: string; color: string | null; stats: Record<string, number>; points: number };
 export type GameBoard = { name: string; url: string; cover_url: string | null; leaderboard: BoardStat[]; players: number; top: Run[] };
@@ -26,7 +26,7 @@ async function call<T>(path: string, init?: RequestInit): Promise<T> {
   return data;
 }
 
-export const createTournament = (body: { title: string; games: string[]; hours: number }) =>
+export const createTournament = (body: { title: string; games: string[]; hours: number; crew_id?: number }) =>
   call<Summary>("", { method: "POST", headers: headers(true), body: JSON.stringify(body) });
 export const myTournaments = () => call<Summary[]>("/mine", { headers: headers() });
 export const getTournament = (code: string) => call<Summary | Detail>(`/${encodeURIComponent(code)}`, { headers: headers() });
@@ -34,3 +34,4 @@ export const joinTournament = (code: string) => call<Summary>(`/${encodeURICompo
 export const leaveTournament = (code: string) => call<void>(`/${encodeURIComponent(code)}/members/me`, { method: "DELETE", headers: headers() });
 export const deleteTournament = (code: string) => call<void>(`/${encodeURIComponent(code)}`, { method: "DELETE", headers: headers() });
 export const newInviteLink = (code: string) => call<Summary>(`/${encodeURIComponent(code)}/new-link`, { method: "POST", headers: headers() });
+export const crewTournaments = (crewId: number) => call<Summary[]>(`/crew/${crewId}`, { headers: headers() });
