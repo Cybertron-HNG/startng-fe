@@ -516,6 +516,19 @@ GET https://api.start.ng/games/{game}/leaderboard?limit=10
 - start.ng works out which game a score belongs to from your game's address (or its session), so a game can only save its own scores.
 - Guests can see the leaderboard but can't save. Invite them to sign in.
 
+<!-- feature: private_tournaments, crews, scoped_boards (Trinity) -->
+## Tournaments with friends and crews
+
+Players can use your game in their own competitions. **You don't change anything**: a game with a leaderboard is already included, and every run it saves with `startng:score` counts automatically.
+
+- **Tournaments with friends.** A player picks up to 5 games, sets how long it runs (1 day to 1 month) and shares an invite link. Friends who join are ranked on each game by **that game's own ranking** (its first column, in the order you set, with the other columns breaking ties). Each game gives 10 points for 1st, 7 for 2nd, 5 for 3rd, 3 for 4th and 1 for everyone else who plays it, and the most points wins. A game with a plain `score` works the same way.
+- **Crews.** A crew is a saved group of players (a family, a class, a city). Crew members can start a tournament for the whole crew, and see a crew-only version of the overall leaderboard and of your game's board.
+- **What counts.** Only a member's runs inside the tournament's time count, after they joined. Nothing in these competitions gives global tournament points.
+- **What's needed.** The game must be live, not hidden, and have a leaderboard: a `startng.json` with columns, or at least one saved score. A game without one can't be picked.
+- **Privacy.** A crew and its members are visible only to the people in it. Players are shown by their character name, never by email.
+
+<!-- /feature: private_tournaments, crews, scoped_boards -->
+
 ## Multiplayer
 
 For games where players see each other live, like the Hangout. This uses the connect page.
