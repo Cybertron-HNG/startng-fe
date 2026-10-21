@@ -91,6 +91,24 @@ export const PAGES: Record<string, Seo> = {
     path: "/friends",
     noindex: true, // an invite link is private; the page sets its own title once it knows the tournament
   },
+  // Crews (src/features/crews): the page that makes one, a crew's own page and its invite link.
+  crews: {
+    title: "Crews: your family, class or city in one place · start.ng",
+    description: "Make a crew for your family, school, class, city or friends, send one invite link, and everyone who joins is in.",
+    path: "/crews",
+  },
+  crew: {
+    title: "Your crew · start.ng",
+    description: "Your crew on start.ng: who is in, and its invite link.",
+    path: "/crews",
+    noindex: true,
+  },
+  joinCrew: {
+    title: "Join a crew · start.ng",
+    description: "You've been invited to a crew on start.ng. Join it to play with your people.",
+    path: "/crews",
+    noindex: true,
+  },
   notFound: {
     title: "Page not found · start.ng",
     description: "There's nothing at this address. Browse the games on start.ng instead.",
@@ -111,6 +129,9 @@ export const STATIC_PAGES: [string, Seo][] = [
   ["approve.html", PAGES.approve],
   ["friends-tournaments.html", PAGES.friendsTournaments],
   ["private-tournament.html", PAGES.privateTournament],
+  ["crews.html", PAGES.crews],
+  ["crew.html", PAGES.crew],
+  ["join-crew.html", PAGES.joinCrew],
   ["404.html", PAGES.notFound],
 ];
 
