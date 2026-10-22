@@ -11,4 +11,5 @@ import "./duplicates"; // H2 duplicate finder (Hamzat)
 import "./email"; // H1 email and notifications (Hamzat)
 import "./game_health"; // H2 game health checks (Hamzat)
 import "./share"; // B2 share cards (Hamzat, for Bumblebee)
+import "./challenges"; // B1 challenge links (Hamzat, for Bumblebee)
 export {};

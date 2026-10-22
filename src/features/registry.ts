@@ -115,8 +115,9 @@ export const allYourGameParts = () => yourGameParts;
 // ---- parts of start.ng's own pages
 
 /** A start.ng page with a place for features to add a box (the tournament page: an email sign-up, crew invites). */
-export type PageSlot = "tournament";
-export type PagePartProps = { user: User | null; onSignIn: () => void };
+export type PageSlot = "tournament" | "game";
+/** game: the game's slug, on the "game" page. */
+export type PagePartProps = { user: User | null; onSignIn: () => void; game?: string };
 type PagePart = { feature: string; key: string; page: PageSlot; order: number; Component: ComponentType<PagePartProps> };
 const pageParts: PagePart[] = [];
 

@@ -4,6 +4,7 @@ import BoardTable from "./BoardTable";
 import { FavoriteButton } from "./Favorites";
 import { User } from "./api";
 import { Game, isInAppGame } from "./games";
+import PageParts from "./features/PageParts";
 import ReportDialog from "./Report";
 import { PAGES, setSeo } from "./seo";
 
@@ -98,6 +99,7 @@ export default function GamePage({ name, game, loading, user, playerId, favorite
             <a className="ghost btn" href={tweet} target="_blank" rel="noreferrer" onClick={() => analytics.share("game", g.slug, "x")}>Share on X</a>
             <button type="button" className="ghost" onClick={copy}>{copied ? "Link copied" : "Copy link"}</button>
           </div>
+          <PageParts page="game" user={user} onSignIn={onSignIn} game={g.slug} />
           {g.slug !== "hangout" && (
             <div className="game-page-report">
               <button type="button" className="link" onClick={() => (user ? setReporting("report") : onSignIn())}>

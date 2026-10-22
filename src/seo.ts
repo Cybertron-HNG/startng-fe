@@ -104,6 +104,12 @@ export const PAGES: Record<string, Seo> = {
     path: "/follows",
     noindex: true, // an invite link is private
   },
+  challenge: {
+    title: "A challenge · start.ng",
+    description: "A friend challenged you to beat their score on start.ng. Take it and see if you can.",
+    path: "/c",
+    noindex: true, // a challenge link is for the people it is sent to
+  },
   notFound: {
     title: "Page not found · start.ng",
     description: "There's nothing at this address. Browse the games on start.ng instead.",
@@ -126,6 +132,7 @@ export const STATIC_PAGES: [string, Seo][] = [
   ["private-tournament.html", PAGES.privateTournament],
   ["follows.html", PAGES.follows],
   ["friend-invite.html", PAGES.friendInvite],
+  ["challenge.html", PAGES.challenge],
   ["404.html", PAGES.notFound],
 ];
 
