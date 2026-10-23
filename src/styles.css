@@ -1002,3 +1002,4 @@ option { background: var(--card); color: var(--ink); }
 .game-sub-links ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .game-sub-links a { text-decoration: underline; text-underline-offset: 3px; }
 .game-sub-links a:hover { color: var(--ink); }
+.game-sub .game-tags { margin-top: 26px; padding: 0; max-width: 68ch; }
