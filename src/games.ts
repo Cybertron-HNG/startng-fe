@@ -43,9 +43,14 @@ export function playableUrl(url: string) {
   return u.href.replace(/\/$/, "");
 }
 
-export function toCard(game: PublishedGame): Game {
+/** The colour pair for a name (a game or a category): the same name always gets the same pair. */
+export function colorsFor(name: string): [string, string] {
   let hash = 0;
-  for (const ch of game.name) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+  for (const ch of name) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+  return CARD_COLORS[hash % CARD_COLORS.length];
+}
+
+export function toCard(game: PublishedGame): Game {
   const url = playableUrl(game.url);
   return {
     slug: game.name,
@@ -53,7 +58,7 @@ export function toCard(game: PublishedGame): Game {
     url,
     host: new URL(url).host,
     by: game.by,
-    colors: CARD_COLORS[hash % CARD_COLORS.length],
+    colors: colorsFor(game.name),
     cover: game.cover_url,
     board: game.leaderboard ?? null,
     plays: game.plays ?? 0,

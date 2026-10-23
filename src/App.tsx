@@ -417,6 +417,7 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
               )}
             </div>
           )}
+          {allGames && <PageParts page="games" user={user} onSignIn={() => setSignInOpen(true)} />}
           {allGames && <FilterBar filters={filters} />}
           {games && filters.active && !searching && cards.length === 0 && (
             <p className="empty">
