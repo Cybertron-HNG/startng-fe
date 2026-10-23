@@ -980,3 +980,25 @@ option { background: var(--card); color: var(--ink); }
 .wd-history > summary { padding: 12px 16px; font-weight: 600; }
 .wd-history > :not(summary) { margin-left: 16px; margin-right: 16px; }
 .wd-history[open] { padding-bottom: 14px; }
+
+/* A game's own pages (about, how to play, FAQ, walkthrough): written by the server, so the top bar is plain links (no script). */
+.sub-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 20px; padding: 22px 24px 8px; }
+.sub-top nav { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: .95rem; }
+.sub-top nav a { color: var(--muted); }
+.sub-top nav a:hover { color: var(--ink); }
+.game-sub { padding-top: 22px; padding-bottom: 44px; }
+.game-sub .crumbs { font: .8rem var(--mono); color: var(--muted); margin: 0 0 18px; }
+.game-sub .crumbs a:hover { color: var(--ink); text-decoration: underline; }
+.game-sub .eyebrow { margin: 0 0 10px; }
+.game-sub h1 { font-size: clamp(2rem, 6vw, 2.8rem); letter-spacing: -.04em; line-height: 1.05; margin: 0 0 22px; }
+.game-sub-body { max-width: 68ch; line-height: 1.7; color: var(--text-2); }
+.game-sub-body h2 { font-size: 1.35rem; letter-spacing: -.02em; color: var(--ink); margin: 28px 0 8px; }
+.game-sub-body p, .game-sub-body ul, .game-sub-body ol { margin: 0 0 14px; }
+.game-sub-body ul, .game-sub-body ol { padding-left: 1.3em; }
+.game-sub-body li { margin: 0 0 6px; }
+.game-sub-play { display: flex; flex-wrap: wrap; gap: 10px; margin: 28px 0 0; }
+.game-sub-links { margin: 34px 0 0; padding: 18px 20px; background: var(--card); border: 1px solid var(--line); border-radius: 18px; max-width: 68ch; }
+.game-sub-links h2 { font-size: 1.1rem; margin: 0 0 10px; letter-spacing: -.02em; }
+.game-sub-links ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.game-sub-links a { text-decoration: underline; text-underline-offset: 3px; }
+.game-sub-links a:hover { color: var(--ink); }

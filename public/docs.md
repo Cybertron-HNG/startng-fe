@@ -490,6 +490,48 @@ Examples:
 | Runner | `distance` "Km run" (highest), `coins` (highest) |
 | Race or escape | `gems` (highest), `time` (lowest, `"format": "time"`) |
 
+### Pages about your game: `story`, `controls`, `howToPlay`, `features`, `walkthrough`
+
+Your game's page is at `start.ng/games/<your-game>`. start.ng can also write up to four more pages about it, so more people can find it when they search for how to play it or what it is:
+
+| Page | Address | It needs |
+| --- | --- | --- |
+| About | `start.ng/games/<your-game>/about` | a `description` or a `story` (or at least 2 `features`) |
+| How to play | `start.ng/games/<your-game>/how-to-play` | `controls` or `howToPlay` |
+| FAQ | `start.ng/games/<your-game>/faq` | a `description`, or `controls` or `howToPlay`, plus a leaderboard, categories or a way to play to answer with |
+| Walkthrough | `start.ng/games/<your-game>/walkthrough` | a `walkthrough` of at least 3 steps or tips |
+
+The pages are written **only from what your game says about itself**. start.ng never guesses how your game plays. If your files don't say how to play, the game gets no "How to play" page. Add the words, and the page becomes possible.
+
+Put them in `startng.json`, next to `description`:
+
+```json
+{
+  "description": "Dodge the lava and climb as high as you can.",
+  "story": "A small fire spirit runs from an erupting volcano.",
+  "controls": ["Space or tap to jump", "Down arrow or swipe down to slide"],
+  "howToPlay": ["Run and jump the gaps.", "Slide under the stone arches.", "Grab every crystal for a higher score."],
+  "features": ["Endless levels", "A daily goal", "Your own start.ng character"],
+  "walkthrough": ["Learn the first three gaps by heart.", "Slide early, not late.", "Save your crystals for the last ridge."]
+}
+```
+
+| Key | What to write |
+| --- | --- |
+| `description` | One or two plain sentences about the game (up to 300 characters). It is also used on your game's page. |
+| `story` | The idea or story behind the game, in a sentence or two (up to 600 characters). |
+| `controls` | A list of short lines, one per control: keys, taps or gestures. |
+| `howToPlay` | A list of steps in order, as you would tell a new player. |
+| `features` | A list of the things that are in your game. |
+| `walkthrough` | A list of tips or steps for getting through the game (at least 3). |
+
+- Every list takes up to **12 lines**, each up to **240 characters**, as plain text. No HTML. A single string also works for `controls`.
+- Names are **exact**: `howToPlay` with a capital P and T. Publishing does **not** check these keys (it ignores keys it doesn't know), so a typo won't stop you publishing, but it also won't produce a page.
+- **No `startng.json`?** start.ng also reads your `README.md`. Headings it understands: "How to play" or "Controls" (a numbered list is the steps, bullets are the controls), "Features", "Story" or "About", and "Walkthrough", "Tips" or "Guide". The first paragraph is used as the description if you didn't write one. It also reads the description tag and any words under a "How to play" heading in your game's own `index.html`.
+- Write true things. A person on the start.ng team reads and approves every page before it goes live, and may change the words.
+- A game that says the same as another game gets one page, not two. A game that says very little gets no extra pages.
+- Pushing an update doesn't publish a page by itself. start.ng makes the pages from time to time, and a page appears at its address once it has been approved.
+
 ### Save a run
 
 Signed-in players only. Send **exactly** the stats in your `startng.json` (or a plain `score` if you don't have one), each a **whole number** from 0 to 1,000,000,000. Anything else is refused.
@@ -690,3 +732,4 @@ For your own game:
 9. The repo is public on GitHub and pushed.
 10. `POST /games/check` passes with no errors (and you've looked at the warnings).
 11. Publish with the API and open the `approve_url` the first time. After that, pushing to the branch is enough.
+12. Optional, but it helps people find you: a `description`, and `controls` or `howToPlay` in `startng.json`, so your game can have its own about and how-to-play pages.

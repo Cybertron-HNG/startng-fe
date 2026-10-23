@@ -1,0 +1,28 @@
+/* Tags and category pages. Colours come from the app's variables; the tiles use the same colour pairs as game covers. */
+.tags-picks { padding-top: 8px; padding-bottom: 8px; }
+.tags-picks-head { display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 14px; }
+.tags-picks-head h2 { margin: 0; font-size: 1.5rem; letter-spacing: -.03em; }
+.tag-tiles { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.tag-tile { position: relative; display: flex; flex-direction: column; justify-content: flex-end; gap: 4px; min-height: 112px; padding: 14px 16px; border-radius: 18px; border: 1px solid var(--line); overflow: hidden; color: #fff; transition: transform .15s, box-shadow .15s, border-color .15s; }
+.tag-tile::before { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0, 0, 0, .5), rgba(0, 0, 0, 0) 70%); }
+.tag-tile > * { position: relative; text-shadow: 0 1px 6px rgba(0, 0, 0, .35); }
+.tag-tile:hover { transform: translateY(-2px); border-color: var(--ink); box-shadow: 4px 4px 0 var(--lime); }
+.tag-tile b { font-size: 1.1rem; letter-spacing: -.02em; line-height: 1.15; }
+.tag-tile span { font: .7rem var(--mono); text-transform: uppercase; letter-spacing: .14em; opacity: .9; }
+.tags-page { padding-top: 28px; padding-bottom: 40px; }
+.tags-page h1 { font-size: 2.6rem; letter-spacing: -.04em; line-height: 1.05; margin: 0 0 12px; }
+.tags-page .lead-sm { max-width: 60ch; margin: 0 0 8px; font-size: 1.05rem; }
+.tags-page .crumbs { font: .8rem var(--mono); color: var(--muted); margin: 0 0 18px; }
+.tags-page .crumbs a:hover { color: var(--ink); text-decoration: underline; }
+.tags-page .section-head { margin-top: 30px; }
+.tags-group { margin: 34px 0 0; }
+.tags-group h2 { font-size: 1.3rem; letter-spacing: -.02em; margin: 0 0 14px; }
+.tags-pager { display: flex; justify-content: space-between; align-items: center; margin: 26px 0 0; }
+.game-tags { padding-top: 6px; padding-bottom: 6px; }
+.game-tags .eyebrow { margin: 0 0 10px; }
+.game-tags ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.game-tags a { display: inline-block; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); font-size: .9rem; font-weight: 600; }
+.game-tags a:hover { border-color: var(--ink); background: var(--lime); color: var(--on-lime); }
+.tags-admin-chips { margin-top: 12px; align-items: center; }
+.tags-admin-chips select { padding: 7px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: inherit; font: inherit; font-size: .9rem; }
+@media (max-width: 760px) { .tags-page h1 { font-size: 2rem; } .tag-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } .tag-tile { min-height: 92px; } }
