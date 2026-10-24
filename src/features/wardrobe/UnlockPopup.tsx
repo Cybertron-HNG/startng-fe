@@ -7,6 +7,7 @@ import { useDialog } from "./useDialog";
 import "./wardrobe.css";
 import { picture, share } from "./words";
 import { withHandle } from "../../share";
+import { celebrate } from "../../motion/motion";
 
 const Viewer = lazy(() => import("../../three/Viewer"));
 
@@ -72,6 +73,7 @@ export default function UnlockPopup({ user }: { user: User }) {
   }, [user.id]);
 
   const item = queue[0];
+  useEffect(() => { if (item) celebrate(); }, [item?.key]); // confetti when something is unlocked (prototype, branch proto/motion)
   useEffect(() => { setWorn(false); setError(""); }, [item?.key]);
   // The character wearing the new item, on top of what they already wear.
   const look = useMemo(() => item ? dressed(user.character?.style ?? styleFor(user.id), withItem(wearing ?? [], item.key, item.slot)) : null,

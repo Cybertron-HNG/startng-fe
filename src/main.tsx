@@ -10,11 +10,15 @@ import "./features"; // every feature registers its pages, card parts and admin 
 import FeatureGate from "./features/FeatureGate";
 import { findPage } from "./features/registry";
 import "./styles.css";
+import "./motion/motion.css";
+import { startMotion } from "./motion/motion";
 
 // The Hangout (start.ng's own game, with three.js) loads only when someone opens it.
 const Hangout = lazy(() => import("./hangout/Hangout"));
 // The admin page loads only for admins who open it.
 const Admin = lazy(() => import("./Admin"));
+// A prototype of the site's motion (branch proto/motion): /motion shows its three moments.
+const MotionLab = lazy(() => import("./motion/MotionLab"));
 
 // Google Analytics (live site only, never on /connect).
 initAnalytics();
@@ -38,6 +42,7 @@ if (location.pathname === "/connect") {
 } else {
   const path = location.pathname;
   const feature = findPage(path); // a feature's page (src/features), shown only while its flag is on
+  startMotion();
   ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
       {HOME_PATHS.includes(path) || APPROVE_PATH.test(path) || GAMES_PATHS.includes(path) || CREATORS_PATHS.includes(path) || TOURNAMENT_PATHS.includes(path) || LEADERBOARD_PATHS.includes(path) || GAME_PATH.test(path) || INDIE_PATH.test(path) ? (
@@ -51,6 +56,10 @@ if (location.pathname === "/connect") {
       ) : path === HANGOUT_PATH ? (
         <Suspense fallback={null}>
           <Hangout />
+        </Suspense>
+      ) : path === "/motion" ? (
+        <Suspense fallback={null}>
+          <MotionLab />
         </Suspense>
       ) : ADMIN_PATHS.includes(path) ? (
         <Suspense fallback={null}>

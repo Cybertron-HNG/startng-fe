@@ -25,6 +25,7 @@ import { CreatorsPage, CreatorsSection } from "./Creators";
 import PageParts from "./features/PageParts";
 import { useFeature } from "./features/flags";
 import { LeaderboardPage, TournamentBanner, TournamentPage, useTournament } from "./Tournament";
+import SketchLogo from "./motion/SketchLogo";
 
 // Set when a game sent the user here to sign in: we send them back afterwards.
 const returnTo = gameReturnUrl();
@@ -372,6 +373,7 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
 
         {view === "home" && (
         <section className="container hero">
+          <SketchLogo className="hero-sketch" />
           <p className="eyebrow">Big imagination. Played everywhere.</p>
           <h1>Good vibes.<br /><mark>Good games.</mark></h1>
           <p className="lead">
