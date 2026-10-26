@@ -5,7 +5,7 @@ A copy of the start.ng website for looking at the design, with no server behind 
 
 What it is: the same React app, built with `npm run build:design`. It reads sample data from `design-preview/mock/` (a snapshot of
 the public games, categories and independent creators, taken 26 Oct 2026) instead of the API, so it works anywhere, signs nobody in
-and saves nothing. It also adds one small whimsical touch: a little character on the home screen that follows the mouse, looks at
+and saves nothing. It also adds one small whimsical touch: a little character on every page that follows the mouse, looks at
 it and hops when you click (`src/features/mascot`). It is built only here, never in the real site.
 
 ## Set it up on Vercel (once)
