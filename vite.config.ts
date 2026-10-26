@@ -102,11 +102,15 @@ function seoPages(site: string): Plugin {
 }
 
 export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "VITE_");
   // VITE_SITE_URL: the public address, for canonical links and previews (default https://start.ng).
-  const site = (loadEnv(mode, process.cwd(), "VITE_").VITE_SITE_URL || DEFAULT_SITE_URL).replace(/\/$/, "");
+  const site = (env.VITE_SITE_URL || DEFAULT_SITE_URL).replace(/\/$/, "");
+  // VITE_DESIGN_PREVIEW=1 (npm run build:design): the design-only build for a separate Vercel project. It is the same app with
+  // sample data (design-preview/), written to dist-design, and it leaves out the nginx pages the real site is deployed with.
+  const design = (process.env.VITE_DESIGN_PREVIEW ?? env.VITE_DESIGN_PREVIEW) === "1";
   return {
-    plugins: [react(), seoPages(site)],
+    plugins: design ? [react()] : [react(), seoPages(site)],
     // three.js (~520 kB) is split into its own chunk and only loads for the character creator and avatar.
-    build: { chunkSizeWarningLimit: 600 },
+    build: { chunkSizeWarningLimit: 600, ...(design ? { outDir: "dist-design" } : {}) },
   };
 });

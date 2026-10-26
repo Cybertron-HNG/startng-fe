@@ -22,6 +22,9 @@ import { Character, styleFor } from "./character";
 const CharacterCreator = lazy(() => import("./CharacterCreator"));
 const GameBoard = lazy(() => import("./GameBoard"));
 const UnlockPopup = lazy(() => import("./features/wardrobe/UnlockPopup"));
+// The design-only preview (npm run build:design, see design-preview/README.md) adds one small character to the home screen.
+const DESIGN_PREVIEW = import.meta.env.VITE_DESIGN_PREVIEW === "1";
+const Mascot = lazy(() => import("./features/mascot/Mascot"));
 import { Game, gameReturnUrl, HANGOUT, isInAppGame, playableUrl, toCard } from "./games";
 import { CreatorsPage, CreatorsSection } from "./Creators";
 import PageParts from "./features/PageParts";
@@ -519,6 +522,7 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
       <SiteFooter />
       <PageParts page="everywhere" user={user} onSignIn={() => setSignInOpen(true)} />
       <ScrollJump />
+      {DESIGN_PREVIEW && view === "home" && <Suspense fallback={null}><Mascot /></Suspense>}
       {user && wardrobeOn && !profileOpen && <Suspense fallback={null}><UnlockPopup user={user} /></Suspense>}
 
       {profileOpen && (
