@@ -4,10 +4,13 @@ import { useEffect, useRef } from "react";
 // It walks after the mouse, looks at it, and hops with a little "hello" when you click. It never takes a click
 // (pointer-events: none) and stands still with fixed eyes when the visitor asks for less motion. On a phone there is no
 // mouse, so it walks to where you tap or drag a finger (a little above it, so your finger never covers it), hops, and
-// goes back to its corner a few seconds later. Plain CSS animation and a few lines of JavaScript, no canvas.
+// goes back to its corner a few seconds later. Double-click or double-tap it and it dances (arms out, mouth open, a few
+// music notes); leave it alone for a while and it falls asleep. Plain CSS animation and a few lines of JavaScript, no canvas.
 
 const SIZE = 52; // about as wide as the character is, in pixels
 const LINES = ["Play!", "Hello!", "Sharp sharp!", "Oya, come!"];
+const DANCE_LINE = "Shaku shaku!";
+const SLEEP_AFTER = 20000; // quiet for this long (milliseconds) and it dozes off
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 
 export default function Mascot() {
@@ -19,7 +22,7 @@ export default function Mascot() {
     const calm = matchMedia("(prefers-reduced-motion: reduce)");
     const home = () => ({ x: innerWidth - 108, y: innerHeight - 24 }); // beside the scroll-up button
     let { x, y } = home();
-    let tx = x, ty = y, raf = 0, hop = 0, talk = 0, line = 0, back = 0;
+    let tx = x, ty = y, raf = 0, hop = 0, talk = 0, line = 0, back = 0, boogie = 0, rest = 0, lastTapAt = 0, lastTapX = 0, lastTapY = 0;
 
     const place = () => { el.style.transform = `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`; };
     const look = (px: number, py: number) => {
@@ -46,17 +49,39 @@ export default function Mascot() {
     const backLater = () => { window.clearTimeout(back); back = window.setTimeout(goHome, 3500); }; // a finger leaves no pointer behind
     const onMove = (e: PointerEvent) => {
       if (calm.matches || e.pointerType === "touch") return; // fingers: the touch handlers below
+      wake();
       look(e.clientX, e.clientY);
       goTo(...aim(e));
     };
     const onLeave = () => { if (!calm.matches) goHome(); };
+    const say = (text: string, ms = 1500) => {
+      window.clearTimeout(talk);
+      el.querySelector(".mascot-bubble")!.textContent = text;
+      el.classList.add("is-talking");
+      talk = window.setTimeout(() => el.classList.remove("is-talking"), ms);
+    };
+    // Asleep after a quiet while; any mouse move, click or touch wakes it.
+    const wake = () => {
+      window.clearTimeout(rest);
+      el.classList.remove("is-asleep");
+      rest = window.setTimeout(() => { if (!el.classList.contains("is-dancing")) el.classList.add("is-asleep"); }, SLEEP_AFTER);
+    };
+    // A double-click or double-tap: a little dance, with the words. With less motion asked for, only the words.
+    const dance = () => {
+      wake();
+      say(DANCE_LINE, 2200);
+      if (calm.matches) return;
+      el.classList.remove("is-hopping", "is-sparkling", "is-dancing");
+      void el.offsetWidth;
+      el.classList.add("is-dancing");
+      window.clearTimeout(boogie);
+      boogie = window.setTimeout(() => el.classList.remove("is-dancing"), 2600);
+    };
     // The hop and the word, for a click or a tap at (px, py).
     const react = (px: number, py: number) => {
       look(px, py);
-      window.clearTimeout(talk);
-      el.querySelector(".mascot-bubble")!.textContent = LINES[line++ % LINES.length];
-      el.classList.add("is-talking");
-      talk = window.setTimeout(() => el.classList.remove("is-talking"), 1500);
+      wake();
+      say(LINES[line++ % LINES.length]);
       if (calm.matches) return; // the words, but no hop or sparkles
       el.classList.remove("is-hopping", "is-sparkling");
       void el.offsetWidth; // so the animation can start again on a quick second click
@@ -68,7 +93,7 @@ export default function Mascot() {
     // Fingers use touch events: unlike pointer events, they keep coming while the page scrolls under the finger. A short, still
     // touch is a tap (walk there and hop); a drag only makes it walk along, so scrolling never sets off a hop.
     let tapX = 0, tapY = 0, tapAt = 0;
-    const onTouchStart = (e: TouchEvent) => { const t = e.touches[0]; tapX = t.clientX; tapY = t.clientY; tapAt = Date.now(); };
+    const onTouchStart = (e: TouchEvent) => { const t = e.touches[0]; tapX = t.clientX; tapY = t.clientY; tapAt = Date.now(); wake(); };
     const onTouchMove = (e: TouchEvent) => {
       if (calm.matches) return;
       const t = e.touches[0];
@@ -78,8 +103,10 @@ export default function Mascot() {
     const onTouchEnd = (e: TouchEvent) => {
       const t = e.changedTouches[0];
       if (Math.hypot(t.clientX - tapX, t.clientY - tapY) < 12 && Date.now() - tapAt < 500) {
+        const second = Date.now() - lastTapAt < 380 && Math.hypot(t.clientX - lastTapX, t.clientY - lastTapY) < 40;
+        lastTapAt = second ? 0 : Date.now(); lastTapX = t.clientX; lastTapY = t.clientY;
         if (!calm.matches) goTo(t.clientX, t.clientY - 72);
-        react(t.clientX, t.clientY);
+        if (second) { look(t.clientX, t.clientY); dance(); } else react(t.clientX, t.clientY);
       }
       if (!calm.matches) backLater();
     };
@@ -89,6 +116,13 @@ export default function Mascot() {
     place();
     addEventListener("pointermove", onMove, { passive: true });
     addEventListener("pointerdown", onClick, { passive: true });
+    // A double-click also selects the word under it: clear that, so the dance is not covered by a highlight (typing fields are left alone).
+    const onDouble = (e: MouseEvent) => {
+      if (!(e.target instanceof Element && e.target.closest("input, textarea, select, [contenteditable]"))) getSelection()?.removeAllRanges();
+      dance();
+    };
+    addEventListener("dblclick", onDouble);
+    wake(); // starts the "falls asleep if left alone" timer
     addEventListener("touchstart", onTouchStart, { passive: true });
     addEventListener("touchmove", onTouchMove, { passive: true });
     addEventListener("touchend", onTouchEnd, { passive: true });
@@ -98,13 +132,14 @@ export default function Mascot() {
     return () => {
       removeEventListener("pointermove", onMove);
       removeEventListener("pointerdown", onClick);
+      removeEventListener("dblclick", onDouble);
       removeEventListener("touchstart", onTouchStart);
       removeEventListener("touchmove", onTouchMove);
       removeEventListener("touchend", onTouchEnd);
       removeEventListener("resize", onResize);
       document.removeEventListener("visibilitychange", onHide);
       document.documentElement.removeEventListener("mouseleave", onLeave);
-      cancelAnimationFrame(raf); window.clearTimeout(hop); window.clearTimeout(talk); window.clearTimeout(back);
+      cancelAnimationFrame(raf); window.clearTimeout(hop); window.clearTimeout(talk); window.clearTimeout(back); window.clearTimeout(boogie); window.clearTimeout(rest);
     };
   }, []);
 
@@ -114,10 +149,13 @@ export default function Mascot() {
         <div className="mascot-body">
           <span className="mascot-eye"><i className="mascot-pupil" /></span>
           <span className="mascot-eye"><i className="mascot-pupil" /></span>
+          <span className="mascot-arm arm-l" /><span className="mascot-arm arm-r" />
           <span className="mascot-mouth" />
         </div>
       </div>
       <b className="mascot-bubble" />
+      <em className="mascot-note">♪</em><em className="mascot-note">♫</em><em className="mascot-note">♪</em>
+      <u className="mascot-zzz">z</u>
       <i className="mascot-spark" /><i className="mascot-spark" /><i className="mascot-spark" /><i className="mascot-spark" /><i className="mascot-spark" /><i className="mascot-spark" />
     </div>
   );

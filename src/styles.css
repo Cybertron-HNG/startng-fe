@@ -1195,12 +1195,38 @@ option { background: var(--card); color: var(--ink); }
 .mascot-spark:nth-of-type(4) { --sx: 20px; --sy: -42px; }
 .mascot-spark:nth-of-type(5) { --sx: 34px; --sy: -22px; }
 .mascot-spark:nth-of-type(6) { --sx: 0px; --sy: -30px; }
+/* extras: a dance (double-click or double-tap) and falling asleep when left alone */
+.mascot-arm { position: absolute; top: 24px; width: 12px; height: 8px; border-radius: 6px; background: var(--lime); border: 2px solid var(--on-lime); opacity: 0; transform: scale(.4); transition: opacity .2s, transform .2s; }
+.mascot-arm.arm-l { left: -9px; transform-origin: 100% 50%; }
+.mascot-arm.arm-r { right: -9px; transform-origin: 0 50%; }
+.mascot.is-dancing .mascot-arm { opacity: 1; transform: scale(1); }
+.mascot.is-dancing .arm-l { animation: mascot-wave-l .3s ease-in-out infinite alternate; }
+.mascot.is-dancing .arm-r { animation: mascot-wave-r .3s ease-in-out infinite alternate; }
+.mascot.is-dancing .mascot-bounce { animation: mascot-dance .6s ease-in-out 4; }
+.mascot.is-dancing .mascot-mouth { width: 11px; height: 9px; margin-left: -5.5px; border: 2px solid var(--on-lime); border-radius: 50%; animation: mascot-sing .3s ease-in-out infinite alternate; }
+.mascot-note { position: absolute; left: 0; bottom: 52px; font: normal 700 1.1rem/1 var(--mono); color: var(--ink); opacity: 0; }
+.mascot.is-dancing .mascot-note { animation: mascot-note 1.3s ease-out infinite; }
+.mascot-note:nth-of-type(1) { --nx: -28px; }
+.mascot-note:nth-of-type(2) { --nx: 22px; animation-delay: .4s; }
+.mascot-note:nth-of-type(3) { --nx: -4px; animation-delay: .8s; }
+.mascot-zzz { position: absolute; left: 12px; bottom: 56px; text-decoration: none; font: 700 .9rem/1 var(--mono); color: var(--ink); opacity: 0; }
+.mascot.is-asleep .mascot-eye { animation: none; transform: scaleY(.12); }
+.mascot.is-asleep .mascot-zzz { opacity: 1; animation: mascot-zzz 2.2s ease-in-out infinite; }
+.mascot.is-asleep .mascot-bounce { animation-duration: 4.2s; }
+@keyframes mascot-dance { 0%, 100% { transform: translateX(-9px) rotate(-8deg) scale(1.04, .96); } 25% { transform: translateX(0) translateY(-12px) rotate(0) scale(.96, 1.05); } 50% { transform: translateX(9px) rotate(8deg) scale(1.04, .96); } 75% { transform: translateX(0) translateY(-12px) rotate(0) scale(.96, 1.05); } }
+@keyframes mascot-wave-l { from { transform: rotate(-35deg); } to { transform: rotate(25deg); } }
+@keyframes mascot-wave-r { from { transform: rotate(35deg); } to { transform: rotate(-25deg); } }
+@keyframes mascot-sing { to { height: 4px; } }
+@keyframes mascot-note { 0% { opacity: 0; transform: translate(0, 0) rotate(0); } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--nx), -46px) rotate(20deg); } }
+@keyframes mascot-zzz { 0% { opacity: 0; transform: translate(0, 0) scale(.7); } 30% { opacity: 1; } 100% { opacity: 0; transform: translate(10px, -18px) scale(1.1); } }
 @keyframes mascot-bob { 50% { transform: translateY(-2px); } }
 @keyframes mascot-blink { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
 @keyframes mascot-hop { 0% { transform: scale(1, 1); } 15% { transform: scale(1.12, .84); } 50% { transform: translateY(-26px) scale(.94, 1.1); } 82% { transform: translateY(0) scale(1.1, .88); } 100% { transform: scale(1, 1); } }
 @keyframes mascot-spark { 0% { opacity: 1; transform: translate(0, 0) scale(1); } 100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(.4); } }
 @media (prefers-reduced-motion: reduce) {
-  .mascot-bounce, .mascot-eye, .mascot.is-hopping .mascot-bounce { animation: none; }
+  .mascot-bounce, .mascot-eye, .mascot.is-hopping .mascot-bounce, .mascot.is-dancing .mascot-bounce, .mascot.is-dancing .mascot-arm, .mascot.is-dancing .mascot-mouth { animation: none; }
+  .mascot-note { display: none; }
+  .mascot.is-asleep .mascot-zzz { animation: none; }
   .mascot-spark { display: none; }
   .mascot-bubble { transition: none; }
 }

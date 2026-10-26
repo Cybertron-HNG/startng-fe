@@ -35,6 +35,8 @@ npx serve dist-design   # or any static server; /api/* needs the rewrites in ver
 ## The character
 
 - Follows the mouse with a little delay and looks at it. Click anywhere: it hops, throws a few sparkles and says a short word.
+- Double-click (or double-tap on a phone): it dances for a couple of seconds, with its arms out, its mouth open, a few music notes and "Shaku shaku!".
+- Leave it alone for about 20 seconds and it falls asleep (eyes closed, a small "z"). Any move or tap wakes it.
 - It never takes a click (`pointer-events: none`) and never blocks a button.
 - With "reduce motion" on, it stands still with no animation (it still says its word when you click).
 - On a phone it walks to where you tap or drag a finger (a little above it), hops, and goes back to its corner beside the scroll-up button a few seconds later.
