@@ -37,5 +37,5 @@ npx serve dist-design   # or any static server; /api/* needs the rewrites in ver
 - Follows the mouse with a little delay and looks at it. Click anywhere: it hops, throws a few sparkles and says a short word.
 - It never takes a click (`pointer-events: none`) and never blocks a button.
 - With "reduce motion" on, it stands still with no animation (it still says its word when you click).
-- On a phone it stays in its corner beside the scroll-up button and reacts to a tap.
+- On a phone it walks to where you tap or drag a finger (a little above it), hops, and goes back to its corner beside the scroll-up button a few seconds later.
 - To change the words, edit `LINES` in `src/features/mascot/Mascot.tsx`; the look is in `src/styles.css` under "the small character".
