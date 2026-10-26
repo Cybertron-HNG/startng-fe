@@ -32,12 +32,24 @@ npx serve dist-design   # or any static server; /api/* needs the rewrites in ver
 - To refresh the sample data, replace the files in `design-preview/mock/` with newer copies of the public `/games`, `/tags` and
   `/indie` answers.
 
-## The character
+## The character: a helper that moves around with you
 
-- Follows the mouse with a little delay and looks at it. Click anywhere: it hops, throws a few sparkles and says a short word.
-- Double-click (or double-tap on a phone): it dances for a couple of seconds, with its arms out, its mouth open, a few music notes and "Shaku shaku!".
-- Leave it alone for about 20 seconds and it falls asleep (eyes closed, a small "z"). Any move or tap wakes it.
-- It never takes a click (`pointer-events: none`) and never blocks a button.
-- With "reduce motion" on, it stands still with no animation (it still says its word when you click).
-- On a phone it walks to where you tap or drag a finger (a little above it), hops, and goes back to its corner beside the scroll-up button a few seconds later.
-- To change the words, edit `LINES` in `src/features/mascot/Mascot.tsx`; the look is in `src/styles.css` under "the small character".
+A small lime guide on every page (except the Hangout, because that is a game: it stays out of games).
+
+- **Moves with you.** It walks after the mouse and looks at it. On a phone it walks to where you tap or drag a finger. Click or tap: it hops and says a word. Double-click or double-tap: it dances ("Shaku shaku!"). Leave it alone for about 20 seconds: it falls asleep.
+- **Gives tips**, one at a time, each once, at least 45 seconds apart: take a tour, today's tournament, new items in the shop, share start.ng on X, browse categories, creators. A tip goes away by itself after 15 seconds, and it waits while you type.
+- **Gives a tour** of the home page (9 steps): it scrolls to each part, rings it, and says what it is. Back, Next, End the tour, Escape.
+- **Welcomes you back.** Follow a link to a game (a `name.start.ng` address), come back to the tab after 15 seconds or more, and it dances and says "Welcome back! How was Bingo?" If the game said you won, it says "Hooray! You won Bingo. Welcome back!" and offers to share the win on X. Then it settles back in its corner.
+- **Switch.** The small round button above the scroll-up button turns the guide off and on. The choice is kept in the browser.
+- It never takes a click (only its card does), and with "reduce motion" on it stays in its corner without moving: tips, tour and cheer still work.
+- Plain CSS animation and a little JavaScript: no canvas, no three.js.
+
+How it knows you won: the game's `/connect` page is on start.ng, so it can set `localStorage` `startng-guide-won` to `{"game":"bingo","at":<milliseconds>}`, and the guide reads it when you come back. To see it here, run this in the browser's console before leaving and coming back:
+
+```js
+localStorage.setItem("startng-guide-won", JSON.stringify({ game: "bingo", at: Date.now() }));
+```
+
+A page of start.ng's own can ask for the cheer straight away: `window.dispatchEvent(new CustomEvent("startng:win", { detail: { game: "Bingo" } }))`.
+
+The words are in `src/features/mascot/guide.ts` (tips, tour); the movement is in `src/features/mascot/Mascot.tsx`; the look is in `src/styles.css` under "the small character" and "the helper".

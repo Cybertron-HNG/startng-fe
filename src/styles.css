@@ -1219,6 +1219,20 @@ option { background: var(--card); color: var(--ink); }
 @keyframes mascot-sing { to { height: 4px; } }
 @keyframes mascot-note { 0% { opacity: 0; transform: translate(0, 0) rotate(0); } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--nx), -46px) rotate(20deg); } }
 @keyframes mascot-zzz { 0% { opacity: 0; transform: translate(0, 0) scale(.7); } 30% { opacity: 1; } 100% { opacity: 0; transform: translate(10px, -18px) scale(1.1); } }
+/* the helper: a card with a tip, the tour or the cheer; the tour's ring; and the switch that turns the guide on and off */
+.mascot-card { position: absolute; left: -130px; bottom: 92px; width: 260px; max-width: calc(100vw - 24px); padding: 12px 14px; background: var(--card); color: var(--ink); border: 1.5px solid var(--ink); border-radius: 14px; box-shadow: 4px 4px 0 var(--lime); pointer-events: auto; transform: translateX(var(--shift, 0px)); font-size: .88rem; line-height: 1.45; user-select: text; }
+.mascot-card p { margin: 0 0 10px; }
+.mascot-card .mascot-card-step { margin: 0 0 4px; font: .7rem var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
+.mascot-card-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.mascot-card .btn, .mascot-card .ghost { padding: 7px 14px; font-size: .85rem; }
+.mascot-card .mascot-card-off { margin-top: 8px; padding: 0; font-size: .75rem; color: var(--muted); }
+.mascot[data-card] .mascot-bubble { display: none; }
+.mascot-ring { position: fixed; z-index: 3; pointer-events: none; border: 2px solid var(--ink); border-radius: 14px; box-shadow: 0 0 0 4px var(--lime); transition: left .25s, top .25s, width .25s, height .25s; }
+.mascot-switch { position: fixed; right: 22px; bottom: 76px; z-index: 5; width: 28px; height: 28px; padding: 0; border-radius: 50%; display: grid; place-items: center; background: var(--card); border: 1.5px solid var(--ink); box-shadow: none; }
+.mascot-switch::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--lime); border: 1.5px solid var(--on-lime); }
+.mascot-switch[aria-pressed="false"]::before { background: transparent; border-color: var(--muted); }
+.mascot-switch:hover { transform: none; }
+@media (max-width: 600px) { .mascot-switch { right: 18px; bottom: 72px; } }
 @keyframes mascot-bob { 50% { transform: translateY(-2px); } }
 @keyframes mascot-blink { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
 @keyframes mascot-hop { 0% { transform: scale(1, 1); } 15% { transform: scale(1.12, .84); } 50% { transform: translateY(-26px) scale(.94, 1.1); } 82% { transform: translateY(0) scale(1.1, .88); } 100% { transform: scale(1, 1); } }
@@ -1229,4 +1243,5 @@ option { background: var(--card); color: var(--ink); }
   .mascot.is-asleep .mascot-zzz { animation: none; }
   .mascot-spark { display: none; }
   .mascot-bubble { transition: none; }
+  .mascot-ring { transition: none; }
 }
