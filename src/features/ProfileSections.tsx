@@ -7,7 +7,10 @@ export default function ProfileSections({ userId, isMe }: { userId: number; isMe
   const isOn = useFeatures();
   return (
     <>
-      {allProfileSections().filter((s) => isOn(s.feature)).map((s) => (
+      {allProfileSections()
+        .filter((s) => isOn(s.feature))
+        .filter((s) => !s.ownerOnly || isMe)
+        .map((s) => (
         <section key={s.key} className="profile-section" aria-label={s.title}>
           <h2>{s.title}</h2>
           <Boundary name={s.title}>
