@@ -101,7 +101,7 @@ export function urlFor(path: string, q: string, page = 1) {
   if (q.trim()) params.set("q", q);
   // The /games filters (src/features/catalog/filters.tsx) stay in the address while searching and paging.
   const now = new URLSearchParams(location.search);
-  for (const key of ["category", "rating", "sort"]) if (now.get(key)) params.set(key, now.get(key)!);
+  for (const key of ["rating", "sort"]) if (now.get(key)) params.set(key, now.get(key)!);
   if (page > 1) params.set("page", String(page));
   const s = params.toString();
   return s ? `${path}?${s}` : path;
