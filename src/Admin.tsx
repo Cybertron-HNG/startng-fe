@@ -3,7 +3,7 @@ import {
   ActivityKind, admin, AdminAccount, adminMe, AdminMe, AdminTournament, AdminTournaments, Developer, GameCard, LogEntry, LogPage, me,
   Analytics, Overview, Permission, reasonLabel, Report, ReviewGame, Role, User,
 } from "./api";
-import { toCard } from "./games";
+import { titleFromSlug, toCard } from "./games";
 import DateField from "./DateField";
 import ThemeToggle from "./ThemeToggle";
 import Boundary from "./features/Boundary";
@@ -188,7 +188,7 @@ function GameArt({ g }: { g: GameCard }) {
   );
 }
 
-const titleOf = (name: string) => name.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+const titleOf = (name: string) => titleFromSlug(name);
 
 /** Bars for a 30 day series: the tallest day fills the height. */
 function DayBars({ title, series, total }: { title: string; series: { day: string; n: number }[]; total: number }) {
