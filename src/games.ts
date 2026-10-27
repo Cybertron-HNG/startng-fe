@@ -38,9 +38,15 @@ export const isInAppGame = (game: Game) => game.url.startsWith("/");
 // The API writes game addresses as https://, which is right on start.ng. Locally the Worker's
 // dev server is plain http, so local *.localhost games are linked over http.
 export function playableUrl(url: string) {
-  const u = new URL(url);
-  if (u.hostname.endsWith(".localhost")) u.protocol = "http:";
-  return u.href.replace(/\/$/, "");
+  if (!url || url.startsWith("/")) return url;
+  try {
+    const u = new URL(url);
+    if (u.hostname === "hangout.start.ng") return "/hangout";
+    if (u.hostname.endsWith(".localhost")) u.protocol = "http:";
+    return u.href.replace(/\/$/, "");
+  } catch {
+    return url;
+  }
 }
 
 /** The colour pair for a name (a game or a category): the same name always gets the same pair. */
@@ -51,6 +57,9 @@ export function colorsFor(name: string): [string, string] {
 }
 
 export function toCard(game: PublishedGame): Game {
+  if (game.name === HANGOUT.slug) {
+    return { ...HANGOUT, plays: game.plays ?? 0 };
+  }
   const url = playableUrl(game.url);
   return {
     slug: game.name,
