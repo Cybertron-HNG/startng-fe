@@ -26,6 +26,8 @@ export type Seo = {
   path: string;
   /** Keep the page out of search results (sign-in flows, 404). */
   noindex?: boolean;
+  /** No canonical link or og:url: the page has no address of its own to point at (404). */
+  noCanonical?: boolean;
   /** Its own preview picture: a path in public/ or a full address, like a game's cover (default SHARE_IMAGE). */
   image?: string;
   imageAlt?: string;
@@ -159,6 +161,7 @@ export const PAGES: Record<string, Seo> = {
     description: "There's nothing at this address. Browse the games on start.ng instead.",
     path: "/",
     noindex: true,
+    noCanonical: true, // it isn't the homepage, so it must not claim to be
   },
 };
 
@@ -203,12 +206,12 @@ export function headTags(seo: Seo, site: string): string {
     `<title>${esc(seo.title)}</title>`,
     `<meta name="description" content="${esc(seo.description)}" />`,
     `<meta name="robots" content="${seo.noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large"}" />`,
-    `<link rel="canonical" href="${esc(url)}" />`,
+    ...(seo.noCanonical ? [] : [`<link rel="canonical" href="${esc(url)}" />`]),
     `<meta property="og:type" content="website" />`,
     `<meta property="og:site_name" content="${SITE_NAME}" />`,
     `<meta property="og:title" content="${esc(seo.title)}" />`,
     `<meta property="og:description" content="${esc(seo.description)}" />`,
-    `<meta property="og:url" content="${esc(url)}" />`,
+    ...(seo.noCanonical ? [] : [`<meta property="og:url" content="${esc(url)}" />`]),
     `<meta property="og:image" content="${esc(image)}" />`,
     `<meta property="og:image:alt" content="${esc(seo.imageAlt ?? SHARE_IMAGE_ALT)}" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
@@ -258,12 +261,14 @@ export function setSeo(seo: Seo) {
   meta("name", "robots", robots);
   meta("property", "og:title", seo.title);
   meta("property", "og:description", seo.description);
-  meta("property", "og:url", url);
+  if (!seo.noCanonical) meta("property", "og:url", url);
+  else document.head.querySelector('meta[property="og:url"]')?.remove();
   meta("name", "twitter:title", seo.title);
   meta("name", "twitter:description", seo.description);
   const image = imageUrl(siteUrl(), seo.image ?? SHARE_IMAGE);
   meta("property", "og:image", image);
   meta("property", "og:image:alt", seo.imageAlt ?? SHARE_IMAGE_ALT);
   meta("name", "twitter:image", image);
-  upsert("link", 'link[rel="canonical"]', { rel: "canonical", href: url });
+  if (!seo.noCanonical) upsert("link", 'link[rel="canonical"]', { rel: "canonical", href: url });
+  else document.head.querySelector('link[rel="canonical"]')?.remove();
 }
