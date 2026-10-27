@@ -957,6 +957,7 @@ button.small { padding: 7px 12px; font-size: .85rem; border-radius: 8px; }
 .email-stats div { display: grid; padding: 10px 14px; border-radius: 12px; background: var(--card); border: 1px solid var(--line); min-width: 96px; }
 .email-stats b { font-size: 1.3rem; }
 .email-stats span { font-size: .78rem; color: var(--muted); text-transform: capitalize; }
+.email-status { flex-wrap: wrap; border-radius: 18px; } /* 7 status buttons: wrap on phones instead of running off the screen */
 .email-row h3 { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .player-link { color: inherit; text-decoration: none; }
 .player-link:hover { text-decoration: underline; }
