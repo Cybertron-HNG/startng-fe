@@ -265,7 +265,7 @@ It adds a "← start.ng" button (top left) and a small "Made on start.ng" badge 
 | `startng.signIn()` | Sends the player to start.ng to sign in, then back to your game. |
 | `startng.saveRun(stats)` | Saves a run without showing the card. |
 | `startng.getLeaderboard(limit)` | The top players, for everyone. |
-| `startng.share({ score })` | Opens an X post with the result and a link to your game. |
+| `startng.share({ score })` | Opens an X post with the result and a link to your game's page on start.ng, so the post shows your cover. |
 
 The back button, the badge and the card's **Share on X** button are the three game standards, so a game that loads the Kit and calls `startng.gameOver()` (or `startng.share()`) at the end of a round meets all three. If you turn the button or the badge off, add your own link back to https://start.ng or the start.ng name instead.
 
