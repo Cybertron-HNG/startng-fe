@@ -175,8 +175,9 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
 
   const filters = useGameFilters(useCallback(() => setPage(1), [])); // the /games filters (T1)
   const favs = useFavorites(user);
-  // Today's tournament: the homepage banner, the badge on game pages, and /tournament.
-  const tournament = useTournament(user, view === "home" || gamePage || tournamentPage);
+  // Today's tournament: the homepage banner, the badge on game pages, /tournament, and on phones the tab bar's dot.
+  const onPhone = useMemo(() => matchMedia("(max-width: 760px)").matches, []);
+  const tournament = useTournament(user, view === "home" || gamePage || tournamentPage || onPhone);
 
   // The Hangout is always first; the rest come from the API (newest first). The homepage shows the
   // most played this week; ties keep the newest first.
