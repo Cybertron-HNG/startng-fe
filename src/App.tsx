@@ -27,6 +27,7 @@ import { CreatorsPage, CreatorsSection } from "./Creators";
 import PageParts from "./features/PageParts";
 import { useFeature } from "./features/flags";
 import { LeaderboardPage, TournamentBanner, TournamentPage, useTournament } from "./Tournament";
+import TabBar from "./TabBar";
 import { ABOUT, QUESTIONS } from "./home-copy";
 
 // Set when a game sent the user here to sign in: we send them back afterwards.
@@ -356,6 +357,13 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
           )}
         </div>
       </header>
+
+      <TabBar
+        current={view === "home" ? "home" : allGames || gamePage ? "games" : tournamentPage || leaderboardPage ? "tournament" : featurePage?.page.path === "/me" ? "me" : null}
+        tournament={tournament.tournament}
+        signedIn={!!user}
+        onMe={() => (!user ? setSignInOpen(true) : profilesOn ? location.assign("/me") : setEditing(true))}
+      />
 
       <main>
         {creatorsPage && <CreatorsPage user={user} onSignIn={() => setSignInOpen(true)} />}
