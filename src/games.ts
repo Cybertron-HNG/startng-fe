@@ -1,5 +1,7 @@
 import { BoardStat, getLeaderboard, getLiveTicket, me, pingSession, PublishedGame, submitScore } from "./api";
 import { CharacterStyle, styleFor } from "./character";
+import { loadFeatures } from "./features/flags";
+import { FEELS, sendPulse, type Feel } from "./features/player_pulse/api";
 
 // A homepage card for a game from GET /games (games published with POST /games/publish).
 // The API only knows the name, so the title and colours are worked out from it:
@@ -149,7 +151,7 @@ function whoami(): Promise<object> {
 }
 
 // What /connect answers. Every reply echoes the request's requestId.
-type Message = { type: string; requestId?: unknown; score?: unknown; stats?: unknown; limit?: unknown; sessionId?: unknown; event?: unknown; kit?: unknown };
+type Message = { type: string; requestId?: unknown; score?: unknown; stats?: unknown; limit?: unknown; sessionId?: unknown; event?: unknown; kit?: unknown; feel?: unknown; note?: unknown };
 const handlers: Record<string, (msg: Message, game: string) => Promise<object>> = {
   // { type: "startng:whoami" }
   //   -> { type: "startng:user", user: { id, name, account, style, face } | null, guest: { name, style, face } }
@@ -193,6 +195,27 @@ const handlers: Record<string, (msg: Message, game: string) => Promise<object>> 
       void pingSession(localStorage.getItem("token"), game, { session_id: msg.sessionId.slice(0, 64), event: msg.event, kit });
     }
     return { type: "startng:sessionNoted" };
+  },
+
+  // Player Pulse (Ziki #58): the Kit's end-of-round card asks "How was that?" when this is on for a signed-in player.
+  // { type: "startng:pulseOn" } -> { type: "startng:pulseState", on }
+  "startng:pulseOn": async () => {
+    const flags = await loadFeatures();
+    return { type: "startng:pulseState", on: !!localStorage.getItem("token") && (flags.has("*") || flags.has("player_pulse")) };
+  },
+
+  // { type: "startng:pulse", feel: "loved" | "too_hard" | "too_easy", note? } -> { type: "startng:pulseSaved", ok, error? }
+  "startng:pulse": async (msg, game) => {
+    const token = localStorage.getItem("token");
+    if (!token) return { type: "startng:pulseSaved", ok: false, error: "Sign in to answer" };
+    if (!FEELS.includes(msg.feel as Feel)) return { type: "startng:pulseSaved", ok: false, error: "Unknown answer" };
+    const note = typeof msg.note === "string" ? msg.note.trim().slice(0, 140) : undefined;
+    try {
+      await sendPulse(token, game, msg.feel as Feel, note);
+      return { type: "startng:pulseSaved", ok: true };
+    } catch (err) {
+      return { type: "startng:pulseSaved", ok: false, error: errorText(err, "Could not send your answer") };
+    }
   },
 
   // { type: "startng:ticket" } -> { type: "startng:ticketData", ok, ticket, url | error }

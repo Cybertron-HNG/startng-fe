@@ -10,6 +10,8 @@
 //   data-back="off"       no back button
 //   data-badge="off"      no badge
 //   data-position="right" put the back button top right instead of top left
+//
+// gameOver({ pulse: false }) leaves out the "How was that?" question (Player Pulse).
 (() => {
   if (window.startng) return;
 
@@ -17,7 +19,7 @@
   const LOCAL = location.hostname.endsWith('.start.localhost');
   const START_NG = LOCAL ? 'http://start.localhost:5173' : 'https://start.ng';
   const API_URL = LOCAL ? 'http://localhost:8000' : 'https://api.start.ng';
-  const VERSION = '0.2.0';
+  const VERSION = '0.3.0';
   // start.ng's connect page only answers games served from *.start.ng.
   const ON_START_NG = location.hostname.endsWith('.start.ng') || LOCAL;
   // The start.ng homepage opens games with ?guest when the player chose "play as guest".
@@ -188,6 +190,15 @@
     button.primary { background: var(--ink); color: var(--on-solid); border-color: var(--ink); }
     button.primary:hover { background: var(--solid-hover); }
     button[hidden] { display: none; }
+    .pulse { display: grid; gap: 8px; margin-top: 4px; padding-top: 10px; border-top: 1px solid var(--line); }
+    .pulse p { margin: 0; color: var(--muted); }
+    .feels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+    .feels button { padding: 8px 4px; font-size: 13px; }
+    .feels button[aria-pressed="true"] { background: var(--lime); color: #292a23; border-color: transparent; }
+    .pulse form { display: flex; gap: 6px; }
+    .pulse input { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px;
+      background: var(--bg); color: var(--ink); font-size: 14px; }
+    .pulse form button { padding: 8px 12px; font-size: 14px; }
   </style>`;
 
   function el(tag, attrs = {}, text = '') {
@@ -382,11 +393,46 @@
     card = null;
   }
 
+  // Player Pulse (Ziki #58): "How was that?" under the card's buttons, for signed-in players while start.ng has it on.
+  // One tap sends the answer; a short note can follow. It never gets in the way of Play again.
+  const FEELS = [['loved', '😄 Loved it'], ['too_hard', '😤 Too hard'], ['too_easy', '😴 Too easy']];
+  async function askPulse(box) {
+    const state = await ask({ type: 'startng:pulseOn' }, 'startng:pulseState');
+    if (!state?.on || !card?.contains(box)) return;
+    const wrap = el('div', { class: 'pulse', role: 'group', 'aria-label': 'How was that?' });
+    const prompt = el('p', {}, 'How was that?');
+    const feels = el('div', { class: 'feels' });
+    let chosen = null;
+    const send = async (note) => {
+      const reply = await ask({ type: 'startng:pulse', feel: chosen, note }, 'startng:pulseSaved');
+      prompt.textContent = reply?.ok ? (note ? 'Thanks, the creator will see your note.' : 'Thanks! Add a note for the creator?') : (reply?.error || "Couldn't send that.");
+      return reply?.ok;
+    };
+    const form = el('form', { hidden: '' });
+    const input = el('input', { type: 'text', maxlength: '140', placeholder: 'e.g. level 3 is too fast', 'aria-label': 'Note for the creator (optional)' });
+    form.append(input, el('button', { type: 'submit' }, 'Send'));
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      if (input.value.trim() && (await send(input.value.trim()))) form.remove();
+    };
+    for (const [feel, label] of FEELS) {
+      const b = el('button', { type: 'button', 'aria-pressed': 'false' }, label);
+      b.onclick = async () => {
+        chosen = feel;
+        feels.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        if (await send()) form.hidden = false;
+      };
+      feels.append(b);
+    }
+    wrap.append(prompt, feels, form);
+    box.append(wrap);
+  }
+
   // Saves the run (if the player is signed in) and shows the end-of-round card.
-  // options: { score, stats, title, onPlayAgain }. Pass stats when the game's
+  // options: { score, stats, title, onPlayAgain, pulse }. Pass stats when the game's
   // startng.json lists them; otherwise score alone is saved. Resolves to
   // start.ng's save reply, or null when nothing was saved.
-  async function gameOver({ score, stats, title = 'Game over', onPlayAgain } = {}) {
+  async function gameOver({ score, stats, title = 'Game over', onPlayAgain, pulse = true } = {}) {
     closeCard();
     card = el('div', { class: 'shade', role: 'dialog', 'aria-modal': 'true', 'aria-label': title });
     const box = el('div', { class: 'card' });
@@ -419,6 +465,7 @@
       return null;
     }
     const saved = await saveRun(stats, score);
+    if (pulse) void askPulse(box);
     if (!saved?.ok) {
       meta.textContent = saved?.error || "Couldn't reach start.ng, so this score wasn't saved.";
       return saved;
