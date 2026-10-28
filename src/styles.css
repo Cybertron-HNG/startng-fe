@@ -329,6 +329,7 @@ input:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
 }
 
 /* shared leaderboards */
+.board-place { margin: 10px 0 0; padding: 10px 12px; border-radius: 10px; background: var(--bg); border: 1px solid var(--line); font-size: .92rem; }
 .board-btn { flex: none; font-size: .82rem; font-weight: 600; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
 .board-btn:hover { color: var(--ink); }
 .by { font-size: .85rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: -4px; }

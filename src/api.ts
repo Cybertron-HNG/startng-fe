@@ -119,6 +119,15 @@ export async function getLeaderboard(game: string, limit = 10): Promise<Leaderbo
   return res.json();
 }
 
+export type YourPlace = { rank: number | null; you: LeaderboardEntry | null; above: LeaderboardEntry[]; total: number };
+
+/** The signed-in player's rank on a game's board and the players just above them; null when it can't be loaded. */
+export async function getYourPlace(token: string | null, game: string): Promise<YourPlace | null> {
+  if (!token) return null;
+  const res = await fetch(`${API_URL}/games/${encodeURIComponent(game)}/leaderboard/me`, { headers: { Authorization: `Bearer ${token}` } });
+  return res.ok ? res.json() : null;
+}
+
 // Multiplayer: a one-minute ticket into a game's live room, and the room's WebSocket address.
 export type LiveTicket = { ticket: string; url: string; roomsUrl: string; apiUrl: string };
 
