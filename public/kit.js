@@ -22,6 +22,10 @@
   const ON_START_NG = location.hostname.endsWith('.start.ng') || LOCAL;
   // The start.ng homepage opens games with ?guest when the player chose "play as guest".
   const CHOSE_GUEST = new URLSearchParams(location.search).has('guest');
+  // The game is playing in a frame on its own start.ng page (Play here): signing in happens on that page, and there is no
+  // "back to start.ng" to go to.
+  const IN_START_NG_PAGE = window.parent !== window && ON_START_NG
+    && (location.ancestorOrigins?.[0] ?? document.referrer).startsWith(START_NG);
   const script = document.currentScript;
   const option = (name) => script?.dataset?.[name];
 
@@ -107,6 +111,7 @@
   }
 
   function signIn() {
+    if (IN_START_NG_PAGE) return window.parent.postMessage({ type: 'startng:signIn' }, START_NG);
     // The address comes back with its query (an invite link is ?room=CODE) but not ?guest.
     const back = new URLSearchParams(location.search);
     back.delete('guest');
@@ -198,7 +203,7 @@
   }
 
   function addChrome() {
-    if (option('back') !== 'off') {
+    if (option('back') !== 'off' && !IN_START_NG_PAGE) {
       const back = el('a', { class: 'pill back', href: `${START_NG}/`, 'aria-label': 'Back to start.ng' }, '← start.ng');
       if (option('position') === 'right') back.classList.add('right');
       root.append(back);

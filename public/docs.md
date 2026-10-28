@@ -271,6 +271,8 @@ The back button, the badge and the card's **Share on X** button are the three ga
 
 Options go on the script tag: `data-back="off"` (no back button), `data-badge="off"` (no badge) and `data-position="right"` (back button top right). The Kit also sends start.ng a ping every 30 seconds while the game is on screen, so creators will be able to see how long people play. It sends nothing else.
 
+Once **Play here** is switched on, players can also play a game in a frame on its own start.ng page. There the Kit leaves out the back button and opens start.ng's sign-in on that page, and saved scores update the leaderboard under the game. So keep your game working inside a frame: don't send it to the top window or block framing.
+
 The code below is the manual way, if you want full control. Games that already use it keep working.
 
 ## Players and their character

@@ -24,4 +24,5 @@ import "./support"; // F10 Help button and problem reports (Hamzat)
 import "./tags"; // tags and category pages (Chloe)
 import "./game_pages"; // a game's about, how to play, FAQ and walkthrough pages (Chloe)
 import "./feature_toggle"; // admin Features tab: switch features on and off (Hamzat)
+import "./play_here"; // Ziki #21: play a game in a frame on its own page (Oluwaseyifunmi)
 export {};

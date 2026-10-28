@@ -659,6 +659,21 @@ code { color: var(--on-lime); }
 .game-page-board h2 span { font-family: var(--mono); font-size: .7rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 400; }
 .game-page-board .board-sub, .game-page-board .board-empty { margin: 0; }
 
+/* Play here (src/features/play_here): the game in a frame on its own page, in a card like the leaderboard's */
+.play-here { display: grid; gap: 10px; padding: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: 4px 4px 0 var(--lime); min-width: 0; scroll-margin-top: 12px; }
+.play-here-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.play-here-bar span { font-family: var(--mono); font-size: .75rem; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin-right: auto; }
+.play-here-bar .btn, .play-here-bar button { padding: 8px 14px; font-size: .9rem; }
+.play-here iframe { display: block; width: 100%; aspect-ratio: 16 / 10; max-height: 80vh; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
+.play-here-link { margin: 0; }
+@media (max-width: 600px) {
+  .play-here { padding: 8px; }
+  /* the label and Close on one row, Full screen and Open in new tab side by side under them */
+  .play-here-bar .btn, .play-here-bar button { order: 2; flex: 1 1 calc(50% - 4px); padding: 8px 10px; font-size: .85rem; text-align: center; }
+  .play-here-bar .play-here-close { order: 1; flex: 0 0 auto; }
+  .play-here iframe { aspect-ratio: auto; height: 75vh; height: 75svh; }
+}
+
 /* daily tournament: homepage banner, /tournament and /leaderboard (Tournament.tsx) */
 .tournament-banner { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "text games" "cta games"; gap: 14px 28px; align-items: center;
   margin: 8px 0 40px; padding: 28px 32px; border: 1.5px solid var(--ink); border-radius: 24px; background: var(--card); box-shadow: 8px 8px 0 var(--lime); color: var(--ink); text-decoration: none; }
