@@ -196,6 +196,7 @@
     .feels button { padding: 8px 4px; font-size: 13px; }
     .feels button[aria-pressed="true"] { background: var(--lime); color: #292a23; border-color: transparent; }
     .pulse form { display: flex; gap: 6px; }
+    .pulse form[hidden] { display: none; }
     .pulse input { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px;
       background: var(--bg); color: var(--ink); font-size: 14px; }
     .pulse form button { padding: 8px 12px; font-size: 14px; }
