@@ -508,6 +508,22 @@ Examples:
 | Runner | `distance` "Km run" (highest), `coins` (highest) |
 | Race or escape | `gems` (highest), `time` (lowest, `"format": "time"`) |
 
+### Show what your game looks like: `screenshots`
+
+List up to **4 pictures** of your game in `startng.json` and they show on its page, in a row players can swipe through, so they can see it before they open it:
+
+```json
+{ "screenshots": ["shots/level-1.png", "shots/boss.webp"] }
+```
+
+- Each one is a file in your published game's folder: `.png`, `.jpg`, `.jpeg` or `.webp`, in the order you list them.
+- They show at about 180 px high, so keep each one small (a few hundred KB at most): players on mobile data load them.
+- They're also listed for search engines on the game's page.
+- `"screenshots": []` removes them. Leaving the key out keeps the ones you had.
+- A broken list (not a list, more than 4, a `..` path, another file type) stops the publish with a message saying what to fix.
+
+This part of start.ng is switched on step by step, so the pictures may not show yet.
+
 ### Pick your game's categories: `categories` and `other_category`
 
 start.ng sorts games into categories, so players can browse "Endless runners" or "Brainy games", and each category has its own page. **You choose yours.** Add `categories` to `startng.json`: a list of up to 5 from the table below. Use the code in the first column (the name as it is shown on start.ng works too).

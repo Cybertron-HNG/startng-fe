@@ -1,0 +1,6 @@
+/* Screenshots on a game's page (GameScreenshots.tsx): the label above, the pictures in a row that swipes sideways */
+.game-page-share.game-shots { display: grid; gap: 10px; }
+.game-shots ul { list-style: none; margin: 0; padding: 0 0 6px; display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; }
+.game-shots li { flex: none; scroll-snap-align: start; }
+.game-shots img { display: block; height: 180px; width: auto; max-width: 80vw; border-radius: 12px; border: 1px solid var(--line); background: var(--card); object-fit: cover; }
+@media (max-width: 600px) { .game-shots img { height: 140px; } }
