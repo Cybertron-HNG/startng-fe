@@ -70,6 +70,7 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
   const creatorsPage = view === "creators";
   const tournamentPage = view === "tournament";
   const leaderboardPage = view === "leaderboard";
+  const friendsPage = (featurePage?.page.feature === "private_tournaments") || location.pathname.startsWith("/friends");
   const [page, setPage] = useState(pageFromUrl);
   const [q, setQ] = useState(queryFromUrl); // /games search
   const [favoritesOpen, setFavoritesOpen] = useState(openFavorites);
@@ -340,6 +341,7 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
         <nav id="pages-menu" aria-label="Pages">
           <a href="/games" aria-current={allGames || gamePage ? "page" : undefined}>Games</a>
           <a href="/tournament" aria-current={tournamentPage || leaderboardPage ? "page" : undefined}>Tournament</a>
+          <a href="/friends" aria-current={friendsPage ? "page" : undefined}>Friends</a>
           <a href="/creators" aria-current={creatorsPage || indiePage ? "page" : undefined}>Creators</a>
           <a href="/docs">Docs</a>
           <ThemeToggle withLabel />
