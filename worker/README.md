@@ -99,6 +99,7 @@ curl -i https://dave.start.ng/            # 200, text/html
 curl -i https://dave.start.ng/save        # 200, the save page
 curl -i https://dave.start.ng/style.css   # 200, text/css
 curl -i https://dave.start.ng/game.js     # 200, text/javascript
+curl -i -H "Range: bytes=0-9" https://dave.start.ng/   # 206, Content-Range: bytes 0-9/<size>
 curl -i https://nope.start.ng/            # 404
 curl -i https://api.start.ng/health       # still the backend, not the bucket
 ```
@@ -113,6 +114,9 @@ Then open `https://dave.start.ng` in a browser: the page should say "It works".
   path of that game then gets a 410 "This game isn't available" page (`no-store`). `SITE_URL` sets where its link goes
   (default `https://<BASE_DOMAIN>`). The check is one `head()` per request.
 - Missing folder or file gives 404. Only GET and HEAD are allowed.
+- A `Range` request (audio and video; iPhone Safari needs it) gets `206` with `Content-Range`, or `416` past the end. Several
+  ranges or a malformed one get the whole file. `If-Range` with an older etag gets the whole new file. Every file sends
+  `Accept-Ranges: bytes`. A Range request costs one `head()` more (for the size).
 - Names in `RESERVED_NAMES` are passed on to the normal origin, never read from the bucket.
 
 ## Phase 1 done checklist
