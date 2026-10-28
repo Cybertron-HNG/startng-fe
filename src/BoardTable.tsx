@@ -63,7 +63,9 @@ export default function BoardTable({ game, playerId }: { game: Game; playerId: n
                     {e.player_id === playerId && <em> (you)</em>}
                   </span>
                   {extra.length > 0 && (
-                    <span className="nm-extra" aria-hidden="true">{extra.map((s) => `${s.label} ${statOf(e, s)}`).join(" · ")}</span>
+                    <span className="nm-extra" aria-hidden="true">
+                      {extra.map((s, i) => <span key={s.key}>{i > 0 && " · "}<span className="pair">{s.label} {statOf(e, s)}</span></span>)}
+                    </span>
                   )}
                 </span>
               </span>
