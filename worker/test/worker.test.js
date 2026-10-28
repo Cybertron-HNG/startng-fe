@@ -65,6 +65,29 @@ test("404 for unknown folder, file, and path", async () => {
   }
 });
 
+test("a missing page shows a start.ng page with a way back; a missing file stays a plain 404", async () => {
+  for (const u of ["https://nope.start.ng/", "https://dave.start.ng/nothere", "https://dave.start.ng/old/level.html", "https://-bad.start.ng/"]) {
+    const r = await get(u);
+    assert.equal(r.status, 404, u);
+    assert.match(r.headers.get("content-type"), /text\/html/, u);
+    const html = await r.text();
+    assert.match(html, /There's no game here/, u);
+    assert.match(html, /<a href="https:\/\/start\.ng\/games">Browse games on start\.ng<\/a>/, u);
+    assert.match(html, /<meta name="robots" content="noindex">/, u);
+  }
+  for (const u of ["https://dave.start.ng/missing.js", "https://dave.start.ng/img/nope.png", "https://nope.start.ng/game.js"]) {
+    const r = await get(u);
+    assert.equal(r.status, 404, u);
+    assert.equal(await r.text(), "Not found", u);
+  }
+  const head = await get("https://nope.start.ng/", { method: "HEAD" });
+  assert.equal(head.status, 404);
+  assert.equal(await head.text(), "");
+  // SITE_URL (a preview or local site) is where the link goes, with or without a trailing slash.
+  const r = await worker.fetch(new Request("https://nope.start.ng/"), { ...env, SITE_URL: "http://localhost:5173/" });
+  assert.match(await r.text(), /href="http:\/\/localhost:5173\/games"/);
+});
+
 test("a game cannot reach another folder or hidden files", async () => {
   for (const p of ["/../other/index.html", "/%2e%2e/other/index.html", "/..%2fother/index.html", "/.git/config", "/a\\b"]) {
     const r = await get("https://dave.start.ng" + p);
