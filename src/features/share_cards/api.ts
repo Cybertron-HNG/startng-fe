@@ -16,7 +16,7 @@ export type ShareInfo = {
 /** null: nothing to share there (missing, private, or share cards are off). */
 export async function getShare(kind: ShareKind, id: string): Promise<ShareInfo | null> {
   const res = await fetch(`${API_URL}/share/${kind}/${encodeURIComponent(id)}`);
-  if (res.status === 404) return null;
+  if (res.status === 404) return null; // the feature is off, or an unknown kind; nothing to share yet is a 200 with null
   if (!res.ok) throw new Error("Couldn't load the share card");
   return res.json();
 }
