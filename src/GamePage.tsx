@@ -93,6 +93,7 @@ export default function GamePage({ name, game, loading, user, playerId, favorite
             <a className="btn" href={g.url} {...(isInAppGame(g) ? {} : { target: "_blank", rel: "noreferrer" })} onClick={(e) => onPlay(e, g)}>
               {isInAppGame(g) ? "Play" : "Play ↗"}
             </a>
+            {!isInAppGame(g) && <PageParts page="game-actions" user={user} onSignIn={onSignIn} game={g.slug} games={[g]} />}
             <FavoriteButton user={user} on={favorite.on} name={g.title} onToggle={favorite.toggle} onSignIn={onSignIn} />
           </div>
         </div>
@@ -103,7 +104,7 @@ export default function GamePage({ name, game, loading, user, playerId, favorite
           <a className="ghost btn" href={tweet} target="_blank" rel="noreferrer" onClick={() => analytics.share("game", g.slug, "x")}>Share on X</a>
           <button type="button" className="ghost" onClick={copy}>{copied ? "Link copied" : "Copy link"}</button>
         </div>
-        <PageParts page="game" user={user} onSignIn={onSignIn} game={g.slug} />
+        <PageParts page="game" user={user} onSignIn={onSignIn} game={g.slug} games={[g]} />
       </div>
       {g.board && (
         <aside className="game-page-board" aria-labelledby="board-heading">

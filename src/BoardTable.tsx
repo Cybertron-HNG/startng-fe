@@ -29,10 +29,20 @@ export default function BoardTable({ game, playerId }: { game: Game; playerId: n
   // One set of columns for the whole table (see .board-table), so every number sits under its heading.
   const cols = `28px minmax(0, 1fr) ${stats.map(() => "auto").join(" ")}`;
 
+  const [saves, setSaves] = useState(0);
   useEffect(() => {
     getLeaderboard(game.slug, 10)
       .then((rows) => setEntries(rows.slice(0, 10)))
       .catch(() => setError("Couldn't load the leaderboard. Try again in a moment."));
+  }, [game.slug, saves]);
+
+  // The game is playing on this page (src/features/play_here) and just saved a score: show the new table.
+  useEffect(() => {
+    const onMessage = (e: MessageEvent) => {
+      if (e.origin === location.origin && e.data?.type === "startng:scoreSaved" && e.data.game === game.slug) setSaves((n) => n + 1);
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
   }, [game.slug]);
 
   return (

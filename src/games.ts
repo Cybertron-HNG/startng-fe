@@ -223,5 +223,17 @@ export function serveConnect() {
     if (!handle) return;
     const reply = await handle(e.data, gameFromOrigin(e.origin));
     (e.source as Window | null)?.postMessage({ ...reply, requestId: e.data.requestId }, e.origin);
+    if (e.data.type === "startng:score" && (reply as { ok?: boolean }).ok) tellPage(gameFromOrigin(e.origin));
   });
+}
+
+// A game playing in a frame on its own start.ng page (src/features/play_here) puts this /connect page inside it, so the
+// page at the top is start.ng too: tell it about the new score so its leaderboard updates. Elsewhere the top page is
+// the game, which the browser won't let this page read, so nothing is sent.
+function tellPage(game: string) {
+  try {
+    if (window.top && window.top !== window.parent && window.top.location.origin === location.origin) {
+      window.top.postMessage({ type: "startng:scoreSaved", game }, location.origin);
+    }
+  } catch { /* the top page isn't start.ng */ }
 }
