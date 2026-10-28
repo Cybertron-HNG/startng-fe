@@ -12,6 +12,7 @@ export default function ReportDialog({ game, title, mode, onClose, onDone }: {
 }) {
   const [reason, setReason] = useState<ReportReason | null>(null);
   const [details, setDetails] = useState("");
+  const [attachDiagnostics, setAttachDiagnostics] = useState(true);
   const [state, setState] = useState<"idle" | "sending" | "sent">("idle");
   const [error, setError] = useState("");
   const flag = mode === "flag";
