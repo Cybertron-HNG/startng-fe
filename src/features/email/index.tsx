@@ -41,6 +41,7 @@ registerProfileSection({
   feature: "email",
   key: "email",
   title: "Emails",
+  ownerOnly: true,
   Component: ({ isMe }: ProfileSectionProps) => (isMe ? <Suspense fallback={null}><EmailPrefs /></Suspense> : null),
 });
 

@@ -101,7 +101,7 @@ export const adminTabPartsFor = (tab: string) => adminTabParts.filter((p) => p.t
 // ---- profile sections
 
 export type ProfileSectionProps = { userId: number; isMe: boolean };
-type ProfileSection = { feature: string; key: string; title: string; order: number; Component: ComponentType<ProfileSectionProps> };
+type ProfileSection = { feature: string; key: string; title: string; order: number; ownerOnly?: boolean; Component: ComponentType<ProfileSectionProps> };
 const profileSections: ProfileSection[] = [];
 
 /** A section on a player's profile (their league tier, crews, wardrobe). The profile page (S1) shows them in order. */
