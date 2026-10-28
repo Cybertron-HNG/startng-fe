@@ -25,8 +25,12 @@ export default function ReportDialog({ game, title, mode, onClose, onDone }: {
     setError("");
     try {
       const token = localStorage.getItem("token");
-      if (flag) await admin.flag(token, game, reason, details.trim());
-      else await reportGame(token, game, reason, details.trim());
+      const diag = attachDiagnostics && typeof window !== "undefined"
+        ? `\n[Diagnostics: ${window.innerWidth}x${window.innerHeight}, touch=${navigator.maxTouchPoints > 0}]`
+        : "";
+      const fullDetails = (details.trim() + diag).trim().slice(0, 1000);
+      if (flag) await admin.flag(token, game, reason, fullDetails);
+      else await reportGame(token, game, reason, fullDetails);
       setState("sent");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Couldn't send it");
@@ -64,6 +68,14 @@ export default function ReportDialog({ game, title, mode, onClose, onDone }: {
               <span>Details {reason === "other" ? "" : "(optional)"}</span>
               <textarea value={details} onChange={(e) => setDetails(e.target.value)} maxLength={1000} rows={3}
                 placeholder="What happened, and where in the game?" />
+            </label>
+            <label className="checkbox">
+              <input
+                type="checkbox"
+                checked={attachDiagnostics}
+                onChange={(e) => setAttachDiagnostics(e.target.checked)}
+              />
+              <span>Include device diagnostics (viewport and touch capability)</span>
             </label>
             {error && <p className="error">{error}</p>}
             <button type="submit" disabled={state === "sending"}>{state === "sending" ? "Sending…" : flag ? "Flag and hide" : "Send report"}</button>

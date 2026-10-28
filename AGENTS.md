@@ -32,4 +32,4 @@ Playtest Agents are automated workers that proactively test published and tourna
 3. **Creator Collaboration & Human-in-the-Loop**:
    - Issues are delivered to the game creator's Ziki Inbox.
    - Creators hold authority to **Confirm**, **Dispute**, or **Fix** reported issues.
-   - Validated reports award creator coins and solver bounties through the Ziki points engine.
+   - Confirmed reports award reporter points after two independent reviewer accepts and triager clearance. Assigned solvers receive severity-based points when the issue is resolved through the Ziki workflow.
