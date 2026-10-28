@@ -18,7 +18,7 @@ export default function CreatorPage({ user, onSignIn, params }: PageProps) {
   useEffect(() => {
     if (c) {
       const desc = c.bio || (c.games?.length
-        ? `${c.name} makes games on start.ng: ${c.games.slice(0, 5).map((g) => g.title).join(", ")}.`
+        ? `${c.name} makes games on start.ng: ${c.games.slice(0, 5).map((g) => g.title).join(", ")}. Play them free in your browser.`
         : `${c.name}'s games on start.ng: play them free in your browser, follow them, and share.`);
       setSeo({
         title: `${c.name}'s games · start.ng`,
@@ -30,6 +30,7 @@ export default function CreatorPage({ user, onSignIn, params }: PageProps) {
       setSeo({
         ...PAGES.notFound,
         title: "No creator here · start.ng",
+        description: "There's no creator at this address.",
         path: location.pathname,
       });
     }
