@@ -98,7 +98,8 @@ Live:
 curl -i https://dave.start.ng/            # 200, text/html
 curl -i https://dave.start.ng/save        # 200, the save page
 curl -i https://dave.start.ng/style.css   # 200, text/css
-curl -i https://dave.start.ng/game.js     # 200, text/javascript
+curl -i https://dave.start.ng/game.js     # 200, text/javascript, with an etag
+curl -i -H 'If-None-Match: "<that etag>"' https://dave.start.ng/game.js   # 304, no body
 curl -i https://nope.start.ng/            # 404
 curl -i https://api.start.ng/health       # still the backend, not the bucket
 ```
@@ -113,6 +114,8 @@ Then open `https://dave.start.ng` in a browser: the page should say "It works".
   path of that game then gets a 410 "This game isn't available" page (`no-store`). `SITE_URL` sets where its link goes
   (default `https://<BASE_DOMAIN>`). The check is one `head()` per request.
 - Missing folder or file gives 404. Only GET and HEAD are allowed.
+- `If-None-Match` with the file's etag (weak or strong, or `*`) gets `304` with no body, from one `head()` that reads no
+  file. `CACHE_CONTROL` stays short (60 s) so a new version shows quickly; after that a repeat visit costs only this check.
 - Names in `RESERVED_NAMES` are passed on to the normal origin, never read from the bucket.
 
 ## Phase 1 done checklist
