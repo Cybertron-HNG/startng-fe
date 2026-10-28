@@ -31,9 +31,14 @@ export default function ChallengePage({ user, onSignIn, params }: PageProps) {
     if (!user) return onSignIn(); // a score only counts signed in
     setBusy(true);
     setError("");
+    // Synchronously initiate window open on user tap to satisfy iOS Safari user gesture security policy
+    const tab = window.open(c.game.url, "_blank", "noopener");
     try {
       if (!c.mine) setC(await acceptChallenge(code));
-      window.open(c.game.url, "_blank", "noopener");
+      // Fallback if popup blocker intercepted new window
+      if (!tab || tab.closed) {
+        location.assign(c.game.url);
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
