@@ -24,8 +24,11 @@
   const CHOSE_GUEST = new URLSearchParams(location.search).has('guest');
   // The game is playing in a frame on its own start.ng page (Play here): signing in happens on that page, and there is no
   // "back to start.ng" to go to.
-  const IN_START_NG_PAGE = window.parent !== window && ON_START_NG
-    && (location.ancestorOrigins?.[0] ?? document.referrer).startsWith(START_NG);
+  // The page's exact origin: ancestorOrigins in Chrome and Safari, the referrer's origin in Firefox.
+  const parentOrigin = (() => {
+    try { return location.ancestorOrigins?.[0] ?? new URL(document.referrer).origin; } catch { return ''; }
+  })();
+  const IN_START_NG_PAGE = window.parent !== window && ON_START_NG && parentOrigin === START_NG;
   const script = document.currentScript;
   const option = (name) => script?.dataset?.[name];
 
