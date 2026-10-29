@@ -5,7 +5,7 @@ import { CharacterStyle, styleFor } from "./character";
 // The API only knows the name, so the title and colours are worked out from it:
 // the same game always gets the same colours.
 // cover is the game's picture; without one the card shows the title's first letter on the colours.
-export type Game = { slug: string; title: string; url: string; host: string; by: string; colors: [string, string]; cover: string | null; board: BoardStat[] | null; plays: number; description: string | null };
+export type Game = { slug: string; title: string; url: string; host: string; by: string; colors: [string, string]; cover: string | null; board: BoardStat[] | null; plays: number; description: string | null; updated_at?: string | null };
 
 const CARD_COLORS: [string, string][] = [
   ["#ffd400", "#e10600"],
@@ -30,6 +30,7 @@ export const HANGOUT: Game = {
   board: null, // the Hangout has no leaderboard
   plays: 0,
   description: "start.ng's own multiplayer park. Sign in as your character, walk around and meet everyone else who's there.",
+  updated_at: null,
 };
 
 /** A game that lives inside this app (opens in the same tab) rather than on its own start.ng address. */
@@ -63,6 +64,7 @@ export function toCard(game: PublishedGame): Game {
     board: game.leaderboard ?? null,
     plays: game.plays ?? 0,
     description: game.description ?? null,
+    updated_at: game.updated_at ?? null,
   };
 }
 
@@ -224,4 +226,30 @@ export function serveConnect() {
     const reply = await handle(e.data, gameFromOrigin(e.origin));
     (e.source as Window | null)?.postMessage({ ...reply, requestId: e.data.requestId }, e.origin);
   });
+}
+
+/** Whether the game was updated within the last 7 days. */
+export function isRecentlyUpdated(isoDate: string | null | undefined): boolean {
+  if (!isoDate) return false;
+  const then = new Date(isoDate).getTime();
+  if (isNaN(then)) return false;
+  const diff = Date.now() - then;
+  return diff > 0 && diff < 7 * 24 * 60 * 60 * 1000;
+}
+
+/** Friendly relative update text, e.g. "today", "yesterday", "2 days ago". */
+export function formatUpdatedAgo(isoDate: string | null | undefined): string | null {
+  if (!isoDate) return null;
+  const then = new Date(isoDate).getTime();
+  if (isNaN(then)) return null;
+  const diff = Date.now() - then;
+  if (diff < 0) return null;
+  const hours = Math.floor(diff / (60 * 60 * 1000));
+  if (hours < 1) return "just now";
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days === 1) return "yesterday";
+  if (days < 7) return `${days} days ago`;
+  const weeks = Math.floor(days / 7);
+  return weeks === 1 ? "1 week ago" : `${weeks} weeks ago`;
 }
