@@ -31,6 +31,7 @@ export function SiteFooterView({ categories = false }: { categories?: boolean })
           <h2>About</h2>
           <ul>
             <li><a href="/about">About start.ng</a></li>
+            <li><a href="/blog">Blog</a></li>
           </ul>
         </nav>
       </div>

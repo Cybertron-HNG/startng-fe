@@ -154,6 +154,12 @@ export const PAGES: Record<string, Seo> = {
     description: "The creators whose games the most different players opened this month on start.ng.",
     path: "/by",
   },
+  // The blog (src/Blog.tsx, Ziki #27): its index. Each post has its own page, from src/blog-posts.ts.
+  blog: {
+    title: "Blog · start.ng",
+    description: "Guides for making and publishing browser games on start.ng, and how start.ng works: the Kit, the daily tournament and more.",
+    path: "/blog",
+  },
   notFound: {
     title: "Page not found · start.ng",
     description: "There's nothing at this address. Browse the games on start.ng instead.",
@@ -184,11 +190,12 @@ export const STATIC_PAGES: [string, Seo][] = [
   ["wardrobe.html", PAGES.wardrobe],
   ["shop.html", PAGES.shop],
   ["profile.html", PAGES.profile],
+  ["blog.html", PAGES.blog],
   ["404.html", PAGES.notFound],
 ];
 
 /** Pages that belong in sitemap.xml. */
-export const SITEMAP_PATHS = ["home", "games", "creators", "tournament", "leaderboard", "hangout", "docs", "about"].map((k) => PAGES[k].path);
+export const SITEMAP_PATHS = ["home", "games", "creators", "tournament", "leaderboard", "hangout", "docs", "about", "blog"].map((k) => PAGES[k].path);
 
 /** A picture's full address: paths in public/ get the site in front, full addresses stay as they are. */
 const imageUrl = (site: string, image: string) => (/^https?:\/\//.test(image) ? image : site + image);
