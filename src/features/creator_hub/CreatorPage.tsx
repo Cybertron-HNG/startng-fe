@@ -7,6 +7,14 @@ import ShareButton from "../share_cards/ShareButton";
 import { getCreator, saveBio, type Creator } from "./api";
 import "./creator_hub.css";
 
+/** "Daniel's games: Git Quest, Lagos Run · start.ng", the same as the server writes. The games tell two creators with the same name apart. */
+export function creatorTitle(c: Pick<Creator, "name" | "games">): string {
+  const shown = c.games.slice(0, 2).map((g) => g.title);
+  let title = `${c.name}'s games${shown.length ? `: ${shown.join(", ")}` : ""}`;
+  if (shown.length === 2 && title.length > 55) title = `${c.name}'s games: ${shown[0]}`;
+  return `${title} · start.ng`;
+}
+
 /** start.ng/by/<id>-<name>: a creator's page. Their games and totals, a Follow button, and Share. Never an email. */
 export default function CreatorPage({ user, onSignIn, params }: PageProps) {
   const id = Number(params.id);
@@ -23,7 +31,7 @@ export default function CreatorPage({ user, onSignIn, params }: PageProps) {
       .then((got) => {
         if (!live) return;
         setC(got);
-        document.title = `${got.name}'s games · start.ng`;
+        document.title = creatorTitle(got);
         if (location.pathname !== `/by/${got.slug}`) history.replaceState(null, "", `/by/${got.slug}`);
       })
       .catch((e) => live && (e instanceof Error && /No creator/.test(e.message) ? setC(null) : setError("Couldn't load this page. Try again in a moment.")));

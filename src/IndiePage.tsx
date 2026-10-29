@@ -41,7 +41,7 @@ export default function IndiePage({ id, user, onSignIn }: { id: number; user: Us
 
   useEffect(() => {
     if (game) {
-      setSeo({ title: `${game.name} · Play free on start.ng`, description: game.description, path: indiePath(game) });
+      setSeo({ title: `${game.name} by ${game.by || "an independent creator"} · Play free on start.ng`, description: game.description, path: indiePath(game) });
     } else if (game === null) {
       setSeo(PAGES.notFound);
     }
