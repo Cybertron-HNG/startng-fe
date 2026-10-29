@@ -26,7 +26,7 @@ const REASONS: Record<string, string> = {
   first_run: "First game of the day", new_game: "Tried a new game", game_goal: "Game goal",
   streak: "Streak", level: "Level up", top_10: "Top 10", first_place: "#1 on a board",
   tournament: "Daily tournament", challenge: "Beat a challenge", league: "League promotion",
-  shop: "Bought", admin: "From start.ng",
+  shop: "Bought", admin: "From start.ng", tip_out: "Tipped a creator", tip_in: "Tip from a player",
 };
 export const reason = (r: string) => REASONS[r] ?? r.replace(/_/g, " ");
 
