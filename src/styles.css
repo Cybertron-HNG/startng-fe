@@ -1171,3 +1171,22 @@ option { background: var(--card); color: var(--ink); }
 .log-filters label { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: .85rem; }
 .log-filters .datefield-button { min-width: 168px; padding: 7px 12px; font-size: .9rem; }
 .log-count { margin: 10px 0 6px; color: var(--muted); font-size: .85rem; }
+
+/* The phone tab bar (src/TabBar.tsx, Ziki #48): fixed at the bottom below 760 px, hidden on computers. */
+.tab-bar { display: none; }
+@media (max-width: 760px) {
+  .tab-bar { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+    background: var(--card); border-top: 1px solid var(--line); padding: 4px 4px max(4px, env(safe-area-inset-bottom)); }
+  .tab-bar a, .tab-bar button { position: relative; display: grid; justify-items: center; align-content: center; gap: 2px; min-height: 48px;
+    padding: 4px 0; border: 0; border-radius: 12px; background: none; color: var(--muted); font: inherit; font-size: 11px; font-weight: 700;
+    text-decoration: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .tab-bar .tab-icon { font-size: 20px; line-height: 1; }
+  .tab-bar [aria-current="page"] { color: var(--on-lime); background: var(--lime); }
+  .tab-bar a:focus-visible, .tab-bar button:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+  .tab-bar .tab-dot { position: absolute; top: 6px; right: calc(50% - 16px); width: 8px; height: 8px; border-radius: 50%;
+    background: var(--danger); border: 2px solid var(--card); }
+  body:has(.tab-bar) { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+  /* The floating Help button, its panel and the scroll button sit above the bar instead of behind it. */
+  body:has(.tab-bar) :is(.help-button, .scroll-jump) { bottom: calc(76px + env(safe-area-inset-bottom)); }
+  body:has(.tab-bar) .help-panel { bottom: calc(132px + env(safe-area-inset-bottom)); max-height: calc(100vh - 170px); }
+}
