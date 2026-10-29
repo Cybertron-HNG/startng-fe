@@ -4,8 +4,6 @@ import { cardPartsFor, type CardSlot } from "./features/registry";
 import { useFeatures } from "./features/flags";
 import type { Game } from "./games";
 
-// A game's card on the homepage and /games. Features add to it through slots (src/features/registry.ts,
-// registerCardPart) instead of editing this file: badges on the picture, stats under the title, actions by Play.
 export default function GameCard({ game: g, legendary = false, link, user, onSignIn, favorite, board, play }: {
   game: Game;
   legendary?: boolean;
@@ -34,7 +32,17 @@ export default function GameCard({ game: g, legendary = false, link, user, onSig
         <div className="info">
           <h3>{g.title}</h3>
           <p>{g.host}</p>
-          <span className="by">by {g.by}</span>
+          <span className="by">
+            by {g.by}
+            {(g as any).is_verified && (
+              <span 
+                title="Verified Creator" 
+                style={{ marginLeft: '6px', color: '#3b82f6', fontSize: '0.9em' }}
+              >
+                ✔️
+              </span>
+            )}
+          </span>
           {slot("stats")}
         </div>
       </a>

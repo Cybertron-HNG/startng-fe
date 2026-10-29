@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { analytics } from "./analytics";
 import {
   enterTournament, getTournament, OverallEntry, overallLeaderboard, recentTournaments, Standing, Tournament, TournamentGame,
-  TournamentSummary, User,
+  TournamentSummary, User, getTournamentResult
 } from "./api";
 import { formatStat, shortName } from "./BoardTable";
 import { useFeature } from "./features/flags";
@@ -163,6 +163,9 @@ export function TournamentPage({ user, state, onSignIn, onPlay }: {
   const playerId = user?.id ?? null;
   const withFriends = useFeature("private_tournaments"); // tournaments with friends (src/features/private_tournaments)
 
+  // State for the results modal
+  const [pastResult, setPastResult] = useState<Tournament | null>(null);
+
   useEffect(() => setSeo(PAGES.tournament), []);
   // Ready before the click, so sharing the picture still counts as part of the tap (browsers require that).
   const imageFile = useRef<File | null>(null);
@@ -313,12 +316,19 @@ export function TournamentPage({ user, state, onSignIn, onPlay }: {
                 <ul className="winners">
                   {past.map((p) => (
                     <li key={p.id}>
-                      <span className="when">{dayText(p.ends_at)}</span>
-                      {p.winner ? (
-                        <span className="nm"><Dot color={p.winner.color} /><b title={p.winner.name}>{shortName(p.winner.name)}</b> · {p.winner.points} pts</span>
-                      ) : (
-                        <span className="nm none">No one played</span>
-                      )}
+                      <button 
+                        type="button" 
+                        className="link" 
+                        style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} 
+                        onClick={() => getTournamentResult(p.id).then(setPastResult)}
+                      >
+                        <span className="when">{dayText(p.ends_at)}</span>
+                        {p.winner ? (
+                          <span className="nm"><Dot color={p.winner.color} /><b title={p.winner.name}>{shortName(p.winner.name)}</b> · {p.winner.points} pts</span>
+                        ) : (
+                          <span className="nm none">No one played</span>
+                        )}
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -337,6 +347,31 @@ export function TournamentPage({ user, state, onSignIn, onPlay }: {
             <a className="btn" href="/friends">Start a tournament</a>
           </aside>
         )}
+
+      {/* The Results Modal */}
+      {pastResult && (
+        <div className="overlay" onClick={() => setPastResult(null)}>
+          <div className="card" style={{ maxWidth: 600, maxHeight: '80vh', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
+            <div className="card-head">
+              <h3>Results: {new Date(pastResult.starts_at).toLocaleDateString()}</h3>
+              <button className="link close" onClick={() => setPastResult(null)}>✕</button>
+            </div>
+            <h4>Final Standings</h4>
+            {pastResult.standings.map((st) => (
+              <div key={st.player_id} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', borderBottom: '1px solid var(--line)' }}>
+                <span>#{st.place} {st.name}</span>
+                <span>{st.points} pts</span>
+              </div>
+            ))}
+            <h4 style={{ marginTop: 20 }}>Games Played</h4>
+            {pastResult.games.map((g) => (
+              <div key={g.name} style={{ padding: '10px 0', borderBottom: '1px solid var(--line)' }}>
+                <strong>{g.name}</strong> ({g.players} players)
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 }
