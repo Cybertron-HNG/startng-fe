@@ -26,4 +26,5 @@ import "./tags"; // tags and category pages (Chloe)
 import "./game_pages"; // a game's about, how to play, FAQ and walkthrough pages (Chloe)
 import "./feature_toggle"; // admin Features tab: switch features on and off (Hamzat)
 import "./jams"; // Ziki #35: monthly game jams (Oluwaseyifunmi)
+import "./tips"; // Ziki #82: tip a creator with coins (Moronke)
 export {};
