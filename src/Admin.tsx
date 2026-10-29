@@ -10,6 +10,7 @@ import Boundary from "./features/Boundary";
 import { useFeatures } from "./features/flags";
 import { adminTabPartsFor, allAdminTabs, registerAdminTab, type AdminTabProps } from "./features/registry";
 import Pagination from "./Pagination";
+import { gameTitle as titleOf } from "./gameTitle";
 
 // start.ng/admin. Only admins get past the first check: super admins (SUPER_ADMIN_EMAILS on the API) and the admins
 // they add by email. There's no admin sign-up: admins sign in to start.ng with Google, then come here.
@@ -188,7 +189,6 @@ function GameArt({ g }: { g: GameCard }) {
   );
 }
 
-const titleOf = (name: string) => name.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 
 /** Bars for a 30 day series: the tallest day fills the height. */
 function DayBars({ title, series, total }: { title: string; series: { day: string; n: number }[]; total: number }) {
