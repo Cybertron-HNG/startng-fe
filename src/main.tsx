@@ -4,6 +4,8 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import App from "./App";
 import About from "./About";
 import Docs from "./Docs";
+import Privacy from "./Privacy";
+import Terms from "./Terms";
 import { serveConnect } from "./games";
 import NotFound from "./NotFound";
 import { initAnalytics } from "./analytics";
@@ -26,6 +28,8 @@ const HANGOUT_PATH = "/hangout";
 const APPROVE_PATH = /^\/approve\/[\w-]{8,40}\/?$/; // the homepage, with "put this game live?" on top
 const DOCS_PATHS = ["/docs", "/docs/"];
 const ABOUT_PATHS = ["/about", "/about/"]; // what start.ng is, and the questions
+const PRIVACY_PATHS = ["/privacy", "/privacy/"]; // what we collect and what you can ask us to do about it
+const TERMS_PATHS = ["/terms", "/terms/"]; // the rules for playing and for publishing a game
 const ADMIN_PATHS = ["/admin", "/admin/"]; // admins only (the API checks)
 const GAMES_PATHS = ["/games", "/games/"]; // every game, a page at a time
 const TOURNAMENT_PATHS = ["/tournament", "/tournament/"]; // today's tournament
@@ -83,6 +87,10 @@ if (location.pathname === "/connect") {
         <Docs />
       ) : ABOUT_PATHS.includes(path) ? (
         <About />
+      ) : PRIVACY_PATHS.includes(path) ? (
+        <Privacy />
+      ) : TERMS_PATHS.includes(path) ? (
+        <Terms />
       ) : feature?.page.shell === "app" ? (
         <FeatureGate feature={feature.page.feature} off={<NotFound />}>
           <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID ?? ""}>
