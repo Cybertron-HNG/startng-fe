@@ -326,3 +326,38 @@
 }
 
 /* someone who isn't here: sitting on their bench */
+
+/* The arcade (arcade.ts, Ziki #41): "🕹️ Lagos Bike Rush · Play · or press E" when you stand at a machine. */
+.hangout-arcade {
+  position: fixed;
+  left: 50%;
+  bottom: 116px; /* above "say something" */
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100% - 32px);
+  padding: 8px 8px 8px 16px;
+  border-radius: 999px;
+  background: rgba(41, 42, 35, 0.85);
+  color: var(--card);
+  font-size: 14px;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.hangout-arcade[hidden] { display: none; }
+.hangout-arcade > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.hangout-arcade b { color: var(--lime); }
+.hangout-arcade button { flex: none; border: 0; border-radius: 999px; padding: 8px 16px; background: var(--lime); color: var(--on-lime); font-weight: 700; cursor: pointer; }
+.hangout-arcade kbd { font-family: var(--mono); color: var(--lime); }
+.hangout-arcade-key { white-space: nowrap; opacity: .8; font-size: 12px; }
+.hangout.touch .hangout-arcade-key { display: none; }
+@media (max-width: 600px) {
+  .hangout-arcade { bottom: 152px; } /* "say something" sits higher here */
+}
+/* above the stick, the Wave button and "Drag to look around" */
+.hangout.touch .hangout-arcade { bottom: calc(max(24px, env(safe-area-inset-bottom)) + 184px); }
+/* a phone on its side: the stick and Wave are at the edges and the hint is gone, so it can sit low in the middle */
+@media (max-height: 480px) and (orientation: landscape) {
+  .hangout.touch .hangout-arcade { bottom: 24px; }
+}

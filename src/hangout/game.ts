@@ -1,9 +1,11 @@
 import * as THREE from "three";
 import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer.js";
-import { me } from "../api";
+import { listGames, me, trackPlay } from "../api";
 import { styleFor } from "../character";
 import { buildHuman, Human } from "./human";
-import { buildPark, seatSpot } from "./world";
+import { arcadeGames, buildArcade } from "./arcade";
+import { playableUrl, toCard, type Game } from "../games";
+import { buildPark, PLAYER_RADIUS, seatSpot } from "./world";
 import { LiveRoom, Player } from "./net";
 import { createChat } from "./chat";
 import { hourNow, startClock } from "./clock";
@@ -34,6 +36,7 @@ export function startHangout(root: HTMLElement): () => void {
   const ui = {
     overlay: find(".hangout-overlay"), title: find(".hangout-panel h1"), message: find(".hangout-panel p"), action: find<HTMLButtonElement>(".hangout-panel button"),
     online: find(".hangout-online"), status: find(".hangout-status"), hint: find(".hangout-hint"), touchHint: find(".hangout-hint-touch"),
+    arcade: find(".hangout-arcade"), arcadeName: find(".hangout-arcade b"), arcadePlay: find<HTMLButtonElement>(".hangout-arcade button"),
   };
   // On a phone or tablet there's no keyboard, so there's an on-screen stick and a Wave button.
   const touch = isTouchDevice();
@@ -61,6 +64,23 @@ export function startHangout(root: HTMLElement): () => void {
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 400);
   const park = buildPark(scene, touch ? 1024 : 2048); // sharper shadows cost more, which phones can't spare
+  // The arcade (arcade.ts): machines for the most played games. Walk up to one and press play.
+  const arcade = buildArcade(scene);
+  listGames().then((games) => { if (!stopped) arcade.setGames(arcadeGames(games.map(toCard))); }).catch(() => {});
+  let atMachine: Game | null = null;
+  function showMachine(game: Game | null) {
+    if (game === atMachine) return;
+    atMachine = game;
+    ui.arcade.hidden = !game;
+    if (game) ui.arcadeName.textContent = game.title;
+  }
+  function playMachine() {
+    if (!atMachine) return;
+    stopMoving();
+    trackPlay(atMachine.slug);
+    // A new tab, so the park (and your place in it) is still here when you come back.
+    window.open(playableUrl(atMachine.url), "_blank", "noopener");
+  }
 
   function resize() {
     const w = innerWidth;
@@ -250,6 +270,7 @@ export function startHangout(root: HTMLElement): () => void {
   const keys = new Set<string>();
   const stick = touch ? createJoystick(find(".hangout-joystick")) : null;
   listen(find(".hangout-wave"), "click", () => wave());
+  listen(ui.arcadePlay, "click", () => playMachine());
   const KEYS = {
     forward: ["KeyW", "ArrowUp"], back: ["KeyS", "ArrowDown"],
     left: ["KeyA", "ArrowLeft"], right: ["KeyD", "ArrowRight"],
@@ -265,6 +286,10 @@ export function startHangout(root: HTMLElement): () => void {
         e.preventDefault();
         chat.focusInput();
       }
+      return;
+    }
+    if (e.code === "KeyE" && atMachine && !e.repeat) {
+      playMachine();
       return;
     }
     if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.code)) e.preventDefault();
@@ -378,8 +403,9 @@ export function startHangout(root: HTMLElement): () => void {
           pos.x,
           pos.z,
         );
-        pos.x = THREE.MathUtils.clamp(next.x, -WORLD, WORLD);
-        pos.z = THREE.MathUtils.clamp(next.z, -WORLD, WORLD);
+        const clear = arcade.collide(next.x, next.z, PLAYER_RADIUS); // and at the arcade's machines
+        pos.x = THREE.MathUtils.clamp(clear.x, -WORLD, WORLD);
+        pos.z = THREE.MathUtils.clamp(clear.z, -WORLD, WORLD);
         const ry = mine.human.root.rotation.y;
         mine.human.root.rotation.y = ry + angleTo(ry, Math.atan2(mx, mz)) * Math.min(1, dt * 12);
         mine.human.setWalking(running ? 1.8 : 1);
@@ -395,7 +421,9 @@ export function startHangout(root: HTMLElement): () => void {
         sentAt = t;
       }
       focus.set(pos.x, 1.45, pos.z);
+      showMachine(arcade.near(pos.x, pos.z));
     } else {
+      showMachine(null);
       yaw += dt * 0.05; // nobody to follow: drift slowly around the park
       focus.set(0, 1.45, 0);
     }
@@ -478,6 +506,7 @@ export function startHangout(root: HTMLElement): () => void {
     clearTimeout(awayTimer);
     stopClock();
     chat.dispose();
+    arcade.dispose();
     stick?.dispose();
     root.classList.remove("touch");
     room.stop();
