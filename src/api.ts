@@ -52,6 +52,7 @@ export type UpdateProblem = { commit: string; at: string; detail: string; errors
 export type BoardStat = { key: string; label: string; order: "highest" | "lowest"; format: "number" | "time" };
 export type PublishedGame = {
   name: string; url: string; repo_url: string; by: string; updated_at: string; cover_url: string | null;
+  share_url?: string | null; // the 1200 x 630 link-preview picture (og:image); null: no cover, start.ng's own
   leaderboard: BoardStat[] | null; // null: this game has no leaderboard
   description?: string | null; // one line from the game's startng.json, for its page on start.ng
   plays?: number; // opened from start.ng in the last 7 days (the homepage shows the most played)
