@@ -21,7 +21,7 @@ export default function MyTournaments({ user, onSignIn }: PageProps) {
 
   useEffect(() => setSeo(PAGES.friendsTournaments), []);
   useEffect(() => {
-    listGames().then((all) => setGames(all.filter((g) => g.name !== "hangout"))).catch(() => setGames([]));
+    listGames().then(setGames).catch(() => setGames([]));
   }, []);
   useEffect(() => {
     if (!user) { setMine([]); return; }

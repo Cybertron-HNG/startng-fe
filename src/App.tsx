@@ -470,12 +470,12 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
               </div>
             )
           )}
-          {view === "home" && community.length > 0 && (
+          {view === "home" && cards.length > 0 && (
             <details className="az-games">
-              <summary>Every game on start.ng, A to Z ({community.length})</summary>
+              <summary>Every game on start.ng, A to Z ({cards.length})</summary>
               <ul>
-                {[...community].sort((a, b) => byTitle(a) < byTitle(b) ? -1 : byTitle(a) > byTitle(b) ? 1 : 0).slice(0, AZ_GAMES).map((g) => (
-                  <li key={g.slug}><a href={`/games/${g.slug}`}>{g.title}</a> <span>by {g.by}</span></li>
+                {[...cards].sort((a, b) => byTitle(a) < byTitle(b) ? -1 : byTitle(a) > byTitle(b) ? 1 : 0).slice(0, AZ_GAMES).map((g) => (
+                  <li key={g.slug}><a href={g.url.startsWith("/") ? g.url : `/games/${g.slug}`}>{g.title}</a> <span>by {g.by}</span></li>
                 ))}
               </ul>
             </details>
