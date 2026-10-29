@@ -970,7 +970,7 @@ button.small { padding: 7px 12px; font-size: .85rem; border-radius: 8px; }
 .newsletter-form select:focus-visible, .newsletter-form input:focus-visible, .newsletter-actions select:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
 .newsletter-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .newsletter-preview { max-width: 680px; margin: 0 0 20px; padding: 14px 18px; border-radius: 14px; background: var(--card); border: 1px solid var(--line); }
-.warn { margin: 12px 0; padding: 10px 14px; border-radius: 12px; background: #fef3c7; color: #78350f; font-size: .92rem; }
+.warn { margin: 12px 0; padding: 10px 14px; border-radius: 12px; background: var(--warn-bg); border: 1px solid var(--warn-line); color: var(--warn-ink); font-size: .92rem; }
 
 /* H2 game health: problems listed under a game */
 .health-problems { margin: 6px 0 0; padding-left: 18px; font-size: .86rem; line-height: 1.5; }
