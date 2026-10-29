@@ -19,6 +19,7 @@ import "./spotlight"; // A2 Game of the Week and the daily challenge (Hamzat, fo
 import "./share_cards";
 import "./challenges";
 import "./creator_hub"; // T2 creator hub (Hamzat, for Tega)
+import "./live"; // Ziki #37 live: playing now and the homepage strip (Daniel)
 import "./wardrobe"; // wardrobe rewards: coins, rarity items and the shop (Kaka)
 import "./support"; // F10 Help button and problem reports (Hamzat)
 import "./tags"; // tags and category pages (Chloe)
