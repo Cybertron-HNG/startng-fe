@@ -82,7 +82,17 @@ export default function GamePage({ name, game, loading, user, playerId, favorite
       <a className="back" href="/games">← All games</a>
       <div className="game-page-grid">
         <div className="art" style={{ background: `linear-gradient(135deg, ${g.colors[0]}, ${g.colors[1]})` }}>
-          {g.cover ? <img src={g.cover} alt={`${g.title} cover`} decoding="async" /> : <span>{g.title.charAt(0)}</span>}
+          {g.cover ? (
+            <img src={g.cover} alt={`${g.title} cover`} decoding="async" />
+          ) : (
+            <div className="generated-tile">
+              <span className="tile-initial">{g.title.charAt(0)}</span>
+              <div className="tile-details">
+                <span className="tile-title">{g.title}</span>
+                <span className="tile-by">by {g.by}</span>
+              </div>
+            </div>
+          )}
         </div>
         <div className="game-page-body">
           {inTournament && <a className="tag tournament-badge" href="/tournament">In today's tournament →</a>}
