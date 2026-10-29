@@ -1,7 +1,8 @@
 /** The site's footer, as plain markup (no flags, no data), so the build can write it into pages (vite.config.ts). SiteFooter (SiteFooter.tsx) is the one
  *  the app draws. The server writes the same footer on its own pages (startng-be app/server_html.py, site_footer): keep the words and links
- *  the same in all three. Categories shows only while the tags feature is on, like the server's. */
-export function SiteFooterView({ categories = false }: { categories?: boolean }) {
+ *  the same in all three. Categories is always listed: the pages the build writes (/about, /docs, 404) can't know the tags flag,
+ *  so a flagged link made those pages differ from what React draws (Ziki idea #96). */
+export function SiteFooterView() {
   return (
     <footer className="container site-footer">
       <div className="site-footer-grid">
@@ -15,7 +16,7 @@ export function SiteFooterView({ categories = false }: { categories?: boolean })
             <li><a href="/games">All games</a></li>
             <li><a href="/tournament">Daily tournament</a></li>
             <li><a href="/leaderboard">Leaderboard</a></li>
-            {categories && <li><a href="/categories">Categories</a></li>}
+            <li><a href="/categories">Categories</a></li>
             <li><a href="/hangout">The Hangout</a></li>
           </ul>
         </nav>
