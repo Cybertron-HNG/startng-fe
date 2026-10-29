@@ -624,6 +624,28 @@ Now and then start.ng runs a **game jam**: a theme and a deadline, on its own pa
 - During voting week, players who have played your game can vote for it on the jam page. You can't vote for your own. The entries with the most votes win.
 - The short name is lowercase letters, numbers and hyphens, like the one on the jam page. Anything else and publishing tells you what to fix.
 
+### Let others remix your game: `remix` and `remix_of`
+
+Every start.ng game is published from a public GitHub repo, so other creators can learn from it. To invite them to start their own game from yours, switch remixing on:
+
+```json
+{ "remix": true }
+```
+
+- Your game's page then shows a **Remix it** button. It opens GitHub's own fork page for your repo; start.ng copies nothing.
+- Remixing is off until you add this. Set `"remix": false` (and publish or push) to switch it off again.
+
+If your game is a remix, say which start.ng game it came from, by its name (the part before `.start.ng`):
+
+```json
+{ "remix_of": "coin-rush" }
+```
+
+- Your game's page shows "Remixed from Coin Rush by …", with a link, and the original's page shows "Remixed once" with a link to yours.
+- Change the name before you publish: a remix is a new game, with its own name and address.
+- A remix is published like any other game, with the same checks and review. Keep the original's licence, and credit its creator in your README too.
+- `"remix_of": null` removes the link.
+
 ### Save a run
 
 Signed-in players only. Send **exactly** the stats in your `startng.json` (or a plain `score` if you don't have one), each a **whole number** from 0 to 1,000,000,000. Anything else is refused.
