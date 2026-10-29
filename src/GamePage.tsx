@@ -103,7 +103,7 @@ export default function GamePage({ name, game, loading, user, playerId, favorite
           <a className="ghost btn" href={tweet} target="_blank" rel="noreferrer" onClick={() => analytics.share("game", g.slug, "x")}>Share on X</a>
           <button type="button" className="ghost" onClick={copy}>{copied ? "Link copied" : "Copy link"}</button>
         </div>
-        <PageParts page="game" user={user} onSignIn={onSignIn} game={g.slug} />
+        <PageParts page="game" user={user} onSignIn={onSignIn} game={g.slug} currentGame={g} />
       </div>
       {g.board && (
         <aside className="game-page-board" aria-labelledby="board-heading">

@@ -8,7 +8,7 @@ export default function PageParts({ page, ...props }: PagePartProps & { page: Pa
   return (
     <>
       {pagePartsFor(page).filter((p) => isOn(p.feature)).map((p) => (
-        <Boundary key={p.key} name={p.feature}>
+        <Boundary key={p.key} name={p.feature ?? p.key}>
           <p.Component {...props} />
         </Boundary>
       ))}

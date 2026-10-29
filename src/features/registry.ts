@@ -42,7 +42,7 @@ export function findPage(pathname: string): { page: FeaturePage; params: Record<
 /** Where on a game card: badges sit on the picture, stats under the title, actions next to Play. */
 export type CardSlot = "badges" | "stats" | "actions";
 export type CardContext = { user: User | null; onSignIn: () => void };
-type CardPart = { feature: string; key: string; slot: CardSlot; order: number; render: (game: Game, ctx: CardContext) => ReactNode };
+type CardPart = { feature: string | null; key: string; slot: CardSlot; order: number; render: (game: Game, ctx: CardContext) => ReactNode };
 const cardParts: CardPart[] = [];
 
 /** Something a feature shows on every game card (a category chip, stars, a "Rate" button). Return null to skip a card. */
@@ -132,8 +132,8 @@ export const allYourGameParts = () => yourGameParts;
 /** A start.ng page with a place for features to add a box (the tournament page: an email sign-up, crew invites). */
 export type PageSlot = "tournament" | "game" | "home" | "games" | "indie" | "everywhere"; // everywhere: once on every page of the site
 /** game: the game's slug, on the "game" page. games: every community game, on the "home" page. */
-export type PagePartProps = { user: User | null; onSignIn: () => void; game?: string; games?: Game[]; query?: string /* the search on /games, if any */ };
-type PagePart = { feature: string; key: string; page: PageSlot; order: number; Component: ComponentType<PagePartProps> };
+export type PagePartProps = { user: User | null; onSignIn: () => void; game?: string; games?: Game[]; query?: string /* the search on /games, if any */; currentGame?: Game };
+type PagePart = { feature: string | null; key: string; page: PageSlot; order: number; Component: ComponentType<PagePartProps> };
 const pageParts: PagePart[] = [];
 
 /** A box a feature adds to one of start.ng's pages, in order. Render nothing when it doesn't apply. */
