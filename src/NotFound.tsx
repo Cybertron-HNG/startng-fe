@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import ThemeToggle from "./ThemeToggle";
 import { PAGES, setSeo } from "./seo";
+import { SiteFooterView } from "./SiteFooterView";
 
 // Shown for any address that isn't one of the app's pages. nginx serves it with a real
 // 404 status (see nginx.conf); the Vite dev server shows it too, with a 200.
@@ -19,6 +20,7 @@ export default function NotFound() {
       <main>
         <NotFoundSection />
       </main>
+      <SiteFooterView />
     </>
   );
 }

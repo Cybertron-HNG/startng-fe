@@ -40,6 +40,18 @@ function hangoutText(): string {
   );
 }
 
+/** /404 as text inside #root: crawlers, curl, and visitors before React hydrates read the 404 heading and lead text. */
+function notFoundText(): string {
+  return (
+    '<header class="container nav"><a class="logo" href="/"><b>start<span>.ng</span></b></a>' +
+    '<nav aria-label="Pages"><a href="/games">Games</a><a href="/creators">Creators</a><a href="/docs">Docs</a></nav></header>' +
+    '<main><section class="container hero"><p class="eyebrow">404</p><h1>Page not <mark>found.</mark></h1>' +
+    '<p class="lead">There\'s nothing at this address.<br />Looking for a game? Each one lives at its own address, like <code>yourgame.start.ng</code>.</p>' +
+    '<div class="actions"><a class="btn" href="/">Go to the homepage</a><a class="btn ghost" href="/games">Browse games</a></div></section></main>' +
+    renderToStaticMarkup(createElement(SiteFooterView))
+  );
+}
+
 // Link previews and search crawlers read the HTML they're served, so the build writes one HTML file
 // per page (games.html, docs.html ...) with that page's title, description and Open Graph tags,
 // plus robots.txt and sitemap.xml. nginx serves them (see nginx.conf). The tags come from src/seo.ts.
@@ -57,6 +69,9 @@ function seoPages(site: string): Plugin {
       for (const [file, page] of STATIC_PAGES) {
         writeFileSync(resolve(out, file), index.replace(block, `<!--seo-->\n    ${headTags(page, site)}\n    <!--/seo-->`).replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, ""));
       }
+      // 404.html text inside #root: a crawler, curl, or browser before React hydrates reads the single <h1> heading.
+      const notFoundHtml = readFileSync(resolve(out, "404.html"), "utf8");
+      writeFileSync(resolve(out, "404.html"), notFoundHtml.replace(ROOT, `<div id="root">${notFoundText()}</div>`));
       // The homepage nginx serves: index.html with the API's text for search engines and AI tools included
       // inside #root (an SSI include, see "location = /" in nginx.conf). The app replaces it when it loads.
       if (!index.includes(ROOT)) throw new Error(`index.html has no ${ROOT} for the homepage text`);
