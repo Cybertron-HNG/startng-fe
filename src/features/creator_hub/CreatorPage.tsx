@@ -15,7 +15,6 @@ export default function CreatorPage({ user, onSignIn, params }: PageProps) {
   const [editing, setEditing] = useState(false);
   const [bio, setBio] = useState("");
 
-  useEffect(() => { setSeo(PAGES.creator); }, []);
   useEffect(() => {
     let live = true;
     setError("");
@@ -23,10 +22,21 @@ export default function CreatorPage({ user, onSignIn, params }: PageProps) {
       .then((got) => {
         if (!live) return;
         setC(got);
-        document.title = `${got.name}'s games · start.ng`;
+        setSeo({
+          ...PAGES.creator,
+          title: `${got.name}'s games · start.ng`,
+          description: got.bio || PAGES.creator.description,
+          path: `/by/${got.slug}`,
+        });
         if (location.pathname !== `/by/${got.slug}`) history.replaceState(null, "", `/by/${got.slug}`);
       })
-      .catch((e) => live && (e instanceof Error && /No creator/.test(e.message) ? setC(null) : setError("Couldn't load this page. Try again in a moment.")));
+      .catch((e) => {
+        if (!live) return;
+        if (e instanceof Error && /No creator/.test(e.message)) {
+          setC(null);
+          setSeo({ ...PAGES.notFound, title: "No creator here · start.ng", path: location.pathname });
+        } else setError("Couldn't load this page. Try again in a moment.");
+      });
     return () => { live = false; };
   }, [id, user?.id]);
 
