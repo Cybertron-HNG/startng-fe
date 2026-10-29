@@ -188,6 +188,8 @@
     button.primary { background: var(--ink); color: var(--on-solid); border-color: var(--ink); }
     button.primary:hover { background: var(--solid-hover); }
     button[hidden] { display: none; }
+    button.clip-btn { background: var(--lime); color: #292a23; border-color: var(--lime); }
+    button.clip-btn:hover { filter: brightness(0.92); }
   </style>`;
 
   function el(tag, attrs = {}, text = '') {
@@ -220,6 +222,115 @@
     open(intent, '_blank', 'noopener');
   }
 
+
+
+  // ---------- Clip Recording ("Share your clip", Issue #39) ----------
+  // Games using kit.js quietly keep the last ~10 seconds of play in memory.
+  // When a run ends with a personal best, players can share a video clip directly
+  // to WhatsApp Status, TikTok, Instagram or download it.
+  // Zero server overhead: recorded in memory, and discarded immediately if not shared.
+
+  let clipChunks = [];
+  let clipRecorder = null;
+  let clipCanvas = null;
+
+  function findCanvas() {
+    return document.querySelector('canvas');
+  }
+
+  function startClipRecorder() {
+    if (option('clip') === 'off') return;
+    if (typeof HTMLCanvasElement === 'undefined' || !HTMLCanvasElement.prototype.captureStream) return;
+    if (typeof MediaRecorder === 'undefined') return;
+
+    try {
+      const canvas = findCanvas();
+      if (!canvas) {
+        const observer = new MutationObserver(() => {
+          const c = findCanvas();
+          if (c) {
+            observer.disconnect();
+            initRecorder(c);
+          }
+        });
+        observer.observe(document.body || document.documentElement, { childList: true, subtree: true });
+        return;
+      }
+      initRecorder(canvas);
+    } catch {
+      // Graceful fallback: never crash a game
+    }
+  }
+
+  function initRecorder(canvas) {
+    if (clipRecorder && clipRecorder.state !== 'inactive') return;
+    clipCanvas = canvas;
+    try {
+      const stream = canvas.captureStream(12);
+      const mime = [
+        'video/webm;codecs=vp9',
+        'video/webm;codecs=vp8',
+        'video/webm',
+        'video/mp4'
+      ].find((t) => MediaRecorder.isTypeSupported?.(t)) || '';
+
+      clipRecorder = mime ? new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 1000000 })
+                          : new MediaRecorder(stream);
+
+      clipRecorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) {
+          clipChunks.push(e.data);
+          if (clipChunks.length > 10) clipChunks.shift();
+        }
+      };
+      clipRecorder.start(1000);
+    } catch {
+      // Gracefully ignore tainted canvas or unsupported media stream
+    }
+  }
+
+  function hasClip() {
+    return clipChunks.length > 0;
+  }
+
+  function clearClip() {
+    clipChunks = [];
+  }
+
+  async function shareClip({ score } = {}) {
+    if (!hasClip()) return;
+    try {
+      const mime = clipRecorder?.mimeType || 'video/webm';
+      const ext = mime.includes('mp4') ? 'mp4' : 'webm';
+      const blob = new Blob(clipChunks, { type: mime });
+      const name = gameName();
+      const gameTitle = document.title || name || 'this game';
+      const url = location.origin + location.pathname;
+      const text = score != null
+        ? `I scored ${score} in ${gameTitle} on start.ng! Can you beat it?`
+        : `Watch my best moment in ${gameTitle} on start.ng!`;
+
+      tell({ type: 'startng:session', event: 'clip_shared', sessionId });
+
+      const file = new File([blob], `${name}-clip.${ext}`, { type: mime });
+      if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: `${gameTitle} clip`,
+          text: `${text} ${url}`,
+          files: [file],
+        });
+      } else {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${name}-clip.${ext}`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 15000);
+        share({ score, text });
+      }
+    } catch {
+      // User cancelled share dialog or download handled
+    }
+  }
 
   // ---------- Rooms: refereed multiplayer (tic-tac-toe, chess ...) ----------
   // start.ng's server runs the rules, so a player can't cheat and a dropped player can come back.
@@ -400,9 +511,11 @@
     shareBtn.onclick = () => share({ score });
     // Challenge a friend (B1) and Play next (A1) are owned by other features;
     // they appear once those contracts exist.
+    const clipBtn = el('button', { type: 'button', class: 'clip-btn', hidden: '' }, 'Share your clip 🎬');
+    clipBtn.onclick = () => shareClip({ score });
     const challenge = el('button', { type: 'button', hidden: '' }, 'Challenge a friend');
     const next = el('button', { type: 'button', hidden: '' }, 'Play next');
-    buttons.append(again, shareBtn, challenge, next);
+    buttons.append(again, clipBtn, shareBtn, challenge, next);
 
     box.append(el('h2', {}, title), el('div', { class: 'score' }, String(score ?? '')), meta, unlocks, buttons);
     card.append(box);
@@ -425,6 +538,7 @@
     }
     const r = saved.result ?? {};
     meta.textContent = r.improved ? `New personal best! You're #${r.rank}.` : `Saved. Your best is still ${r.best} (#${r.rank}).`;
+    if ((r.improved || !player) && hasClip()) clipBtn.removeAttribute('hidden');
     // D1 adds new awards to the score reply as unlocked: [...].
     for (const item of r.unlocked ?? saved.unlocked ?? []) unlocks.append(el('li', {}, `Unlocked: ${item.name ?? item.key ?? item}`));
     return saved;
@@ -434,10 +548,10 @@
 
   window.startng = Object.freeze({
     version: VERSION, onStartNg: ON_START_NG, choseGuest: CHOSE_GUEST,
-    getPlayer, onPlayerChange, signIn, saveRun, getLeaderboard, gameOver, closeCard, share, rooms,
+    getPlayer, onPlayerChange, signIn, saveRun, getLeaderboard, gameOver, closeCard, share, shareClip, hasClip, rooms,
   });
 
-  const init = () => { addChrome(); startTelemetry(); };
+  const init = () => { addChrome(); startTelemetry(); startClipRecorder(); };
   if (document.body) init();
   else document.addEventListener('DOMContentLoaded', init);
 })();
