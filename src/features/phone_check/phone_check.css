@@ -1,0 +1,5 @@
+/* "Phone check" in Your games (Ziki #14). The card itself is .your-stats (src/features/creator_hub/creator_hub.css). */
+.phone-check-findings { margin: 4px 16px 10px; padding-left: 18px; display: grid; gap: 6px; overflow-wrap: anywhere; }
+/* .game-card p clamps a game's description to two lines; this note is ours and must show in full */
+.phone-check > .note { display: block; -webkit-line-clamp: unset; margin: 0 16px 10px; font-size: .85rem; }
+.phone-check > .note a { color: inherit; text-decoration: underline; }

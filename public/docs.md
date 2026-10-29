@@ -172,7 +172,7 @@ For the link, use your game's start.ng page (`https://start.ng/games/<your-game>
 
 ### Works on a small phone
 
-Many players are on a small phone (about 320 to 375 pixels wide). Open your game at that size before you publish. This is advice, not a check, but a game that doesn't fit gets bad reviews fast.
+Many players are on a small phone (about 320 to 375 pixels wide). Open your game at that size before you publish: a game that doesn't fit gets bad reviews fast. After each publish or update, start.ng's phone check looks at your start screen at phone sizes and shows what it finds under your game in Your games ("Phone check"). It only warns; it never stops a game going live.
 
 - Add `<meta name="viewport" content="width=device-width, initial-scale=1">` to `index.html`. Without it a phone draws your game at desktop width.
 - Keep the top bar short: score, lives and buttons on one or two rows, taking up no more than about a quarter of the screen. Put the rest in a menu, or hide small extras on narrow screens.
