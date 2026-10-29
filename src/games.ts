@@ -5,7 +5,7 @@ import { CharacterStyle, styleFor } from "./character";
 // The API only knows the name, so the title and colours are worked out from it:
 // the same game always gets the same colours.
 // cover is the game's picture; without one the card shows the title's first letter on the colours.
-export type Game = { slug: string; title: string; url: string; host: string; by: string; colors: [string, string]; cover: string | null; board: BoardStat[] | null; plays: number; description: string | null };
+export type Game = { slug: string; title: string; url: string; host: string; by: string; colors: [string, string]; cover: string | null; share?: string | null; board: BoardStat[] | null; plays: number; description: string | null };
 
 const CARD_COLORS: [string, string][] = [
   ["#ffd400", "#e10600"],
@@ -60,6 +60,7 @@ export function toCard(game: PublishedGame): Game {
     by: game.by,
     colors: colorsFor(game.name),
     cover: game.cover_url,
+    share: game.share_url ?? null,
     board: game.leaderboard ?? null,
     plays: game.plays ?? 0,
     description: game.description ?? null,

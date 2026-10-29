@@ -29,6 +29,8 @@ export type Seo = {
   /** Its own preview picture: a path in public/ or a full address, like a game's cover (default SHARE_IMAGE). */
   image?: string;
   imageAlt?: string;
+  /** The picture's size in pixels, when it's known (a game's 1200 x 630 share picture): og:image:width/height. */
+  imageSize?: [number, number];
 };
 
 const HOME_DESCRIPTION =
@@ -210,6 +212,7 @@ export function headTags(seo: Seo, site: string): string {
     `<meta property="og:description" content="${esc(seo.description)}" />`,
     `<meta property="og:url" content="${esc(url)}" />`,
     `<meta property="og:image" content="${esc(image)}" />`,
+    ...(seo.imageSize ? [`<meta property="og:image:width" content="${seo.imageSize[0]}" />`, `<meta property="og:image:height" content="${seo.imageSize[1]}" />`] : []),
     `<meta property="og:image:alt" content="${esc(seo.imageAlt ?? SHARE_IMAGE_ALT)}" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${esc(seo.title)}" />`,
@@ -263,6 +266,10 @@ export function setSeo(seo: Seo) {
   meta("name", "twitter:description", seo.description);
   const image = imageUrl(siteUrl(), seo.image ?? SHARE_IMAGE);
   meta("property", "og:image", image);
+  for (const [i, side] of (["width", "height"] as const).entries()) {
+    if (seo.imageSize) meta("property", `og:image:${side}`, String(seo.imageSize[i]));
+    else document.head.querySelector(`meta[property="og:image:${side}"]`)?.remove(); // another page's picture had a size
+  }
   meta("property", "og:image:alt", seo.imageAlt ?? SHARE_IMAGE_ALT);
   meta("name", "twitter:image", image);
   upsert("link", 'link[rel="canonical"]', { rel: "canonical", href: url });
