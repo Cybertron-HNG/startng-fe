@@ -16,18 +16,24 @@ const gamesDir = path.resolve(process.env.GAMES_DIR || path.join(here, "sample-g
 const port = Number(process.env.PORT || 8787);
 const baseDomain = process.env.BASE_DOMAIN || "localhost";
 
-// Same shape as an R2 bucket binding for what the Worker uses: get(key) -> object or null.
+// Same shape as an R2 bucket binding for what the Worker uses: head(key) and get(key, { range }) -> object or null.
 const bucket = {
-  async get(key) {
+  async head(key) {
     const file = path.resolve(gamesDir, key);
     if (!file.startsWith(gamesDir + path.sep)) return null;
     try {
-      const body = await fs.readFile(file);
       const { mtimeMs, size } = await fs.stat(file);
-      return { body, httpEtag: `"${size}-${Math.floor(mtimeMs)}"`, httpMetadata: {} };
+      return { size, httpEtag: `"${size}-${Math.floor(mtimeMs)}"`, httpMetadata: {} };
     } catch {
       return null;
     }
+  },
+  async get(key, options) {
+    const meta = await this.head(key);
+    if (!meta) return null;
+    const whole = await fs.readFile(path.resolve(gamesDir, key));
+    const r = options?.range;
+    return { ...meta, body: r ? whole.subarray(r.offset, r.offset + r.length) : whole };
   },
 };
 
@@ -60,7 +66,9 @@ globalThis.fetch = localOrigin;
 
 http
   .createServer(async (req, res) => {
-    const request = new Request(`http://${req.headers.host}${req.url}`, { method: req.method });
+    // The browser's headers go along too (Range, for audio and video).
+    const headers = Object.entries(req.headers).filter(([, v]) => typeof v === "string");
+    const request = new Request(`http://${req.headers.host}${req.url}`, { method: req.method, headers });
     const response = await worker.fetch(request, env);
     res.writeHead(response.status, Object.fromEntries(response.headers));
     res.end(Buffer.from(await response.arrayBuffer()));
