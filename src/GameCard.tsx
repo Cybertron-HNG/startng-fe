@@ -31,7 +31,7 @@ export default function GameCard({ game: g, legendary = false, link, user, onSig
           {g.cover ? (
             <img src={g.cover} alt="" loading="lazy" decoding="async" />
           ) : (
-            <div className="generated-tile">
+            <div className="generated-tile" aria-hidden="true">
               <span className="tile-initial">{g.title.charAt(0)}</span>
               <div className="tile-details">
                 <span className="tile-title">{g.title}</span>
