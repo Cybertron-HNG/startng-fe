@@ -163,7 +163,7 @@ export function TournamentPage({ user, state, onSignIn, onPlay }: {
   const playerId = user?.id ?? null;
   const withFriends = useFeature("private_tournaments"); // tournaments with friends (src/features/private_tournaments)
 
-  // NEW: State for the results modal
+  // State for the results modal
   const [pastResult, setPastResult] = useState<Tournament | null>(null);
 
   useEffect(() => setSeo(PAGES.tournament), []);
@@ -348,7 +348,7 @@ export function TournamentPage({ user, state, onSignIn, onPlay }: {
           </aside>
         )}
 
-      {/* NEW: The Results Modal */}
+      {/* The Results Modal */}
       {pastResult && (
         <div className="overlay" onClick={() => setPastResult(null)}>
           <div className="card" style={{ maxWidth: 600, maxHeight: '80vh', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
