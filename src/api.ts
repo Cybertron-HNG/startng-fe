@@ -119,6 +119,55 @@ export async function getLeaderboard(game: string, limit = 10): Promise<Leaderbo
   return res.json();
 }
 
+/** Save game progress for a signed-in player (up to 64 KB JSON). */
+export async function saveGameProgress(token: string, game: string, data: unknown): Promise<{ ok: boolean }> {
+  const serialized = JSON.stringify(data);
+  try {
+    const res = await fetch(`${API_URL}/games/${encodeURIComponent(game)}/save`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: serialized,
+    });
+    if (res.ok) return { ok: true };
+    if (res.status !== 404) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(typeof err.detail === "string" ? err.detail : "Could not save game progress");
+    }
+  } catch (err) {
+    if (err instanceof Error && !err.message.includes("404")) throw err;
+  }
+  try {
+    localStorage.setItem(`startng:save:${game}`, serialized);
+    return { ok: true };
+  } catch {
+    throw new Error("Local storage quota exceeded or unavailable");
+  }
+}
+
+/** Load game progress for a signed-in player. Returns parsed data or null if none saved. */
+export async function loadGameProgress(token: string, game: string): Promise<unknown> {
+  try {
+    const res = await fetch(`${API_URL}/games/${encodeURIComponent(game)}/save`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) {
+      const json = await res.json();
+      return json.data !== undefined ? json.data : json;
+    }
+    if (res.status === 404) {
+      const local = localStorage.getItem(`startng:save:${game}`);
+      return local ? JSON.parse(local) : null;
+    }
+  } catch {
+    const local = localStorage.getItem(`startng:save:${game}`);
+    return local ? JSON.parse(local) : null;
+  }
+  return null;
+}
+
 // Multiplayer: a one-minute ticket into a game's live room, and the room's WebSocket address.
 export type LiveTicket = { ticket: string; url: string; roomsUrl: string; apiUrl: string };
 

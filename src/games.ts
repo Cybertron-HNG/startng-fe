@@ -1,4 +1,4 @@
-import { BoardStat, getLeaderboard, getLiveTicket, me, pingSession, PublishedGame, submitScore } from "./api";
+import { BoardStat, getLeaderboard, getLiveTicket, loadGameProgress, me, pingSession, PublishedGame, saveGameProgress, submitScore } from "./api";
 import { CharacterStyle, styleFor } from "./character";
 
 // A homepage card for a game from GET /games (games published with POST /games/publish).
@@ -149,7 +149,7 @@ function whoami(): Promise<object> {
 }
 
 // What /connect answers. Every reply echoes the request's requestId.
-type Message = { type: string; requestId?: unknown; score?: unknown; stats?: unknown; limit?: unknown; sessionId?: unknown; event?: unknown; kit?: unknown };
+type Message = { type: string; requestId?: unknown; score?: unknown; stats?: unknown; limit?: unknown; sessionId?: unknown; event?: unknown; kit?: unknown; data?: unknown };
 const handlers: Record<string, (msg: Message, game: string) => Promise<object>> = {
   // { type: "startng:whoami" }
   //   -> { type: "startng:user", user: { id, name, account, style, face } | null, guest: { name, style, face } }
@@ -170,6 +170,36 @@ const handlers: Record<string, (msg: Message, game: string) => Promise<object>> 
       return { type: "startng:scoreSaved", ok: true, result: await submitScore(token, game, run) };
     } catch (err) {
       return { type: "startng:scoreSaved", ok: false, error: errorText(err, "Could not save the score") };
+    }
+  },
+
+  // { type: "startng:save", data } -> { type: "startng:saved", ok: boolean, error?: string }
+  // Keeps game progress on the player's start.ng account, up to 64 KB JSON.
+  "startng:save": async (msg, game) => {
+    const token = localStorage.getItem("token");
+    if (!token) return { type: "startng:saved", ok: false, error: "Sign in to save your progress" };
+    if (msg.data === undefined) return { type: "startng:saved", ok: false, error: "No data provided" };
+    try {
+      const serialized = JSON.stringify(msg.data);
+      if (new Blob([serialized]).size > 65536) {
+        return { type: "startng:saved", ok: false, error: "Save data must be 64 KB or less" };
+      }
+      await saveGameProgress(token, game, msg.data);
+      return { type: "startng:saved", ok: true };
+    } catch (err) {
+      return { type: "startng:saved", ok: false, error: errorText(err, "Could not save your progress") };
+    }
+  },
+
+  // { type: "startng:load" } -> { type: "startng:loadData", ok: boolean, data?: unknown, error?: string }
+  "startng:load": async (_msg, game) => {
+    const token = localStorage.getItem("token");
+    if (!token) return { type: "startng:loadData", ok: false, error: "Sign in to load your progress" };
+    try {
+      const data = await loadGameProgress(token, game);
+      return { type: "startng:loadData", ok: true, data };
+    } catch (err) {
+      return { type: "startng:loadData", ok: false, error: errorText(err, "Could not load your progress") };
     }
   },
 

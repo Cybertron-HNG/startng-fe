@@ -127,6 +127,29 @@
     return reply?.ok ? reply.entries : null;
   }
 
+  // Saves game progress for a signed-in player (up to 64 KB JSON).
+  // Resolves to { ok: true }, { ok: false, error }, or null if start.ng didn't answer.
+  async function save(data) {
+    if (data === undefined) return { ok: false, error: 'No data provided' };
+    try {
+      const text = typeof data === 'string' ? data : JSON.stringify(data);
+      if (new Blob([text]).size > 65536) {
+        return { ok: false, error: 'Save data exceeds 64 KB limit' };
+      }
+    } catch {
+      return { ok: false, error: 'Data could not be serialized to JSON' };
+    }
+    const reply = await ask({ type: 'startng:save', data }, 'startng:saved');
+    return reply ?? { ok: false, error: "start.ng didn't answer" };
+  }
+
+  // Loads game progress for a signed-in player.
+  // Resolves to saved data or null if none saved, signed out, or start.ng didn't answer.
+  async function load() {
+    const reply = await ask({ type: 'startng:load' }, 'startng:loadData');
+    return reply?.ok ? reply.data ?? null : null;
+  }
+
   // ---------- Session telemetry (C11) ----------
   // start, a heartbeat every 30 s while the tab is visible, and end. The connect
   // page ignores these until game_sessions exists on the server.
@@ -435,6 +458,7 @@
   window.startng = Object.freeze({
     version: VERSION, onStartNg: ON_START_NG, choseGuest: CHOSE_GUEST,
     getPlayer, onPlayerChange, signIn, saveRun, getLeaderboard, gameOver, closeCard, share, rooms,
+    save, load,
   });
 
   const init = () => { addChrome(); startTelemetry(); };

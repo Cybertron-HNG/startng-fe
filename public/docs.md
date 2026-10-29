@@ -264,12 +264,32 @@ It adds a "← start.ng" button (top left) and a small "Made on start.ng" badge 
 | `startng.onPlayerChange(fn)` | Calls `fn` with the player whenever they sign in or out. |
 | `startng.signIn()` | Sends the player to start.ng to sign in, then back to your game. |
 | `startng.saveRun(stats)` | Saves a run without showing the card. |
+| `startng.save(data)` | Stores this player's progress for this game (up to 64 KB JSON) on their start.ng account, so progress follows them across devices. |
+| `startng.load()` | Retrieves the saved progress data, or `null` if none saved or not signed in. |
 | `startng.getLeaderboard(limit)` | The top players, for everyone. |
 | `startng.share({ score })` | Opens an X post with the result and a link to your game. |
 
 The back button, the badge and the card's **Share on X** button are the three game standards, so a game that loads the Kit and calls `startng.gameOver()` (or `startng.share()`) at the end of a round meets all three. If you turn the button or the badge off, add your own link back to https://start.ng or the start.ng name instead.
 
 Options go on the script tag: `data-back="off"` (no back button), `data-badge="off"` (no badge) and `data-position="right"` (back button top right). The Kit also sends start.ng a ping every 30 seconds while the game is on screen, so creators will be able to see how long people play. It sends nothing else.
+
+### Saves that follow the player
+
+Keep a player's progress (unlocked levels, coins, items) on their start.ng account so it follows them across devices:
+
+```js
+// Store progress (one JSON per player per game, max 64 KB)
+await startng.save({ level: 7, coins: 320 });
+
+// Load it back on any device
+const saved = await startng.load();
+if (saved) {
+  player.level = saved.level;
+  player.coins = saved.coins;
+}
+```
+
+Guests keep using `localStorage` until they sign in; once signed in, call `startng.save()` once to migrate their progress over. Only that game can read its own saves.
 
 The code below is the manual way, if you want full control. Games that already use it keep working.
 
@@ -852,7 +872,7 @@ For your own game:
 
 ## Good to know
 
-- **Shared vs personal:** `localStorage` only lives in one browser, so other players never see what's in it. A personal best can live there, but anything other players should see must go to start.ng.
+- **Shared vs personal:** `localStorage` only lives in one browser, so other players never see what's in it, and it does not follow the player to another device. For progress that follows the player across devices, use `startng.save()` and `startng.load()`. A personal best can live in `localStorage`, but anything other players should see must go to start.ng.
 - **Cheating:** a browser game can never be fully cheat-proof. start.ng only accepts your declared numbers, within limits, from signed-in players. As the owner you can remove a bad score: `DELETE /games/{game}/scores/{player_id}` with your start.ng sign-in.
 - **Testing:** sign-in, scores and multiplayer only work once your game is live at `your-game.start.ng`. Opened as a local file there's no player, so make sure your game still plays without one.
 - **Privacy:** your game never sees the player's email or real sign-in. A game session only works for your game.
