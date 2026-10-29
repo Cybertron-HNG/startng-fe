@@ -8,6 +8,7 @@ import PageParts from "./features/PageParts";
 import ReportDialog from "./Report";
 import { PAGES, setSeo } from "./seo";
 import { withHandle } from "./share";
+import ShareButton from "./features/share_cards/ShareButton";
 
 // start.ng/games/<name>: a game's own page on start.ng, shown before the game itself. Search engines
 // and shared links land here (the API serves this address with the text already in it, see
