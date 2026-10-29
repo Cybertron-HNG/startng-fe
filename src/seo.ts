@@ -154,6 +154,12 @@ export const PAGES: Record<string, Seo> = {
     description: "The creators whose games the most different players opened this month on start.ng.",
     path: "/by",
   },
+  // A game jam's page (src/features/jams): the plain page nginx falls back to when the API can't write the jam's own.
+  jam: {
+    title: "A game jam on start.ng",
+    description: "A game jam on start.ng: a theme and a deadline. Creators enter a game, players who played it vote, and the best win.",
+    path: "/jam",
+  },
   notFound: {
     title: "Page not found · start.ng",
     description: "There's nothing at this address. Browse the games on start.ng instead.",
@@ -184,6 +190,7 @@ export const STATIC_PAGES: [string, Seo][] = [
   ["wardrobe.html", PAGES.wardrobe],
   ["shop.html", PAGES.shop],
   ["profile.html", PAGES.profile],
+  ["jam.html", PAGES.jam],
   ["404.html", PAGES.notFound],
 ];
 
