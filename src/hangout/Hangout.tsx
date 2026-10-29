@@ -39,6 +39,11 @@ export default function Hangout() {
         <div className="hangout-joystick-knob" />
       </div>
       <button type="button" className="hangout-wave">Wave</button>
+      <div className="hangout-arcade" hidden role="status">
+        <span>🕹️ <b /></span>
+        <button type="button">Play</button>
+        <span className="hangout-arcade-key">or press <kbd>E</kbd></span>
+      </div>
 
       <aside className="hangout-chat" id="hangout-chat" aria-label="Chat" aria-hidden="true">
         <header>
