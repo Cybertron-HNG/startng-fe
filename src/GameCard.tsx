@@ -28,7 +28,17 @@ export default function GameCard({ game: g, legendary = false, link, user, onSig
     <article className={legendary ? "game legendary" : "game"}>
       <a className="game-link" {...link}>
         <div className="art" style={{ background: `linear-gradient(135deg, ${g.colors[0]}, ${g.colors[1]})` }}>
-          {g.cover ? <img src={g.cover} alt="" loading="lazy" decoding="async" /> : <span>{g.title.charAt(0)}</span>}
+          {g.cover ? (
+            <img src={g.cover} alt="" loading="lazy" decoding="async" />
+          ) : (
+            <div className="generated-tile" aria-hidden="true">
+              <span className="tile-initial">{g.title.charAt(0)}</span>
+              <div className="tile-details">
+                <span className="tile-title">{g.title}</span>
+                <span className="tile-by">by {g.by}</span>
+              </div>
+            </div>
+          )}
           {slot("badges")}
         </div>
         <div className="info">

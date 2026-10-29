@@ -59,7 +59,7 @@ export function toCard(game: PublishedGame): Game {
     host: new URL(url).host,
     by: game.by,
     colors: colorsFor(game.name),
-    cover: game.cover_url,
+    cover: game.name === "hangout" && !game.cover_url ? HANGOUT.cover : game.cover_url,
     board: game.leaderboard ?? null,
     plays: game.plays ?? 0,
     description: game.description ?? null,
