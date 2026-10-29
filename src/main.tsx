@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import App from "./App";
 import About from "./About";
+import Blog from "./Blog";
 import Docs from "./Docs";
 import { serveConnect } from "./games";
 import NotFound from "./NotFound";
@@ -25,6 +26,7 @@ const HOME_PATHS = ["/", "/index.html"];
 const HANGOUT_PATH = "/hangout";
 const APPROVE_PATH = /^\/approve\/[\w-]{8,40}\/?$/; // the homepage, with "put this game live?" on top
 const DOCS_PATHS = ["/docs", "/docs/"];
+const BLOG_PATH = /^\/blog(?:\/([a-z0-9][a-z0-9-]{0,59}))?\/?$/; // the blog, and one post (src/blog-posts.ts)
 const ABOUT_PATHS = ["/about", "/about/"]; // what start.ng is, and the questions
 const ADMIN_PATHS = ["/admin", "/admin/"]; // admins only (the API checks)
 const GAMES_PATHS = ["/games", "/games/"]; // every game, a page at a time
@@ -81,6 +83,8 @@ if (location.pathname === "/connect") {
         </Suspense>
       ) : DOCS_PATHS.includes(path) ? (
         <Docs />
+      ) : BLOG_PATH.test(path) && !isNotFoundPage ? (
+        <Blog slug={path.match(BLOG_PATH)?.[1]} />
       ) : ABOUT_PATHS.includes(path) ? (
         <About />
       ) : feature?.page.shell === "app" ? (

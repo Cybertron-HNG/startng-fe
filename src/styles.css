@@ -382,6 +382,17 @@ input:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
 .docs-body h2 { font-size: 1.7rem; letter-spacing: -.03em; margin: 48px 0 12px; padding-top: 20px; border-top: 1px solid var(--line); }
 .docs-body h3 { font-size: 1.2rem; margin: 28px 0 8px; }
 .docs-body p, .docs-body li { color: var(--text-2); }
+/* the blog (src/Blog.tsx): the index, and a post laid out like the docs body without the sidebar */
+.blog { max-width: 760px; padding-top: 28px; padding-bottom: 56px; }
+.blog > h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); letter-spacing: -.04em; line-height: 1; margin: 0 0 12px; }
+.blog-list { list-style: none; margin: 28px 0 0; padding: 0; display: grid; gap: 14px; }
+.blog-list li { display: grid; gap: 6px; padding: 18px; border-radius: 16px; background: var(--card); border: 1px solid var(--line); }
+.blog-list a { font-size: 1.2rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink); text-decoration: none; }
+.blog-list a:hover { text-decoration: underline; }
+.blog-list time, .blog-post > time { font-family: var(--mono); font-size: .75rem; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
+.blog-list p { margin: 0; color: var(--text-2); line-height: 1.55; }
+.blog-back { margin: 0 0 18px; }
+.blog-post > time { display: block; margin-bottom: 10px; }
 .docs-body ul, .docs-body ol { padding-left: 22px; }
 .docs-body li { margin: 4px 0; }
 .docs-body a { text-decoration: underline; text-underline-offset: 3px; }

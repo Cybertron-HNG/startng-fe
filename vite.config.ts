@@ -5,6 +5,8 @@ import react from "@vitejs/plugin-react";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import AboutView from "./src/AboutView";
+import { POSTS } from "./src/blog-posts";
+import { BlogIndexView, BlogPostView } from "./src/BlogView";
 import { QUESTIONS } from "./src/home-copy";
 import { Markdown, slug } from "./src/markdown";
 import { SiteFooterView } from "./src/SiteFooterView";
@@ -93,9 +95,33 @@ function seoPages(site: string): Plugin {
       writeFileSync(resolve(out, "about.html"), about.replace("<!--/seo-->", () => `<script type="application/ld+json">${JSON.stringify(faq).replace(/</g, "\\u003c")}</script>
     <!--/seo-->`));
       fill("hangout.html", PAGES.hangout.path, hangoutText());
+      // The blog: the index, and one page per post (blog-<slug>.html, which nginx serves for /blog/<slug>), each with the
+      // post's own tags and BlogPosting data, and its words inside #root (the same as src/Blog.tsx draws).
+      const blogChrome = (main: string) =>
+        '<header class="container nav"><a class="logo" href="/"><b>start<span>.ng</span></b></a>' +
+        '<nav aria-label="Pages"><a href="/games">Games</a><a href="/creators">Creators</a><a href="/docs">Docs</a></nav></header>' +
+        main + renderToStaticMarkup(createElement(SiteFooterView));
+      fill("blog.html", PAGES.blog.path, blogChrome(renderToStaticMarkup(createElement(BlogIndexView))));
+      for (const post of POSTS) {
+        const source = readFileSync(resolve(__dirname, `public/blog/${post.slug}.md`), "utf8").replace(/\r\n/g, "\n");
+        const url = `${site}/blog/${post.slug}`;
+        const seo = { title: `${post.title} · start.ng`, description: post.description, path: `/blog/${post.slug}` };
+        const data = {
+          "@context": "https://schema.org", "@type": "BlogPosting", headline: post.title, description: post.description,
+          datePublished: post.date, url, mainEntityOfPage: url,
+          author: { "@type": "Organization", name: "start.ng", url: `${site}/` },
+          publisher: { "@type": "Organization", name: "start.ng", logo: `${site}/favicon.svg` },
+        };
+        const head = `${headTags(seo, site)}\n    <script type="application/ld+json">${JSON.stringify(data).replace(/</g, "\\u003c")}</script>`;
+        // index.html carries the homepage's own JSON-LD; a post has only its own.
+        const page = index.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, "").replace(block, `<!--seo-->\n    ${head}\n    <!--/seo-->`);
+        if (!page.includes(ROOT)) throw new Error(`blog-${post.slug}.html has no ${ROOT}`);
+        writeFileSync(resolve(out, `blog-${post.slug}.html`),
+          page.replace(ROOT, () => `<div id="root">${blogChrome(renderToStaticMarkup(createElement(BlogPostView, { post, source })))}</div>`));
+      }
       mkdirSync(out, { recursive: true });
       writeFileSync(resolve(out, "robots.txt"), `User-agent: *\nAllow: /\nDisallow: /approve/\nDisallow: /connect\n\nSitemap: ${site}/sitemap.xml\n`);
-      const urls = SITEMAP_PATHS.map((p) => `  <url><loc>${site}${p}</loc></url>`).join("\n");
+      const urls = [...SITEMAP_PATHS, ...POSTS.map((p) => `/blog/${p.slug}`)].map((p) => `  <url><loc>${site}${p}</loc></url>`).join("\n");
       writeFileSync(resolve(out, "sitemap.static.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
     },
   };
