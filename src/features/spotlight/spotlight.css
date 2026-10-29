@@ -6,6 +6,15 @@
 .spot-game { display: flex; gap: 16px; align-items: center; }
 .spot-game img { width: 140px; height: 90px; object-fit: cover; border-radius: 12px; }
 .week-tag { text-decoration: none; }
+/* today's challenge on its game's page (GameChallenge): a card with the lime offset shadow, first in the rows under the details */
+.game-challenge { display: grid; gap: 6px; padding: 16px 18px; border-radius: 16px; background: var(--card); border: 1.5px solid var(--ink); box-shadow: 4px 4px 0 var(--lime); min-width: 0; }
+.game-challenge .eyebrow { margin: 0; color: var(--muted); }
+.game-challenge h2 { margin: 0; font-size: 1.25rem; letter-spacing: -.02em; overflow-wrap: anywhere; }
+.game-challenge-sub { margin: 0; color: var(--muted); }
+.game-challenge.done { border-color: var(--line); }
+.game-challenge.done .game-challenge-sub { color: var(--ink); font-weight: 600; }
+.game-challenge-actions { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin-top: 4px; }
+.game-challenge-actions button { padding: 8px 16px; }
 /* the homepage Game of the Week and daily challenge: the tournament banner (styles.css) with a big cover on the right */
 .spot-banner .spot-cover { grid-area: games; width: 260px; aspect-ratio: 16 / 10; border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: var(--line); display: grid; place-items: center; font-size: 2.4rem; font-weight: 800; }
 .spot-banner .spot-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
