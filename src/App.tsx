@@ -645,6 +645,9 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
                 onError={() => setError("Google sign-in failed")}
               />
             </div>
+            <p className="note sign-in-legal">
+              By signing in you agree to our <a href="/terms">terms of use</a> and <a href="/privacy">privacy policy</a>.
+            </p>
           </div>
         </div>
       )}
