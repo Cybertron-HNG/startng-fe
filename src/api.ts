@@ -402,6 +402,13 @@ export async function overallLeaderboard(period: "all" | "week", limit = 50): Pr
   return res.json();
 }
 
+/** The full results of a specific finished tournament (for the history archive). */
+export async function getTournamentResult(id: number): Promise<Tournament> {
+  const res = await fetch(`${API_URL}/tournaments/${id}`);
+  if (!res.ok) throw new Error("Could not load the tournament results");
+  return res.json();
+}
+
 // ---- Reports and the admin page (start.ng/admin). The API checks every permission; the website only hides buttons.
 
 export const REPORT_REASONS = [
