@@ -2,7 +2,7 @@
 // the admin tabs "Email" and "Newsletter", the email section on your own profile, and the sign-up box on the tournament page.
 // Sending runs on the API (app/features/email).
 import { lazy, Suspense } from "react";
-import { registerAdminTab, registerPage, registerPagePart, registerProfileSection, type AdminTabProps, type ProfileSectionProps } from "../registry";
+import { registerAdminTab, registerPage, registerPagePart, registerProfileSection, type AdminTabProps } from "../registry";
 import TournamentEmail from "./TournamentEmail";
 
 const EmailTab = lazy(() => import("./EmailTab"));
@@ -41,7 +41,8 @@ registerProfileSection({
   feature: "email",
   key: "email",
   title: "Emails",
-  Component: ({ isMe }: ProfileSectionProps) => (isMe ? <Suspense fallback={null}><EmailPrefs /></Suspense> : null),
+  ownerOnly: true,
+  Component: () => <Suspense fallback={null}><EmailPrefs /></Suspense>,
 });
 
 registerPagePart({ feature: "email", key: "email", page: "tournament", Component: TournamentEmail });
