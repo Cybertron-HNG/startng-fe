@@ -279,3 +279,14 @@ export function setSeo(seo: Seo) {
   if (!seo.noCanonical) upsert("link", 'link[rel="canonical"]', { rel: "canonical", href: url });
   else document.head.querySelector('link[rel="canonical"]')?.remove();
 }
+
+/** Put a page's JSON-LD in the head while it is open (null takes it out). The server writes the same for crawlers that don't run scripts. */
+export function setStructuredData(key: string, build: ((site: string) => object) | null) {
+  const selector = `script[type="application/ld+json"][data-seo="${key}"]`;
+  const old = document.head.querySelector(selector);
+  if (!build) { old?.remove(); return; }
+  const el = old ?? document.head.appendChild(document.createElement("script"));
+  el.setAttribute("type", "application/ld+json");
+  el.setAttribute("data-seo", key);
+  el.textContent = JSON.stringify(build(siteUrl()));
+}

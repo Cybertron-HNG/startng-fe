@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { PageProps } from "../registry";
-import { PAGES, setSeo } from "../../seo";
+import { PAGES, setSeo, setStructuredData } from "../../seo";
 import { AvatarFace } from "../../Avatar";
 import FollowButton from "../follows/FollowButton";
 import ShareButton from "../share_cards/ShareButton";
@@ -39,6 +39,28 @@ export default function CreatorPage({ user, onSignIn, params }: PageProps) {
       });
     return () => { live = false; };
   }, [id, user?.id]);
+
+  // A ProfilePage for search engines: the creator and the list of their games.
+  useEffect(() => {
+    if (!c) return;
+    setStructuredData("creator", (site) => ({
+      "@context": "https://schema.org",
+      "@type": "ProfilePage",
+      url: `${site}/by/${c.slug}`,
+      mainEntity: {
+        "@type": "Person",
+        name: c.name,
+        url: `${site}/by/${c.slug}`,
+        ...(c.bio ? { description: c.bio } : {}),
+        owns: {
+          "@type": "ItemList",
+          numberOfItems: c.games.length,
+          itemListElement: c.games.slice(0, 20).map((g, i) => ({ "@type": "ListItem", position: i + 1, url: `${site}/games/${g.name}`, name: g.title })),
+        },
+      },
+    }));
+    return () => setStructuredData("creator", null);
+  }, [c]);
 
   async function saveYourBio() {
     try {
