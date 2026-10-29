@@ -716,7 +716,7 @@ code { color: var(--on-lime); }
 .reasons label.on { border-color: var(--ink); background: var(--bg); }
 .reasons input { margin: 0; accent-color: var(--ink); }
 .report-details { display: grid; gap: 6px; font-size: .9rem; font-weight: 600; }
-button.danger, .btn.danger { background: var(--danger); color: #fff; }
+button.danger, .btn.danger { background: var(--danger); color: var(--on-solid); }
 button:disabled { opacity: .5; cursor: not-allowed; }
 
 /* The admin page (Admin.tsx) */
