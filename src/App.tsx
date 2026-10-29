@@ -120,6 +120,8 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
   const profileOpen = !!user && (!user.character || editing);
   const wardrobeOn = useFeature("wardrobe"); // the unlock popup (src/features/wardrobe)
   const profilesOn = useFeature("profiles"); // the profile page holds Your games (src/features/profiles)
+  const friendsOn = useFeature("private_tournaments"); // Play with friends in the top bar (src/features/private_tournaments)
+  const friendsPage = featurePage?.page.feature === "private_tournaments";
   // The profile page's Edit button (it has no access to this state).
   useEffect(() => {
     const open = () => setEditing(true);
@@ -340,6 +342,7 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
         <nav id="pages-menu" aria-label="Pages">
           <a href="/games" aria-current={allGames || gamePage ? "page" : undefined}>Games</a>
           <a href="/tournament" aria-current={tournamentPage || leaderboardPage ? "page" : undefined}>Tournament</a>
+          {friendsOn && <a href="/friends" aria-current={friendsPage ? "page" : undefined}>Play with friends</a>}
           <a href="/creators" aria-current={creatorsPage || indiePage ? "page" : undefined}>Creators</a>
           <a href="/docs">Docs</a>
           <ThemeToggle withLabel />
