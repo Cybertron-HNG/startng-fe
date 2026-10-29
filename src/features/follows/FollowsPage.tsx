@@ -3,31 +3,37 @@ import type { PageProps } from "../registry";
 import { PAGES, setSeo } from "../../seo";
 import FollowButton from "./FollowButton";
 import PlayerRow from "./PlayerRow";
+import QuickMessagePicker from "./QuickMessagePicker";
+import QuickMessagesInbox from "./QuickMessagesInbox";
 import { makeInvite, myPeople, type Invite, type ListKind, type People } from "./api";
 import "./follows.css";
 
-const TABS: { kind: ListKind; label: string; empty: string }[] = [
+type TabKind = ListKind | "messages";
+
+const TABS: { kind: TabKind; label: string; empty: string }[] = [
   { kind: "friends", label: "Friends", empty: "No friends yet. Send someone your invite link above." },
   { kind: "following", label: "Following", empty: "You're not following anyone yet." },
   { kind: "followers", label: "Followers", empty: "Nobody follows you yet." },
+  { kind: "messages", label: "Messages", empty: "No messages yet." },
 ];
 
-/** start.ng/follows: your invite link, and your friends, who you follow and who follows you. Only you see these lists. */
+/** start.ng/follows: your invite link, friends, messages, following and followers. Only you see these lists. */
 export default function FollowsPage({ user, onSignIn }: PageProps) {
-  const [tab, setTab] = useState<ListKind>("friends");
+  const [tab, setTab] = useState<TabKind>("friends");
   const [lists, setLists] = useState<Partial<Record<ListKind, People>>>({});
   const [error, setError] = useState("");
   const [invite, setInvite] = useState<Invite | null>(null);
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
-  const reloadGeneration = useRef(0); // only the newest reload may update the page
+  const reloadGeneration = useRef(0);
 
   useEffect(() => setSeo(PAGES.follows), []);
 
   function reload() {
     const generation = ++reloadGeneration.current;
     setError("");
-    Promise.all(TABS.map((t) => myPeople(t.kind)))
+    const kinds: ListKind[] = ["friends", "following", "followers"];
+    Promise.all(kinds.map((k) => myPeople(k)))
       .then(([friends, following, followers]) => {
         if (generation === reloadGeneration.current) setLists({ friends, following, followers });
       })
@@ -35,7 +41,7 @@ export default function FollowsPage({ user, onSignIn }: PageProps) {
         if (generation === reloadGeneration.current) setError("Couldn't load your lists. Try again in a moment.");
       });
   }
-  // A different account must never see the last account's private lists, even for a moment.
+
   useEffect(() => {
     reloadGeneration.current++;
     setLists({});
@@ -52,7 +58,7 @@ export default function FollowsPage({ user, onSignIn }: PageProps) {
   }
 
   const link = invite ? `${location.origin}${invite.path}` : "";
-  const canShare = typeof navigator.share === "function" && matchMedia("(pointer: coarse)").matches; // phones and tablets
+  const canShare = typeof navigator.share === "function" && matchMedia("(pointer: coarse)").matches;
   const text = "Be my friend on start.ng, so we can see each other's games and scores:";
 
   async function getLink() {
@@ -66,13 +72,15 @@ export default function FollowsPage({ user, onSignIn }: PageProps) {
       setBusy(false);
     }
   }
+
   async function copy() {
     try {
       await navigator.clipboard.writeText(link);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch { /* the link is on the page to copy by hand */ }
+    } catch { /* Link remains on page to copy manually */ }
   }
+
   async function share() {
     try {
       await navigator.share({ title: "start.ng", text, url: link });
@@ -81,8 +89,9 @@ export default function FollowsPage({ user, onSignIn }: PageProps) {
     }
   }
 
-  const current = lists[tab];
+  const current = tab !== "messages" ? lists[tab] : null;
   const shown = TABS.find((t) => t.kind === tab)!;
+
   return (
     <section className="container follows-page">
       <h1>Friends</h1>
@@ -107,26 +116,54 @@ export default function FollowsPage({ user, onSignIn }: PageProps) {
       </div>
 
       <div className="follows-tabs" role="group" aria-label="Your lists">
-        {TABS.map((t) => (
-          <button key={t.kind} type="button" aria-pressed={tab === t.kind} className={tab === t.kind ? "on" : ""} onClick={() => setTab(t.kind)}>
-            {t.label}{lists[t.kind] ? ` (${lists[t.kind]!.count})` : ""}
-          </button>
-        ))}
+        {TABS.map((t) => {
+          const count = t.kind !== "messages" && lists[t.kind] ? ` (${lists[t.kind]!.count})` : "";
+          return (
+            <button
+              key={t.kind}
+              type="button"
+              aria-pressed={tab === t.kind}
+              className={tab === t.kind ? "on" : ""}
+              onClick={() => setTab(t.kind)}
+            >
+              {t.label}{count}
+            </button>
+          );
+        })}
       </div>
 
       {error && <p className="error">{error}</p>}
-      {!current && !error && <p className="board-sub">Loading...</p>}
-      {current && current.count === 0 && <p className="empty">{shown.empty}</p>}
-      {current && current.count > 0 && (
-        <ul className="follows-list">
-          {current.people.map((p) => (
-            <PlayerRow key={p.id} player={p}>
-              <FollowButton userId={p.id} name={p.character?.name ?? p.name ?? undefined} onSignIn={onSignIn} onChange={reload} />
-            </PlayerRow>
-          ))}
-        </ul>
+
+      {tab === "messages" ? (
+        <QuickMessagesInbox />
+      ) : (
+        <>
+          {!current && !error && <p className="board-sub">Loading...</p>}
+          {current && current.count === 0 && <p className="empty">{shown.empty}</p>}
+          {current && current.count > 0 && (
+            <ul className="follows-list">
+              {current.people.map((p) => (
+                <PlayerRow key={p.id} player={p}>
+                  {tab === "friends" && (
+                    <QuickMessagePicker
+                      recipientId={p.id}
+                      recipientName={p.character?.name ?? p.name ?? "Friend"}
+                    />
+                  )}
+                  <FollowButton
+                    userId={p.id}
+                    name={p.character?.name ?? p.name ?? undefined}
+                    onSignIn={onSignIn}
+                    onChange={reload}
+                  />
+                </PlayerRow>
+              ))}
+            </ul>
+          )}
+        </>
       )}
-      <p className="note follows-private">Only you can see these lists. Other players only see how many followers you have.</p>
+
+      <p className="note follows-private">Only you can see these lists and messages. Other players only see how many followers you have.</p>
     </section>
   );
 }
