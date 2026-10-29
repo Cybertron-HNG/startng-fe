@@ -17,6 +17,7 @@ import { FilterBar, useGameFilters } from "./features/catalog/filters";
 import { setSeo, PAGES } from "./seo";
 import { SkeletonCards } from "./Skeleton";
 import ScrollJump from "./ScrollJump";
+import InstallTip from "./InstallTip";
 import { Character, styleFor } from "./character";
 // The creator (and three.js) loads only when someone opens it.
 const CharacterCreator = lazy(() => import("./CharacterCreator"));
@@ -519,6 +520,7 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
       <SiteFooter />
       <PageParts page="everywhere" user={user} onSignIn={() => setSignInOpen(true)} />
       <ScrollJump />
+      <InstallTip />
       {user && wardrobeOn && !profileOpen && <Suspense fallback={null}><UnlockPopup user={user} /></Suspense>}
 
       {profileOpen && (
