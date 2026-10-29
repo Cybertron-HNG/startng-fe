@@ -5,7 +5,7 @@ import { CharacterStyle, styleFor } from "./character";
 // The API only knows the name, so the title and colours are worked out from it:
 // the same game always gets the same colours.
 // cover is the game's picture; without one the card shows the title's first letter on the colours.
-export type Game = { slug: string; title: string; url: string; host: string; by: string; colors: [string, string]; cover: string | null; board: BoardStat[] | null; plays: number; description: string | null };
+export type Game = { slug: string; title: string; url: string; host: string; by: string; colors: [string, string]; cover: string | null; board: BoardStat[] | null; plays: number; description: string | null; size_bytes: number | null };
 
 const CARD_COLORS: [string, string][] = [
   ["#ffd400", "#e10600"],
@@ -30,6 +30,7 @@ export const HANGOUT: Game = {
   board: null, // the Hangout has no leaderboard
   plays: 0,
   description: "start.ng's own multiplayer park. Sign in as your character, walk around and meet everyone else who's there.",
+  size_bytes: null,
 };
 
 /** A game that lives inside this app (opens in the same tab) rather than on its own start.ng address. */
@@ -63,6 +64,7 @@ export function toCard(game: PublishedGame): Game {
     board: game.leaderboard ?? null,
     plays: game.plays ?? 0,
     description: game.description ?? null,
+    size_bytes: game.size_bytes ?? null,
   };
 }
 
@@ -224,4 +226,26 @@ export function serveConnect() {
     const reply = await handle(e.data, gameFromOrigin(e.origin));
     (e.source as Window | null)?.postMessage({ ...reply, requestId: e.data.requestId }, e.origin);
   });
+}
+
+
+/** Human-readable data size string (e.g. "About 1.8 MB to load"). */
+export function formatDataSize(bytes: number | null | undefined): string | null {
+  if (!bytes || bytes <= 0) return null;
+  if (bytes < 1024 * 1024) {
+    const kb = Math.max(1, Math.round(bytes / 1024));
+    return `About ${kb} KB to load`;
+  }
+  const mb = (bytes / (1024 * 1024)).toFixed(1).replace(/\.0$/, "");
+  return `About ${mb} MB to load`;
+}
+
+/** Whether the game is heavy on data (10 MB or more). */
+export function isHeavyData(bytes: number | null | undefined): boolean {
+  return typeof bytes === "number" && bytes >= 10 * 1024 * 1024;
+}
+
+/** Whether the game is light on data (under 2 MB). */
+export function isLightData(bytes: number | null | undefined): boolean {
+  return typeof bytes === "number" && bytes > 0 && bytes <= 2 * 1024 * 1024;
 }

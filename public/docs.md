@@ -170,6 +170,18 @@ shareButton.onclick = () => {
 
 For the link, use your game's start.ng page (`https://start.ng/games/<your-game>`) if you want people to land on its page with the leaderboard.
 
+### Keep your game light on mobile data
+
+Many players on start.ng are on metered mobile data connections. Start.ng calculates your game's total download size upon publish and displays an estimate on your game's page (e.g. **"About 1.8 MB to load"**).
+
+- Games under **2 MB** earn the **"Light on data"** category tag, helping data-conscious players discover them.
+- Games over **10 MB** display a data-heavy indicator on their game cards.
+
+Tips to keep games lean and fast:
+- **Compress game assets:** Use modern formats like WebP or AVIF for textures and sprites, and compressed OGG or MP3 for audio.
+- **Lazy-load music and levels:** Download background music tracks or secondary stage models on demand during gameplay instead of bundling everything into the initial page load.
+- **Minify scripts and styles:** Bundle production builds and remove unused external libraries.
+
 ### Works on a small phone
 
 Many players are on a small phone (about 320 to 375 pixels wide). Open your game at that size before you publish. This is advice, not a check, but a game that doesn't fit gets bad reviews fast.
