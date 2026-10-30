@@ -50,11 +50,25 @@ export function colorsFor(name: string): [string, string] {
   return CARD_COLORS[hash % CARD_COLORS.length];
 }
 
+const TITLE_ACRONYMS = new Set(["fc", "3d", "2d", "hq", "ui", "ai", "rpg", "fps", "vr", "ar", "ng", "vs", "ok", "dj", "tv", "pc"]);
+
+/** Formats a game slug into a human-readable title, preserving well-known uppercase acronyms (FC, 3D, etc.). */
+export function titleFromSlug(name: string): string {
+  return name
+    .split("-")
+    .map((w) => {
+      const lower = w.toLowerCase();
+      if (TITLE_ACRONYMS.has(lower)) return lower.toUpperCase();
+      return w.charAt(0).toUpperCase() + w.slice(1);
+    })
+    .join(" ");
+}
+
 export function toCard(game: PublishedGame): Game {
   const url = playableUrl(game.url);
   return {
     slug: game.name,
-    title: game.name.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
+    title: titleFromSlug(game.name),
     url,
     host: new URL(url).host,
     by: game.by,
