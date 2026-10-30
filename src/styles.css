@@ -977,6 +977,7 @@ button.small { padding: 7px 12px; font-size: .85rem; border-radius: 8px; }
 .tournament-email { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between; margin: 18px 0; padding: 16px 18px; border-radius: 16px; background: var(--card); border: 1px solid var(--line); }
 .tournament-email p { margin: 2px 0 0; }
 .tournament-email .email-signup-row { flex: 1 1 280px; max-width: 420px; }
+.tournament-email-actions { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
 
 /* M2 leagues (src/features/leagues): tier badge, countdown, zone edges on the group table, past rounds */
 .league-tier { justify-self: start; }
