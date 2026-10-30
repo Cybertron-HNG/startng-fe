@@ -27,6 +27,8 @@ export default function GamePage({ name, game, loading, user, playerId, favorite
 }) {
   const [copied, setCopied] = useState(false);
   const [reporting, setReporting] = useState<"report" | "flag" | null>(null);
+  const [embedding, setEmbedding] = useState(false);
+  const [snippetCopied, setSnippetCopied] = useState(false);
   const found = !!game;
 
   useEffect(() => {
@@ -68,6 +70,17 @@ export default function GamePage({ name, game, loading, user, playerId, favorite
   const description = g.description ?? `Play ${g.title} free in your browser, right here on start.ng. A game by ${g.by}.`;
   const tweet = `https://twitter.com/intent/tweet?${new URLSearchParams({ text: withHandle(`Come play ${g.title} on start.ng!`), url: pageUrl })}`;
 
+  
+  const embedSnippet = `<iframe src="${g.url.replace(/\/$/, "")}/?embed" width="100%" height="560" allow="fullscreen; autoplay" loading="lazy"></iframe>`;
+  async function copyEmbedSnippet() {
+    try {
+      await navigator.clipboard.writeText(embedSnippet);
+      analytics.share("game", g.slug, "embed_snippet");
+      setSnippetCopied(true);
+      setTimeout(() => setSnippetCopied(false), 2000);
+    } catch { /* clipboard fallback */ }
+  }
+
   async function copy() {
     try {
       await navigator.clipboard.writeText(pageUrl);
@@ -102,6 +115,9 @@ export default function GamePage({ name, game, loading, user, playerId, favorite
           <span>Share it</span>
           <a className="ghost btn" href={tweet} target="_blank" rel="noreferrer" onClick={() => analytics.share("game", g.slug, "x")}>Share on X</a>
           <button type="button" className="ghost" onClick={copy}>{copied ? "Link copied" : "Copy link"}</button>
+          {g.allowEmbed !== false && !isInAppGame(g) && (
+            <button type="button" className="ghost" onClick={() => setEmbedding(true)}>Embed</button>
+          )}
         </div>
         <PageParts page="game" user={user} onSignIn={onSignIn} game={g.slug} />
       </div>
@@ -119,6 +135,26 @@ export default function GamePage({ name, game, loading, user, playerId, favorite
           {canFlag && <button type="button" className="link flag" onClick={() => setReporting("flag")}>Flag game (admin)</button>}
         </div>
       )}
+      
+      {embedding && (
+        <div className="overlay" onClick={() => setEmbedding(false)}>
+          <div className="card embed-dialog" role="dialog" aria-modal="true" aria-labelledby="embed-title" onClick={(e) => e.stopPropagation()}>
+            <div className="card-head">
+              <h3 id="embed-title">Embed this game</h3>
+              <button type="button" className="link close" aria-label="Close" onClick={() => setEmbedding(false)}>✕</button>
+            </div>
+            <p className="note">
+              Paste this HTML snippet into your website, blog, or portfolio to let visitors play right there as a guest.
+            </p>
+            <textarea className="embed-snippet" readOnly value={embedSnippet} rows={3} onClick={(e) => (e.target as HTMLTextAreaElement).select()} />
+            <div className="embed-dialog-actions">
+              <button type="button" className="primary" onClick={copyEmbedSnippet}>{snippetCopied ? "Snippet copied" : "Copy snippet"}</button>
+              <button type="button" className="ghost" onClick={() => setEmbedding(false)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {reporting && (
         <ReportDialog game={g.slug} title={g.title} mode={reporting} onClose={() => setReporting(null)}
           onDone={() => { setReporting(null); if (reporting === "flag") onHidden?.(); }} />

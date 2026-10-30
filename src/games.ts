@@ -5,7 +5,7 @@ import { CharacterStyle, styleFor } from "./character";
 // The API only knows the name, so the title and colours are worked out from it:
 // the same game always gets the same colours.
 // cover is the game's picture; without one the card shows the title's first letter on the colours.
-export type Game = { slug: string; title: string; url: string; host: string; by: string; colors: [string, string]; cover: string | null; board: BoardStat[] | null; plays: number; description: string | null };
+export type Game = { slug: string; title: string; url: string; host: string; by: string; colors: [string, string]; cover: string | null; board: BoardStat[] | null; plays: number; description: string | null; allowEmbed?: boolean };
 
 const CARD_COLORS: [string, string][] = [
   ["#ffd400", "#e10600"],
@@ -30,6 +30,7 @@ export const HANGOUT: Game = {
   board: null, // the Hangout has no leaderboard
   plays: 0,
   description: "start.ng's own multiplayer park. Sign in as your character, walk around and meet everyone else who's there.",
+  allowEmbed: false,
 };
 
 /** A game that lives inside this app (opens in the same tab) rather than on its own start.ng address. */
@@ -63,6 +64,7 @@ export function toCard(game: PublishedGame): Game {
     board: game.leaderboard ?? null,
     plays: game.plays ?? 0,
     description: game.description ?? null,
+    allowEmbed: game.allow_embed !== false,
   };
 }
 
