@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { BoardStat, getLeaderboard, LeaderboardEntry } from "./api";
 import { useFeature } from "./features/flags";
 import { Game } from "./games";
@@ -26,8 +26,11 @@ export default function BoardTable({ game, playerId }: { game: Game; playerId: n
   const profilesOn = useFeature("profiles"); // names link to player pages (src/features/profiles)
   // The game's own columns (startng.json); first one ranks, the rest break ties.
   const stats = game.board ?? [{ key: "score", label: "Score", order: "highest" as const, format: "number" as const }];
-  // One set of columns for the whole table (see .board-table), so every number sits under its heading.
+  // One set of columns for the whole table (see .board-table), so every number sits under its heading. On phones only
+  // the first (ranking) column stays; the others go on a line under the name (.game-board-table in styles.css).
   const cols = `28px minmax(0, 1fr) ${stats.map(() => "auto").join(" ")}`;
+  const [main, ...extra] = stats;
+  const statOf = (e: LeaderboardEntry, s: BoardStat) => formatStat(s, e.stats?.[s.key] ?? (s.key === "score" ? e.score : null));
 
   useEffect(() => {
     getLeaderboard(game.slug, 10)
@@ -41,21 +44,33 @@ export default function BoardTable({ game, playerId }: { game: Game; playerId: n
       {!error && entries === null && <p className="board-sub">Loading…</p>}
       {entries?.length === 0 && <p className="board-empty">No scores yet. Play it and be the first.</p>}
       {entries && entries.length > 0 && (
-        <div className="board-table" role="table" aria-label={`${game.title} leaderboard`} style={{ gridTemplateColumns: cols }}>
+        <div className="board-table game-board-table" role="table" aria-label={`${game.title} leaderboard`}
+          style={{ "--board-cols": cols } as CSSProperties}>
           <div className="board-row board-head" role="row">
             <span role="columnheader">#</span>
             <span role="columnheader">Player</span>
-            {stats.map((s) => <span key={s.key} role="columnheader" className="num">{s.label}</span>)}
+            <span role="columnheader" className="num">{main.label}</span>
+            {extra.map((s) => <span key={s.key} role="columnheader" className="num extra">{s.label}</span>)}
           </div>
           {entries.map((e) => (
             <div key={e.player_id} role="row" className={`board-row ${e.player_id === playerId ? "me" : ""}`}>
               <span className="rk">{e.rank}</span>
               <span className="nm" title={e.name}>
                 <span className="dot" style={{ background: e.color ?? "var(--line)" }} />
-                {profilesOn ? <a className="player-link" href={`/p/${e.player_id}`}>{shortName(e.name)}</a> : shortName(e.name)}
-                {e.player_id === playerId && <em> (you)</em>}
+                <span className="nm-body">
+                  <span className="nm-name">
+                    {profilesOn ? <a className="player-link" href={`/p/${e.player_id}`}>{shortName(e.name)}</a> : shortName(e.name)}
+                    {e.player_id === playerId && <em> (you)</em>}
+                  </span>
+                  {extra.length > 0 && (
+                    <span className="nm-extra" aria-hidden="true">
+                      {extra.map((s, i) => <span key={s.key}>{i > 0 && " · "}<span className="pair">{s.label} {statOf(e, s)}</span></span>)}
+                    </span>
+                  )}
+                </span>
               </span>
-              {stats.map((s) => <span key={s.key} className="num sc">{formatStat(s, e.stats?.[s.key] ?? (s.key === "score" ? e.score : null))}</span>)}
+              <span className="num sc">{statOf(e, main)}</span>
+              {extra.map((s) => <span key={s.key} className="num sc extra">{statOf(e, s)}</span>)}
             </div>
           ))}
         </div>
