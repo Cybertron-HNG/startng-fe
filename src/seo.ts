@@ -230,6 +230,46 @@ export function headTags(seo: Seo, site: string): string {
 }
 
 /** Structured data for the homepage, so search engines know what start.ng is. */
+
+/** Structured data for the /games page: BreadcrumbList and CollectionPage. */
+export function gamesJsonLd(site: string): string {
+  const data = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: site + "/" },
+          { "@type": "ListItem", position: 2, name: "Games", item: site + "/games" },
+        ],
+      },
+      {
+        "@type": "CollectionPage",
+        name: PAGES.games.title,
+        description: PAGES.games.description,
+        url: site + "/games",
+      },
+    ],
+  };
+  return `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, "\\u003c")}</script>`;
+}
+
+/** Structured data for the /leaderboard page: BreadcrumbList. */
+export function leaderboardJsonLd(site: string): string {
+  const data = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: site + "/" },
+          { "@type": "ListItem", position: 2, name: "Leaderboard", item: site + "/leaderboard" },
+        ],
+      },
+    ],
+  };
+  return `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, "\\u003c")}</script>`;
+}
 export function jsonLd(site: string): string {
   const data = {
     "@context": "https://schema.org",
