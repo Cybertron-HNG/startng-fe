@@ -1171,3 +1171,7 @@ option { background: var(--card); color: var(--ink); }
 .log-filters label { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: .85rem; }
 .log-filters .datefield-button { min-width: 168px; padding: 7px 12px; font-size: .9rem; }
 .log-count { margin: 10px 0 6px; color: var(--muted); font-size: .85rem; }
+
+.card.embed-dialog { max-width: 520px; width: 100%; display: grid; gap: 14px; }
+.card.embed-dialog textarea { width: 100%; font-family: monospace; font-size: .85rem; resize: none; border-radius: 8px; padding: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); box-sizing: border-box; }
+.card.embed-dialog .embed-dialog-actions { display: flex; gap: 8px; justify-content: flex-end; }

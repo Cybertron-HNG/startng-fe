@@ -54,7 +54,7 @@ export const analytics = {
   viewGame: (game: string) => track("view_item", { item_id: game, item_category: "game" }),
   play: (game: string) => track("play_game", { game }),
   playIndie: (id: number) => track("play_game", { game: `indie-${id}`, indie: true }),
-  share: (contentType: "game" | "indie_game" | "tournament" | "share_card", id: string, method: "x" | "copy_link" | "whatsapp" | "share_menu") =>
+  share: (contentType: "game" | "indie_game" | "tournament" | "share_card", id: string, method: "x" | "copy_link" | "whatsapp" | "share_menu" | "embed_snippet") =>
     track("share", { method, content_type: contentType, item_id: id }),
   login: () => track("login", { method: "Google" }),
   enterTournament: (id: number) => track("tournament_enter", { tournament_id: id }),
