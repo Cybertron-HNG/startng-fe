@@ -88,11 +88,19 @@ function seoPages(site: string): Plugin {
       // (/games?page=2) is its own canonical address, and searches and filters get no text (nginx marks them noindex).
       const pageOf = (n: string) => `<!--# if expr="$${n} != 1" -->?page=<!--# echo var="${n}" --><!--# endif -->`;
       fill("games.html", PAGES.games.path, `<!--# if expr="$games_ssr = yes" --><!--# include virtual="/_ssr/games?page=$games_page" --><!--# endif -->`, pageOf("games_page"));
+      const addHeadInclude = (file: string, include: string) => {
+        const html = readFileSync(resolve(out, file), "utf8");
+        const end = "<!--/seo-->";
+        if (!html.includes(end)) throw new Error(`${file} has no SEO block for structured data`);
+        writeFileSync(resolve(out, file), html.replace(end, `${include}\n    ${end}`));
+      };
+      addHeadInclude("games.html", '<!--# if expr="$games_ssr = yes" --><script type="application/ld+json"><!--# include virtual="/_ssr/games-schema?page=$games_page" --></script><!--# endif -->');
       fill("creators.html", PAGES.creators.path, `<!--# if expr="$creators_ssr = yes" --><!--# include virtual="/_ssr/creators?page=$creators_page" --><!--# endif -->`, pageOf("creators_page"));
       // /tournament, and /leaderboard (this week's, ?period=week, is its own address).
       fill("tournament.html", PAGES.tournament.path, `<!--# include virtual="/_ssr/tournament" -->`);
       fill("leaderboard.html", PAGES.leaderboard.path, `<!--# include virtual="/_ssr/leaderboard?period=$leaderboard_period" -->`,
         `<!--# if expr="$leaderboard_period = week" -->?period=week<!--# endif -->`);
+      addHeadInclude("leaderboard.html", '<script type="application/ld+json"><!--# include virtual="/_ssr/leaderboard-schema?period=$leaderboard_period" --></script>');
       // Features' pages, from the API while the feature is on (see "location ~ ^/_ssr/feature/" in nginx.conf).
       fill("spotlight.html", PAGES.spotlight.path, `<!--# include virtual="/_ssr/feature/spotlight" -->`);
       fill("creators-board.html", PAGES.creatorsBoard.path, `<!--# include virtual="/_ssr/feature/by" -->`);
@@ -125,3 +133,4 @@ export default defineConfig(({ mode }) => {
     build: { chunkSizeWarningLimit: 600 },
   };
 });
+
