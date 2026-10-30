@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { PagePartProps } from "../registry";
 import { mine, setMine, subscribe, type MyEmail } from "./api";
 
-// On start.ng/tournament: get each day's tournament (and, signed in, how you did) by email.
+// On start.ng/tournament: get each day's tournament (and, signed in, how you did, and a reminder) by email.
 export default function TournamentEmail({ user }: PagePartProps) {
   return (
     <aside className="tournament-email" aria-label="Tournament emails">
@@ -22,14 +22,30 @@ function SignedIn() {
   if (error) return <p className="error">{error}</p>;
   if (!me) return null;
   const on = me.topics.filter((t) => t.on).map((t) => t.key);
-  if (on.includes("tournament") && on.includes("results")) {
-    return <p className="note">You get these, with how you did. <a href="/emails">Your emails →</a></p>;
-  }
+  const save = (topics: string[]) => { setMine(topics).then(setMe).catch((e) => setError(e.message)); };
   return (
-    <button type="button" onClick={() => setMine([...new Set([...on, "tournament", "results"])]).then(setMe).catch((e) => setError(e.message))}>
-      Email me, with how I did
-    </button>
+    <div className="tournament-email-actions">
+      {on.includes("tournament") && on.includes("results") ? (
+        <p className="note">You get these, with how you did. <a href="/emails">Your emails →</a></p>
+      ) : (
+        <button type="button" onClick={() => save([...new Set([...on, "tournament", "results"])])}>Email me, with how I did</button>
+      )}
+      <Reminder on={on} save={save} />
+    </div>
   );
+}
+
+/** "Remind me": one email 10 minutes before each day's tournament starts (Ziki #60). Easy to turn off again here. */
+function Reminder({ on, save }: { on: string[]; save: (topics: string[]) => void }) {
+  if (on.includes("reminder")) {
+    return (
+      <p className="note">
+        We'll email you 10 minutes before each tournament starts.{" "}
+        <button type="button" className="link" onClick={() => save(on.filter((t) => t !== "reminder"))}>Stop reminders</button>
+      </p>
+    );
+  }
+  return <button type="button" className="ghost" onClick={() => save([...on, "reminder"])}>Remind me 10 minutes before</button>;
 }
 
 function Visitor() {
