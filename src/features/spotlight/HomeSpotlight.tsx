@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { PagePartProps } from "../registry";
-import { getSpotlight, type Spotlight } from "./api";
+import { getSpotlight, type Challenge, type Spotlight } from "./api";
 
 /** The picture on a homepage banner: the game's cover, or its first letter. */
 function Cover({ url, title }: { url: string | null; title: string }) {
@@ -11,7 +11,7 @@ function Cover({ url, title }: { url: string | null; title: string }) {
   );
 }
 
-const left = (iso: string) => {
+export const left = (iso: string) => {
   const ms = new Date(iso).getTime() - Date.now();
   if (ms <= 0) return "resetting now";
   return `${Math.floor(ms / 3_600_000)}h ${Math.floor((ms % 3_600_000) / 60_000)}m left`;
@@ -49,7 +49,7 @@ export function HomeSpotlight({ user }: PagePartProps) {
           <a className="tournament-banner spot-banner" href={`/games/${c.game}`}>
             <div>
               <p className="eyebrow">Daily challenge · {left(c.ends_at)}</p>
-              <h2>{c.goal_is_a_ceiling ? `Finish ${c.game_title} in ${c.goal_shown} or less` : `Reach ${c.goal_shown} in ${c.game_title}`}</h2>
+              <h2>{goalLine(c)}</h2>
               <p className="tournament-banner-sub">
                 {c.done ? "Done for today. Come back tomorrow for the next one." : c.best ? `Your best today: ${c.best}. One goal a day, set from how people play.` : "One goal a day, set from how people really play."}
               </p>
@@ -60,6 +60,38 @@ export function HomeSpotlight({ user }: PagePartProps) {
         </section>
       )}
     </>
+  );
+}
+
+/** Today's goal in one line, as the homepage banner and the game page say it. */
+export const goalLine = (c: Challenge) =>
+  c.goal_is_a_ceiling ? `Finish ${c.game_title} in ${c.goal_shown} or less` : `Reach ${c.goal_shown} in ${c.game_title}`;
+
+/** On a game's page, when it is today's daily challenge (Ziki #25): the goal, the time left and whether this player has done
+ *  it, so someone who tapped "Take the challenge" on the homepage sees what to aim for. */
+export function GameChallenge({ game, user, onSignIn }: PagePartProps) {
+  const [c, setC] = useState<Challenge | null>(null);
+  useEffect(() => {
+    let live = true;
+    getSpotlight().then((got) => live && setC(got.challenge)).catch(() => {});
+    return () => { live = false; };
+  }, [user?.id]);
+  if (!game || !c || c.game !== game) return null;
+  return (
+    <section className={c.done ? "game-challenge done" : "game-challenge"} aria-label="Today's daily challenge">
+      <p className="eyebrow">Daily challenge · {left(c.ends_at)}</p>
+      <h2>{goalLine(c)}</h2>
+      <p className="game-challenge-sub">
+        {c.done ? "Done for today ✓ Come back tomorrow for the next one."
+          : c.best ? `Your best today: ${c.best}. One goal a day, set from how people play.`
+          : user ? "Play and reach it before it resets. One goal a day, set from how people play."
+          : "Sign in, then play and reach it before it resets."}
+      </p>
+      <div className="game-challenge-actions">
+        {!user && <button type="button" className="ghost" onClick={onSignIn}>Sign in</button>}
+        <a className="link" href="/spotlight">About daily challenges</a>
+      </div>
+    </section>
   );
 }
 

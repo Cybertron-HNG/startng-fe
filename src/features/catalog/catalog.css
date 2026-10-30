@@ -1,11 +1,8 @@
 .filter-bar { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin: 4px 0 16px; }
-.filter-bar .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.filter-bar .chips button { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: inherit; font: inherit; font-size: .85rem; cursor: pointer; }
-.filter-bar .chips button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .category-chip { background: rgba(0, 0, 0, .65); color: #fff; }
 .stars { font-size: .85rem; white-space: nowrap; }
 .star-pick { display: inline-flex; gap: 2px; }
 .star-pick button { border: 0; background: none; color: var(--muted); font-size: 1.5rem; line-height: 1; cursor: pointer; padding: 0 2px; }
-.star-pick button.on { color: #f7b731; }
+.star-pick button.on { color: var(--star); } /* the theme variable (styles.css), so picked stars stand out in light and dark */
 .star-pick button:disabled { cursor: not-allowed; opacity: .6; }
 .category-picker { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; font-size: .9rem; }

@@ -612,6 +612,18 @@ Put them in `startng.json`, next to `description`:
 - A game that says the same as another game gets one page, not two. A game that says very little gets no extra pages.
 - Pushing an update doesn't publish a page by itself. start.ng makes the pages from time to time, and a page appears at its address once it has been approved.
 
+### Enter a game jam: `jam`
+
+Now and then start.ng runs a **game jam**: a theme and a deadline, on its own page at `start.ng/jam/<short-name>`. To enter, add the jam's short name to `startng.json` and publish (or push) while the jam is taking entries:
+
+```json
+{ "jam": "lagos-rush-hour" }
+```
+
+- Your game is entered the first time it's published with that key while the jam is open. Before it opens, or after entries close, the key does nothing and the game publishes as usual.
+- During voting week, players who have played your game can vote for it on the jam page. You can't vote for your own. The entries with the most votes win.
+- The short name is lowercase letters, numbers and hyphens, like the one on the jam page. Anything else and publishing tells you what to fix.
+
 ### Save a run
 
 Signed-in players only. Send **exactly** the stats in your `startng.json` (or a plain `score` if you don't have one), each a **whole number** from 0 to 1,000,000,000. Anything else is refused.

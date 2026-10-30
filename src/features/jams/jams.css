@@ -1,0 +1,24 @@
+/* Game jams (src/features/jams): the jam page, laid out like a creator's page (creator_hub.css) */
+.jam-page { max-width: 760px; padding-top: 28px; padding-bottom: 56px; }
+.jam-page .eyebrow { margin: 0 0 8px; color: var(--muted); }
+.jam-page h1 { margin: 0 0 10px; }
+.jam-page h2 { margin: 28px 0 10px; font-size: 1.1rem; }
+.jam-when { margin: 14px 0 0; font-weight: 600; }
+.jam-enter { margin: 10px 0 0; padding: 10px 12px; border-radius: 10px; background: var(--lime); color: var(--on-lime); font-size: .9rem; line-height: 1.45; overflow-wrap: anywhere; }
+.jam-entries { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.jam-entry { display: flex; gap: 12px; align-items: center; padding: 8px 12px 8px 8px; border-radius: 12px; background: var(--card); border: 1px solid var(--line); }
+.jam-entry img, .jam-entry .tile { flex: none; width: 72px; height: 48px; object-fit: cover; border-radius: 8px; display: grid; place-items: center; background: var(--line); font-weight: 700; }
+.jam-entry-text { flex: 1; display: grid; min-width: 0; }
+.jam-entry-text a { font-weight: 700; color: inherit; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.jam-entry-text a:hover { text-decoration: underline; }
+.jam-entry-text span { font-size: .8rem; color: var(--muted); }
+.jam-entry button { flex: none; padding: 8px 14px; font-size: .9rem; }
+.jam-why { flex: 0 1 180px; font-style: normal; font-size: .78rem; color: var(--muted); text-align: right; }
+.jam-entry.winner-1 { box-shadow: 4px 4px 0 var(--lime); border-color: var(--ink); }
+.jam-entry.winner-2, .jam-entry.winner-3 { box-shadow: 3px 3px 0 var(--lime); }
+@media (max-width: 600px) {
+  .jam-entry { flex-wrap: wrap; }
+  .jam-entry img, .jam-entry .tile { width: 56px; height: 40px; }
+  .jam-entry button { flex: 1 1 100%; }
+  .jam-why { flex: 1 1 100%; text-align: left; }
+}

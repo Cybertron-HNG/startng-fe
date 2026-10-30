@@ -3,7 +3,7 @@
   --lime: #d8fd71; --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --text-2: #3c3d35; --on-solid: #fff; --on-solid-accent: var(--lime); --on-lime: #292a23; --solid-hover: #000;
   --scrim: rgba(41, 42, 35, .45); --shimmer: #efede2; --code-bg: #292a23; --legendary-bg: #fafff0; --banner-tint: #f1fbd2;
-  --dot: rgba(41, 42, 35, .16); --danger: #c0392b; --ok: #2e7d32; --warn-ink: #8a6d00;
+  --dot: rgba(41, 42, 35, .16); --danger: #c0392b; --ok: #2e7d32; --warn-ink: #8a6d00; --star: #8f5d00; /* a picked rating star: deep gold, darker than --muted on --bg and --card (catalog RatingBox) */
   --warn-bg: #fff7d6; --warn-line: #f0d77a; --bad-bg: #fdecea; --bad-line: #f3b8b0;
   /* wardrobe item rarities (src/features/wardrobe): at least 4.5:1 with the --on-solid label text, in both themes */
   /* the text and shading on a coloured card (a category tile): white on a darkened gradient, a little darker in dark mode */
@@ -16,7 +16,7 @@
   --bg: #292a23; --card: #33342c; --ink: #f6f5ee; --muted: #b0b1a6; --line: #4a4b41;
   --text-2: #dedcd0; --on-solid: #292a23; --on-solid-accent: #292a23; --solid-hover: #fff;
   --scrim: rgba(20, 21, 17, .65); --shimmer: #44453b; --code-bg: #1f201b; --legendary-bg: #38402a; --banner-tint: #343b27;
-  --dot: rgba(246, 245, 238, .12); --danger: #ff8a7d; --ok: #7fd884; --warn-ink: #e6c34d;
+  --dot: rgba(246, 245, 238, .12); --danger: #ff8a7d; --ok: #7fd884; --warn-ink: #e6c34d; --star: #f7c948;
   --warn-bg: #4a4220; --warn-line: #7a6a2a; --bad-bg: #4a2a26; --bad-line: #7d4a43;
   --r-common: #a6a79b; --r-uncommon: #5fcf82; --r-rare: #6f9bf0; --r-epic: #b383ef; --r-legendary: #f5a640; --r-limited: #f27aa3;
   color-scheme: dark;

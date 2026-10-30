@@ -26,6 +26,8 @@ export type Seo = {
   path: string;
   /** Keep the page out of search results (sign-in flows, 404). */
   noindex?: boolean;
+  /** No canonical link or og:url: the page has no address of its own to point at (404). */
+  noCanonical?: boolean;
   /** Its own preview picture: a path in public/ or a full address, like a game's cover (default SHARE_IMAGE). */
   image?: string;
   imageAlt?: string;
@@ -154,11 +156,18 @@ export const PAGES: Record<string, Seo> = {
     description: "The creators whose games the most different players opened this month on start.ng.",
     path: "/by",
   },
+  // A game jam's page (src/features/jams): the plain page nginx falls back to when the API can't write the jam's own.
+  jam: {
+    title: "A game jam on start.ng",
+    description: "A game jam on start.ng: a theme and a deadline. Creators enter a game, players who played it vote, and the best win.",
+    path: "/jam",
+  },
   notFound: {
     title: "Page not found · start.ng",
     description: "There's nothing at this address. Browse the games on start.ng instead.",
     path: "/",
     noindex: true,
+    noCanonical: true,
   },
 };
 
@@ -184,6 +193,7 @@ export const STATIC_PAGES: [string, Seo][] = [
   ["wardrobe.html", PAGES.wardrobe],
   ["shop.html", PAGES.shop],
   ["profile.html", PAGES.profile],
+  ["jam.html", PAGES.jam],
   ["404.html", PAGES.notFound],
 ];
 
@@ -203,12 +213,12 @@ export function headTags(seo: Seo, site: string): string {
     `<title>${esc(seo.title)}</title>`,
     `<meta name="description" content="${esc(seo.description)}" />`,
     `<meta name="robots" content="${seo.noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large"}" />`,
-    `<link rel="canonical" href="${esc(url)}" />`,
+    ...(seo.noCanonical ? [] : [`<link rel="canonical" href="${esc(url)}" />`]),
     `<meta property="og:type" content="website" />`,
     `<meta property="og:site_name" content="${SITE_NAME}" />`,
     `<meta property="og:title" content="${esc(seo.title)}" />`,
     `<meta property="og:description" content="${esc(seo.description)}" />`,
-    `<meta property="og:url" content="${esc(url)}" />`,
+    ...(seo.noCanonical ? [] : [`<meta property="og:url" content="${esc(url)}" />`]),
     `<meta property="og:image" content="${esc(image)}" />`,
     `<meta property="og:image:alt" content="${esc(seo.imageAlt ?? SHARE_IMAGE_ALT)}" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
@@ -258,12 +268,14 @@ export function setSeo(seo: Seo) {
   meta("name", "robots", robots);
   meta("property", "og:title", seo.title);
   meta("property", "og:description", seo.description);
-  meta("property", "og:url", url);
+  if (!seo.noCanonical) meta("property", "og:url", url);
+  else document.head.querySelector('meta[property="og:url"]')?.remove();
   meta("name", "twitter:title", seo.title);
   meta("name", "twitter:description", seo.description);
   const image = imageUrl(siteUrl(), seo.image ?? SHARE_IMAGE);
   meta("property", "og:image", image);
   meta("property", "og:image:alt", seo.imageAlt ?? SHARE_IMAGE_ALT);
   meta("name", "twitter:image", image);
-  upsert("link", 'link[rel="canonical"]', { rel: "canonical", href: url });
+  if (!seo.noCanonical) upsert("link", 'link[rel="canonical"]', { rel: "canonical", href: url });
+  else document.head.querySelector('link[rel="canonical"]')?.remove();
 }

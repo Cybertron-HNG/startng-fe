@@ -1,0 +1,11 @@
+/* Live (Ziki #37): "playing now" and the homepage strip. Colours from styles.css's variables. */
+.playing-now { display: inline-flex; align-items: center; gap: 6px; font-size: .82rem; font-weight: 600; color: var(--ok); }
+.playing-now i, .live-strip h2 i { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); flex: none; animation: live-pulse 2s ease-in-out infinite; }
+@keyframes live-pulse { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .playing-now i, .live-strip h2 i { animation: none; } }
+.live-line.live-line { margin-top: 8px; margin-bottom: 8px; }
+.live-strip.live-strip { margin-top: 16px; margin-bottom: 24px; }
+.live-strip h2 { display: flex; align-items: center; gap: 8px; font-size: 1.1rem; margin: 0 0 8px; }
+.live-strip ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.live-strip li { overflow-wrap: anywhere; }
+.live-strip a { color: inherit; }
