@@ -72,6 +72,13 @@ test("a game cannot reach another folder or hidden files", async () => {
   }
 });
 
+test("malformed and encoded traversal paths are rejected", async () => {
+  for (const p of ["/%E0%A4%A", "/%2e%2e%2fother%2findex.html", "/save%2f..%2f..%2fother%2findex.html"]) {
+    const r = await get("https://dave.start.ng" + p);
+    assert.equal(r.status, 404, p);
+  }
+});
+
 test("bad or multi-level host names are 404", async () => {
   for (const h of ["-bad.start.ng", "a.b.start.ng", "UP_per.start.ng"]) {
     assert.equal((await get(`https://${h}/`)).status, 404, h);
