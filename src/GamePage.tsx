@@ -7,7 +7,7 @@ import { Game, isInAppGame } from "./games";
 import PageParts from "./features/PageParts";
 import ReportDialog from "./Report";
 import { PAGES, setSeo } from "./seo";
-import { withHandle } from "./share";
+import ShareButton from "./features/share_cards/ShareButton";
 
 // start.ng/games/<name>: a game's own page on start.ng, shown before the game itself. Search engines
 // and shared links land here (the API serves this address with the text already in it, see
@@ -25,7 +25,6 @@ export default function GamePage({ name, game, loading, user, playerId, favorite
   canFlag?: boolean; // the signed-in admin may flag games (app/admin.py on the API)
   onHidden?: () => void; // the game was reported or flagged, so it's hidden now
 }) {
-  const [copied, setCopied] = useState(false);
   const [reporting, setReporting] = useState<"report" | "flag" | null>(null);
   const found = !!game;
 
@@ -66,16 +65,7 @@ export default function GamePage({ name, game, loading, user, playerId, favorite
   const g = game;
   const pageUrl = `${location.origin}/games/${g.slug}`;
   const description = g.description ?? `Play ${g.title} free in your browser, right here on start.ng. A game by ${g.by}.`;
-  const tweet = `https://twitter.com/intent/tweet?${new URLSearchParams({ text: withHandle(`Come play ${g.title} on start.ng!`), url: pageUrl })}`;
 
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(pageUrl);
-      analytics.share("game", g.slug, "copy_link");
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch { /* no clipboard (older browsers): the address bar has the link */ }
-  }
 
   return (
     <section className="container game-page">
@@ -100,8 +90,16 @@ export default function GamePage({ name, game, loading, user, playerId, favorite
       <div className="game-page-rows">
         <div className="game-page-share">
           <span>Share it</span>
-          <a className="ghost btn" href={tweet} target="_blank" rel="noreferrer" onClick={() => analytics.share("game", g.slug, "x")}>Share on X</a>
-          <button type="button" className="ghost" onClick={copy}>{copied ? "Link copied" : "Copy link"}</button>
+          <ShareButton
+            kind="game"
+            id={g.slug}
+            ghost
+            fallback={{
+              title: g.title,
+              text: `Come play ${g.title} on start.ng!`,
+              url: pageUrl,
+            }}
+          />
         </div>
         <PageParts page="game" user={user} onSignIn={onSignIn} game={g.slug} />
       </div>
