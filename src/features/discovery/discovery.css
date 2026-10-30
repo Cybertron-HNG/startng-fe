@@ -16,7 +16,7 @@
 .feature-checklist[open] { padding-bottom: 12px; }
 .feature-checklist[open] summary { margin-bottom: 4px; }
 .feature-checklist ul { list-style: none; margin: 8px 0; padding: 0; display: grid; gap: 4px; }
-.feature-checklist .ok { color: #2f7d32; }
-.feature-checklist .todo { color: #b3261e; }
+.feature-checklist .ok { color: var(--ok); }
+.feature-checklist .todo { color: var(--danger); }
 .feature-checklist .maybe { color: var(--muted); }
 .featured-shelf { margin-bottom: 28px; }
