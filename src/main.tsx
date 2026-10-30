@@ -16,6 +16,9 @@ import "./styles.css";
 const Hangout = lazy(() => import("./hangout/Hangout"));
 // The admin page loads only for admins who open it.
 const Admin = lazy(() => import("./Admin"));
+// The design-only site (see the README) adds one small character, a guide, to every page except the Hangout: it is a game, and the guide stays out of games.
+const DESIGN_PREVIEW = import.meta.env.VITE_DESIGN_PREVIEW === "1";
+const Mascot = lazy(() => import("./features/mascot/Mascot"));
 
 // Google Analytics (live site only, never on /connect).
 initAnalytics();
@@ -98,6 +101,7 @@ if (location.pathname === "/connect") {
       ) : (
         <NotFound />
       )}
+      {DESIGN_PREVIEW && path !== HANGOUT_PATH && <Suspense fallback={null}><Mascot /></Suspense>}
     </React.StrictMode>
   );
 }
