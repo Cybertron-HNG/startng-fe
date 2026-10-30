@@ -214,7 +214,9 @@
   function share({ score, text } = {}) {
     const game = document.title || 'this game';
     const line = text ?? (score != null ? `I scored ${score} in ${game} on start.ng. Can you beat it?` : `Play ${game} on start.ng`);
-    const url = location.origin + location.pathname;
+    // The game's page on start.ng, not its own address: that page has the game's cover and title in its
+    // preview tags, so X shows this game's card (a game's own address has none). Games elsewhere share themselves.
+    const url = ON_START_NG ? `${START_NG}/games/${gameName()}` : location.origin + location.pathname;
     const post = /@playonstartng/i.test(line) ? line : line + ' @playonstartng'; // start.ng's account on X
     const intent = `https://x.com/intent/post?text=${encodeURIComponent(post)}&url=${encodeURIComponent(url)}`;
     open(intent, '_blank', 'noopener');
