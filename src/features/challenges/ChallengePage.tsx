@@ -29,12 +29,22 @@ export default function ChallengePage({ user, onSignIn, params }: PageProps) {
   async function play() {
     if (!c) return;
     if (!user) return onSignIn(); // a score only counts signed in
+    if (c.mine) {
+      window.open(c.game.url, "_blank", "noopener");
+      return;
+    }
+    // Open the tab now, inside the tap: iPhones and Safari block window.open after an await as a pop-up (Ziki #6).
+    // It gets the game's address once the challenge is accepted, and closes again if that fails.
+    const tab = window.open("", "_blank");
+    if (tab) tab.opener = null;
     setBusy(true);
     setError("");
     try {
-      if (!c.mine) setC(await acceptChallenge(code));
-      window.open(c.game.url, "_blank", "noopener");
+      setC(await acceptChallenge(code));
+      if (tab) tab.location.href = c.game.url;
+      else window.open(c.game.url, "_blank", "noopener"); // the browser gave us no tab: try once more
     } catch (e) {
+      tab?.close();
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
       setBusy(false);
