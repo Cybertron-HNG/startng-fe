@@ -1,5 +1,6 @@
 import { BoardStat, getLeaderboard, getLiveTicket, me, pingSession, PublishedGame, submitScore } from "./api";
 import { CharacterStyle, styleFor } from "./character";
+import { gameTitle } from "./gameTitle";
 
 // A homepage card for a game from GET /games (games published with POST /games/publish).
 // The API only knows the name, so the title and colours are worked out from it:
@@ -54,7 +55,7 @@ export function toCard(game: PublishedGame): Game {
   const url = playableUrl(game.url);
   return {
     slug: game.name,
-    title: game.name.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
+    title: gameTitle(game.name),
     url,
     host: new URL(url).host,
     by: game.by,

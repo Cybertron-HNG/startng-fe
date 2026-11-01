@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import type { AdminTabProps } from "../registry";
 import { checkAll, checkNow, overview, type Overview } from "./api";
+import { gameTitle as titleOf } from "../../gameTitle";
 
 // start.ng/admin#game-health: games that fail their checks. Checks run by themselves about every 20 minutes;
 // three failures in a row make a game unhealthy (its owner sees it too).
 
-const titleOf = (name: string) => name.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 const when = (iso: string | null) => (iso ? new Date(iso).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }) : "never");
 const LABELS: Record<string, string> = { ok: "healthy", failing: "failing", unhealthy: "unhealthy", unchecked: "not checked yet" };
 
