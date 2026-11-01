@@ -49,13 +49,13 @@ export default function BoardTable({ game, playerId }: { game: Game; playerId: n
           </div>
           {entries.map((e) => (
             <div key={e.player_id} role="row" className={`board-row ${e.player_id === playerId ? "me" : ""}`}>
-              <span className="rk">{e.rank}</span>
-              <span className="nm" title={e.name}>
+              <span className="rk" role="cell">{e.rank}</span>
+              <span className="nm" role="cell" title={e.name}>
                 <span className="dot" style={{ background: e.color ?? "var(--line)" }} />
                 {profilesOn ? <a className="player-link" href={`/p/${e.player_id}`}>{shortName(e.name)}</a> : shortName(e.name)}
                 {e.player_id === playerId && <em> (you)</em>}
               </span>
-              {stats.map((s) => <span key={s.key} className="num sc">{formatStat(s, e.stats?.[s.key] ?? (s.key === "score" ? e.score : null))}</span>)}
+              {stats.map((s) => <span key={s.key} role="cell" className="num sc">{formatStat(s, e.stats?.[s.key] ?? (s.key === "score" ? e.score : null))}</span>)}
             </div>
           ))}
         </div>
