@@ -58,6 +58,9 @@ export default function HelpButton({ user, onSignIn }: PagePartProps) {
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
   const panel = useRef<HTMLDivElement>(null);
+  const helpButton = useRef<HTMLButtonElement>(null);
+  const searchTab = useRef<HTMLButtonElement>(null);
+  const reportTab = useRef<HTMLButtonElement>(null);
 
   useEffect(() => { if (open) loadDocs().then(setSections); }, [open]);
   useEffect(() => {
@@ -65,7 +68,11 @@ export default function HelpButton({ user, onSignIn }: PagePartProps) {
   }, [open, tab, user?.id]);
   useEffect(() => {
     if (!open) return;
-    const close = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const close = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setOpen(false);
+      helpButton.current?.focus();
+    };
     document.addEventListener("keydown", close);
     return () => document.removeEventListener("keydown", close);
   }, [open]);
@@ -83,25 +90,38 @@ export default function HelpButton({ user, onSignIn }: PagePartProps) {
     } catch (err) { setError(err instanceof Error ? err.message : "That didn't send"); } finally { setBusy(false); }
   }
 
+  function close() {
+    setOpen(false);
+    requestAnimationFrame(() => helpButton.current?.focus());
+  }
+
+  function onTabKey(e: React.KeyboardEvent<HTMLButtonElement>) {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight" && e.key !== "Home" && e.key !== "End") return;
+    e.preventDefault();
+    const next = e.key === "Home" ? "search" : e.key === "End" ? "report" : tab === "search" ? "report" : "search";
+    setTab(next);
+    (next === "search" ? searchTab : reportTab).current?.focus();
+  }
+
   const results = search(sections, q);
   return (
     <>
-      <button type="button" className="help-button" aria-expanded={open} aria-controls="help-panel" onClick={() => setOpen((o) => !o)}>
+      <button ref={helpButton} type="button" className="help-button" aria-expanded={open} aria-controls="help-panel" onClick={() => setOpen((o) => !o)}>
         <span aria-hidden="true">?</span> Help
       </button>
       {open && (
         <div id="help-panel" className="help-panel" role="dialog" aria-label="Help" ref={panel}>
           <div className="help-head">
             <b>Help</b>
-            <button type="button" className="help-close" aria-label="Close" onClick={() => setOpen(false)}>×</button>
+            <button type="button" className="help-close" aria-label="Close" onClick={close}>×</button>
           </div>
-          <div className="segmented help-tabs" role="tablist">
-            <button type="button" role="tab" aria-selected={tab === "search"} className={tab === "search" ? "on" : ""} onClick={() => setTab("search")}>Find an answer</button>
-            <button type="button" role="tab" aria-selected={tab === "report"} className={tab === "report" ? "on" : ""} onClick={() => setTab("report")}>Report a problem</button>
+          <div className="segmented help-tabs" role="tablist" aria-label="Help sections">
+            <button ref={searchTab} id="help-tab-search" type="button" role="tab" aria-selected={tab === "search"} aria-controls="help-panel-search" tabIndex={tab === "search" ? 0 : -1} className={tab === "search" ? "on" : ""} onClick={() => setTab("search")} onKeyDown={onTabKey}>Find an answer</button>
+            <button ref={reportTab} id="help-tab-report" type="button" role="tab" aria-selected={tab === "report"} aria-controls="help-panel-report" tabIndex={tab === "report" ? 0 : -1} className={tab === "report" ? "on" : ""} onClick={() => setTab("report")} onKeyDown={onTabKey}>Report a problem</button>
           </div>
 
           {tab === "search" ? (
-            <div className="help-body">
+            <div className="help-body" role="tabpanel" id="help-panel-search" aria-labelledby="help-tab-search">
               <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="e.g. how do I publish a game?" aria-label="Search the docs" autoFocus />
               {q.trim() && results.length === 0 && <p className="note">Nothing in the docs matches. Try other words, or report a problem.</p>}
               <ul className="help-results">
@@ -115,12 +135,12 @@ export default function HelpButton({ user, onSignIn }: PagePartProps) {
               {!q.trim() && <p className="note">Search start.ng's docs, or read them all at <a href="/docs">start.ng/docs</a>.</p>}
             </div>
           ) : !user ? (
-            <div className="help-body">
+            <div className="help-body" role="tabpanel" id="help-panel-report" aria-labelledby="help-tab-report">
               <p className="note">Sign in to report a problem with start.ng. If it's a real bug, you get coins.</p>
               <button type="button" onClick={onSignIn}>Sign in</button>
             </div>
           ) : (
-            <div className="help-body">
+            <div className="help-body" role="tabpanel" id="help-panel-report" aria-labelledby="help-tab-report">
               <form onSubmit={report} className="help-report">
                 <label htmlFor="help-what">What went wrong with start.ng?</label>
                 <textarea id="help-what" value={what} onChange={(e) => setWhat(e.target.value)} rows={4} maxLength={2000} required
