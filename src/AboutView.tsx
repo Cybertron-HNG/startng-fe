@@ -15,6 +15,7 @@ const WAYS: [string, string, string][] = [
 export default function AboutView({ themeToggle }: { themeToggle?: ReactNode }) {
   return (
     <>
+      <a className="skip-link" href="#main">Skip to content</a>
       <header className="container nav">
         <a className="logo" href="/"><b>start<span>.ng</span></b></a>
         <nav aria-label="Pages">
@@ -25,7 +26,7 @@ export default function AboutView({ themeToggle }: { themeToggle?: ReactNode }) 
         </nav>
         <div className="nav-account">{themeToggle}</div>
       </header>
-      <main>
+      <main id="main" tabIndex={-1}>
         <section className="container about about-page">
           <p className="eyebrow">About</p>
           <h1>About start.ng</h1>

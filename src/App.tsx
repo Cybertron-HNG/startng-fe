@@ -336,6 +336,7 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
 
   return (
     <>
+      <a className="skip-link" href="#main">Skip to content</a>
       <header className={menuOpen ? "container nav open" : "container nav"}>
         <a className="logo" href="/"><b>start<span>.ng</span></b></a>
         <nav id="pages-menu" aria-label="Pages">
@@ -358,7 +359,7 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
         </div>
       </header>
 
-      <main>
+      <main id="main" tabIndex={-1}>
         {creatorsPage && <CreatorsPage user={user} onSignIn={() => setSignInOpen(true)} />}
 
         {tournamentPage && <TournamentPage user={user} state={tournament} onSignIn={() => setSignInOpen(true)} onPlay={pickGame} />}

@@ -71,6 +71,7 @@ export default function Docs() {
 
   return (
     <>
+      <a className="skip-link" href="#main">Skip to content</a>
       <header className="container nav">
         <a className="logo" href="/"><b>start<span>.ng</span></b></a>
         <nav aria-label="Pages">
@@ -87,7 +88,7 @@ export default function Docs() {
           )}
         </div>
       </header>
-      <main className="container docs">
+      <main id="main" tabIndex={-1} className="container docs">
         <aside className="docs-side">
           <div className="ai-box">
             <b>Building with AI?</b>

@@ -8,6 +8,7 @@ import { SiteFooterView } from "./SiteFooterView";
 export default function NotFound() {
   return (
     <>
+      <a className="skip-link" href="#main">Skip to content</a>
       <header className="container nav">
         <a className="logo" href="/"><b>start<span>.ng</span></b></a>
         <nav aria-label="Pages">
@@ -17,7 +18,7 @@ export default function NotFound() {
         </nav>
         <div className="nav-account"><ThemeToggle /></div>
       </header>
-      <main>
+      <main id="main" tabIndex={-1}>
         <NotFoundSection />
       </main>
       <SiteFooterView />

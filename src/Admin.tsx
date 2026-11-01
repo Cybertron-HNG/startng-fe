@@ -145,6 +145,7 @@ export default function Admin() {
 
   return (
     <div className="admin-shell">
+      <a className="skip-link" href="#main">Skip to content</a>
       <header className="admin-top">
         <div className="admin-brand">
           <a className="logo" href="/">start.ng</a>
@@ -162,7 +163,7 @@ export default function Admin() {
           ))}
         </nav>
       </aside>
-      <main className="admin-main">
+      <main id="main" tabIndex={-1} className="admin-main">
         {shown && (
           <Boundary key={shown.key} name={shown.label}>
             <shown.Component access={access} can={can} go={go} ask={ask} />
