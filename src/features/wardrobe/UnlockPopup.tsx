@@ -3,7 +3,7 @@ import type { User } from "../../api";
 import { styleFor } from "../../character";
 import { changed, getItems, getWardrobe, wear, type Item } from "./api";
 import { dressed, useWorn, withItem } from "./dress";
-import { useDialog } from "./useDialog";
+import { useDialog } from "../../useDialog";
 import "./wardrobe.css";
 import { picture, share } from "./words";
 import { withHandle } from "../../share";

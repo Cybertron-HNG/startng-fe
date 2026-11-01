@@ -1,4 +1,5 @@
 import SiteFooter from "./SiteFooter";
+import { useDialog } from "./useDialog";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import { adminMe, AdminMe, approvePendingGame, getGameSession, trackPlay, getPendingGame, googleLogin, listGames, me, myGames, PendingGameInfo, saveCharacter, TokenResponse, User } from "./api";
@@ -278,6 +279,9 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
     setSignInOpen(false);
     if (goTo !== returnTo) setGoTo(null);
   }
+
+  const chooseRef = useDialog<HTMLDivElement>(!!chosen && !user, () => setChosen(null));
+  const signInRef = useDialog<HTMLDivElement>(signInOpen && !user && !checking, closeSignIn);
 
   function onSuccess(res: TokenResponse) {
     analytics.login();
@@ -598,7 +602,7 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
 
       {chosen && !user && (
         <div className="overlay" onClick={() => setChosen(null)}>
-          <div className="card choose" role="dialog" aria-modal="true" aria-labelledby="choose-title" onClick={(e) => e.stopPropagation()}>
+          <div className="card choose" ref={chooseRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="choose-title" onClick={(e) => e.stopPropagation()}>
             <div className="card-head">
               <h3 id="choose-title">Play {chosen.title}</h3>
               <button type="button" className="link close" aria-label="Close" onClick={() => setChosen(null)}>✕</button>
@@ -624,7 +628,7 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
 
       {signInOpen && !user && !checking && (
         <div className="overlay" onClick={closeSignIn}>
-          <div className="card" role="dialog" aria-modal="true" aria-labelledby="sign-in-title" onClick={(e) => e.stopPropagation()}>
+          <div className="card" ref={signInRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="sign-in-title" onClick={(e) => e.stopPropagation()}>
             <div className="card-head">
               <h3 id="sign-in-title">Sign in to start.ng</h3>
               <button type="button" className="link close" aria-label="Close" onClick={closeSignIn}>✕</button>

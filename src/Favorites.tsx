@@ -1,6 +1,7 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { addFavorite, IndieGame, indieCoverUrl, listFavorites, listIndieGames, removeFavorite, syncFavorites, trackIndiePlay, trackPlay, User } from "./api";
 import { Game, isInAppGame } from "./games";
+import { useDialog } from "./useDialog";
 
 // Favorite games. They're saved on the account (the API's /favorites) so they follow you to every
 // device, and kept in localStorage too so hearts respond at once and work if the API is slow.
@@ -115,12 +116,7 @@ export default function Favorites({ user, games, gamesLoading, onClose }: { user
   const favs = useFavorites(user);
   const [indie, setIndie] = useState<IndieGame[] | null>(null);
   const wantsIndie = favs.list.some((k) => k.startsWith("i:"));
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  const dialogRef = useDialog(true, onClose);
 
   useEffect(() => {
     if (wantsIndie && indie === null) listIndieGames(localStorage.getItem("token")).then(setIndie).catch(() => setIndie([]));
@@ -139,7 +135,7 @@ export default function Favorites({ user, games, gamesLoading, onClose }: { user
 
   return (
     <div className="overlay" onClick={onClose}>
-      <div className="card favorites" role="dialog" aria-modal="true" aria-labelledby="fav-title" onClick={(e) => e.stopPropagation()}>
+      <div className="card favorites" ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="fav-title" onClick={(e) => e.stopPropagation()}>
         <div className="card-head">
           <h3 id="fav-title">Your favorites</h3>
           <button type="button" className="link close" aria-label="Close" onClick={onClose}>✕</button>
