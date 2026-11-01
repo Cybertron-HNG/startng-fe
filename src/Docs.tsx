@@ -75,6 +75,7 @@ export default function Docs() {
         <a className="logo" href="/"><b>start<span>.ng</span></b></a>
         <nav aria-label="Pages">
           <a href="/games">Games</a>
+          <a href="/tournament">Tournament</a>
           <a href="/creators">Creators</a>
           <a href="/docs" aria-current="page">Docs</a>
         </nav>
