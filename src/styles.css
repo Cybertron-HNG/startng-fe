@@ -637,6 +637,12 @@ code { color: var(--on-lime); }
 .game-page-share { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); }
 .game-page-share span { font-family: var(--mono); font-size: .75rem; text-transform: uppercase; letter-spacing: .12em; margin-right: 4px; }
 .game-page-share .btn, .game-page-share button { padding: 9px 16px; font-size: .9rem; }
+.tip-supporters { color: var(--ink); font-size: .95rem; }
+.tip-form { display: grid; gap: 10px; width: 100%; }
+.tip-form .segmented { flex-wrap: wrap; border-radius: 18px; }
+.tip-note { display: grid; gap: 6px; font-size: .9rem; color: var(--ink); }
+.tip-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.your-tips ul { margin: 8px 0; padding-left: 18px; display: grid; gap: 4px; }
 .game-page-share .chip { display: inline-block; padding: 9px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font-size: .9rem; font-weight: 600; font-family: inherit; text-transform: none; letter-spacing: 0; margin-right: 0; }
 .indie-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 28px 0 0; }
 .indie-facts > div { padding: 14px 16px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; min-width: 0; }
