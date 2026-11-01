@@ -72,17 +72,6 @@ function useCountdown(at: string | null | undefined): string | null {
   return ms === 0 ? "" : h > 0 ? `${h}h ${m}m` : `${m}m`;
 }
 
-/** "Next tournament starts in 5h 12m" while today's runs. Its games are a surprise until it starts. */
-function NextTournament({ at }: { at: string | null }) {
-  const left = useCountdown(at);
-  if (!at || left === null) return null;
-  return (
-    <p className="tournament-next">
-      Next tournament {left ? <>starts in <b>{left}</b></> : "starts now"} · {dayText(at)}, {endsAtText(at)} your time. New games, revealed when it starts.
-    </p>
-  );
-}
-
 const endsAtText = (iso: string) => new Date(iso).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
 const dayText = (iso: string) => new Date(iso).toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
 
@@ -106,9 +95,8 @@ export function TournamentBanner({ tournament }: { tournament: Tournament | null
           <p className="eyebrow">Today's tournament · {left}</p>
           <h2>{tournament.games.length} games. 24 hours. One winner.</h2>
           <p className="tournament-banner-sub">
-            Share to enter, then play. {tournament.entrants} {tournament.entrants === 1 ? "player has" : "players have"} entered.
+            Ends at {endsAtText(tournament.ends_at)} your time. Share to enter, then play. {tournament.entrants} {tournament.entrants === 1 ? "player has" : "players have"} entered.
           </p>
-          <NextTournament at={tournament.next_starts_at} />
         </div>
         <div className="tournament-banner-games" aria-hidden="true">
           {tournament.games.map((g) => {
@@ -238,7 +226,6 @@ export function TournamentPage({ user, state, onSignIn, onPlay }: {
                 Ends at <b>{endsAtText(t.ends_at)}</b> your time. {t.entrants} {t.entrants === 1 ? "player has" : "players have"} entered.
               </p>
               <p className="note">{POINTS_NOTE} Most points wins the day.</p>
-              <NextTournament at={t.next_starts_at} />
             </div>
             <div className="tournament-enter">
               {t.entered ? (
