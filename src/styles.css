@@ -506,7 +506,7 @@ textarea:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
 .indie-cover:focus-within { outline: 2px solid var(--ink); outline-offset: 2px; }
 .indie-details:focus, .indie-form:focus { outline: none; }
 @media (max-width: 760px) {
-  .indie-banner { grid-template-columns: 1fr; padding: 26px 20px; }
+  .indie-banner { grid-template-columns: minmax(0, 1fr); padding: 26px 20px; }
   .indie-banner::after { background: linear-gradient(180deg, var(--card) 45%, color-mix(in srgb, var(--card) 40%, transparent) 75%, transparent); }
   /* The tiles are sized from the art's width, so its height must follow its width too: a fixed height let them grow over the buttons above. */
   .indie-banner-art { height: auto; aspect-ratio: 2 / 1; min-height: 170px; width: 100%; max-width: 520px; margin: 6px auto 0; }
