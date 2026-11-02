@@ -36,7 +36,9 @@ export default function GamePage({ name, game, loading, user, playerId, favorite
         title: `${game.title} · Play free on start.ng`,
         description: game.description ?? `Play ${game.title} free in your browser on start.ng, a game by ${game.by}.`,
         path: `/games/${game.slug}`,
-        ...(game.cover ? { image: game.cover, imageAlt: `${game.title} cover` } : {}),
+        // The 1200 x 630 share picture (small enough for WhatsApp, Ziki #74), as the server-written page has it.
+        ...(game.share ? { image: game.share, imageSize: [1200, 630] as [number, number], imageAlt: `${game.title} cover` }
+          : game.cover ? { image: game.cover, imageAlt: `${game.title} cover` } : {}),
       });
     } else if (!loading) {
       setSeo(PAGES.notFound);
