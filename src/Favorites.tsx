@@ -83,8 +83,11 @@ export function useFavorites(user: User | null) {
       changes++;
       saving++;
       const id = user.id;
+      const sentAt = changes; // the local state as of this request going out
       (adding ? addFavorite : removeFavorite)(token(), key)
-        .then((saved) => { if (--saving === 0) write(id, saved); }) // the last answer is the account's full list
+        // The last answer is the account's full list, but only if no heart was tapped while this
+        // request was out: a slow answer must not undo taps made after it was sent (Ziki issue #96).
+        .then((saved) => { if (--saving === 0 && changes === sentAt) write(id, saved); })
         .catch(() => { saving--; });
     },
   };
