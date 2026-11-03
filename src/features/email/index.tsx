@@ -1,42 +1,25 @@
-// H1 email and notifications (Hamzat): start.ng/emails (choose your emails; where confirm and unsubscribe links land),
-// the admin tabs "Email" and "Newsletter", the email section on your own profile, and the sign-up box on the tournament page.
-// Sending runs on the API (app/features/email).
-import { lazy, Suspense } from "react";
-import { registerAdminTab, registerPage, registerPagePart, registerProfileSection, type AdminTabProps } from "../registry";
+import { Suspense } from "react";
+import { registerPagePart, registerProfileSection, registerTab } from "../registry";
+import { EmailPrefs } from "./EmailPrefs";
 import TournamentEmail from "./TournamentEmail";
 
-const EmailTab = lazy(() => import("./EmailTab"));
-const NewsletterTab = lazy(() => import("./NewsletterTab"));
-const EmailPrefs = lazy(() => import("./EmailPrefs"));
-
-registerPage({ feature: "email", path: "/emails", shell: "app", load: () => import("./EmailsPage") });
-
-registerAdminTab({
+registerTab({
   feature: "email",
   key: "email",
-  label: "Email",
-  order: 40,
-  permission: "email.view",
-  Component: (props: AdminTabProps) => (
-    <Suspense fallback={null}>
-      <EmailTab {...props} />
-    </Suspense>
-  ),
+  title: "Email",
+  adminOnly: true,
+  loader: () => import("./EmailTab"),
 });
 
-registerAdminTab({
+registerTab({
   feature: "email",
-  key: "newsletter",
-  label: "Newsletter",
-  order: 41,
-  permission: "newsletter.send",
-  Component: (props: AdminTabProps) => (
-    <Suspense fallback={null}>
-      <NewsletterTab {...props} />
-    </Suspense>
-  ),
+  key: "announcements",
+  title: "Announcements",
+  adminOnly: true,
+  loader: () => import("./EmailTab"),
 });
 
+// The player's own profile shows their email preferences; someone else looking at their profile doesn't see them.
 registerProfileSection({
   feature: "email",
   key: "email",
