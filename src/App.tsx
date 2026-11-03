@@ -426,7 +426,7 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
             <div className="list-tools">
               <SearchBox value={q} onChange={search} label="Search games" placeholder="Search games or creators" suggestions={suggestions} />
               {games && (
-                <span className="count">
+                <span className="count" role="status" aria-live="polite" aria-atomic="true">
                   {searching || filters.active
                     ? `${cards.length} ${cards.length === 1 ? "result" : "results"}`
                     : pages > 1

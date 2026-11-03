@@ -310,7 +310,7 @@ export function CreatorsPage({ user, onSignIn }: { user: User | null; onSignIn: 
         <SearchBox value={q} onChange={search} label="Search independent games" placeholder="Search games or creators"
           suggestions={(games ?? []).flatMap((g) => [g.name, g.by])} />
         {games && (
-          <span className="count">
+          <span className="count" role="status" aria-live="polite" aria-atomic="true">
             {searching
               ? `${found.length} ${found.length === 1 ? "result" : "results"}`
               : pages > 1
