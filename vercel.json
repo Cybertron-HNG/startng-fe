@@ -1,0 +1,12 @@
+{
+  "buildCommand": "npm run build:design",
+  "outputDirectory": "dist-design",
+  "rewrites": [
+    { "source": "/api/features", "destination": "/mock/features.json" },
+    { "source": "/api/games", "destination": "/mock/games.json" },
+    { "source": "/api/tags", "destination": "/mock/tags.json" },
+    { "source": "/api/indie", "destination": "/mock/indie.json" },
+    { "source": "/api/indie/:id", "destination": "/mock/indie/:id.json" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
