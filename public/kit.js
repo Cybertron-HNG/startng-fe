@@ -119,7 +119,12 @@
   // { ok: false, error }, or null if start.ng didn't answer.
   function saveRun(stats, score) {
     const message = stats ? { type: 'startng:score', stats } : { type: 'startng:score', score };
-    return ask(message, 'startng:scoreSaved');
+    const p = ask(message, 'startng:scoreSaved');
+    // If end-of-round modal card is not shown, show the corner card so runs without gameOver still get Up next
+    if (!card) {
+      getNextGame().then((nextData) => { if (nextData && !card) showUpNext(nextData); });
+    }
+    return p;
   }
 
   async function getLeaderboard(limit = 10) {
@@ -188,6 +193,34 @@
     button.primary { background: var(--ink); color: var(--on-solid); border-color: var(--ink); }
     button.primary:hover { background: var(--solid-hover); }
     button[hidden] { display: none; }
+    .up-next {
+      position: fixed; z-index: 2147483000;
+      bottom: max(10px, env(safe-area-inset-bottom));
+      left: max(10px, env(safe-area-inset-left));
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 10px; border-radius: 12px;
+      background: var(--card); color: var(--ink); border: 1px solid var(--line);
+      box-shadow: 2px 2px 0 var(--lime);
+      text-decoration: none; cursor: pointer; max-width: min(320px, calc(100vw - 20px));
+      -webkit-tap-highlight-color: transparent;
+      animation: upNextIn .2s ease-out;
+    }
+    .up-next:hover { border-color: var(--ink); }
+    .up-next img { width: 32px; height: 32px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
+    .up-next-art {
+      width: 32px; height: 32px; border-radius: 6px; flex-shrink: 0;
+      background: var(--line); display: grid; place-items: center; font-weight: 700; color: var(--ink);
+    }
+    .up-next-info { display: grid; gap: 1px; min-width: 0; text-align: left; }
+    .up-next-eyebrow { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; }
+    .up-next-title { font-size: 13px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .up-next-by { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .up-next-close {
+      margin-left: 2px; padding: 2px 6px; border: none; background: transparent;
+      color: var(--muted); font-size: 14px; line-height: 1; cursor: pointer; border-radius: 4px;
+    }
+    .up-next-close:hover { color: var(--ink); background: var(--line); }
+    @keyframes upNextIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
   </style>`;
 
   function el(tag, attrs = {}, text = '') {
@@ -376,10 +409,62 @@
   // lanedash.start.ng -> "lanedash"
   const gameName = () => location.hostname.split('.')[0];
 
+  // Up next game cache and fetcher (PRD A1 / Issue #47)
+  let nextGamePromise = null;
+  function getNextGame() {
+    if (!ON_START_NG) return Promise.resolve(null);
+    nextGamePromise ??= ask({ type: 'startng:next' }, 'startng:nextData')
+      .then((reply) => (reply?.ok ? reply.next : null))
+      .catch(() => null);
+    return nextGamePromise;
+  }
+
+  let upNextCard = null;
+  let upNextTimer = null;
+  function closeUpNext() {
+    if (upNextTimer) clearTimeout(upNextTimer);
+    upNextTimer = null;
+    upNextCard?.remove();
+    upNextCard = null;
+  }
+
+  function showUpNext(nextData) {
+    if (!nextData || !nextData.slug) return;
+    closeUpNext();
+    const pill = el('div', { class: 'up-next', role: 'region', 'aria-label': 'Up next game' });
+    if (nextData.cover) {
+      pill.append(el('img', { src: nextData.cover, alt: '' }));
+    } else {
+      pill.append(el('div', { class: 'up-next-art' }, (nextData.title || nextData.slug).charAt(0)));
+    }
+    const info = el('div', { class: 'up-next-info' });
+    const eyebrow = el('span', { class: 'up-next-eyebrow' }, nextData.tournament ? `Play next in ${nextData.tournament} ▶` : 'Up next ▶');
+    const name = el('span', { class: 'up-next-title' }, nextData.title);
+    info.append(eyebrow, name);
+    if (nextData.by) {
+      info.append(el('span', { class: 'up-next-by' }, `by ${nextData.by}`));
+    }
+    const closeBtn = el('button', { type: 'button', class: 'up-next-close', 'aria-label': 'Dismiss' }, '✕');
+    closeBtn.onclick = (e) => {
+      e.stopPropagation();
+      closeUpNext();
+    };
+    pill.append(info, closeBtn);
+    pill.onclick = () => {
+      location.href = nextData.url || `${START_NG}/games/${nextData.slug}`;
+    };
+    root.append(pill);
+    upNextCard = pill;
+    upNextTimer = setTimeout(closeUpNext, 10000);
+  }
+
   let card;
-  function closeCard() {
+  function closeCard({ showNext = false } = {}) {
     card?.remove();
     card = null;
+    if (showNext) {
+      getNextGame().then((nextData) => { if (nextData) showUpNext(nextData); });
+    }
   }
 
   // Saves the run (if the player is signed in) and shows the end-of-round card.
@@ -410,6 +495,17 @@
     again.focus();
 
     if (!ON_START_NG) return null;
+
+    // Load next game suggestion in background and populate the next button
+    getNextGame().then((nextData) => {
+      if (!nextData || !card) return;
+      next.textContent = nextData.tournament ? `Play next in ${nextData.tournament}: ${nextData.title} ▶` : `Up next: ${nextData.title} ▶`;
+      next.removeAttribute('hidden');
+      next.onclick = () => {
+        location.href = nextData.url || `${START_NG}/games/${nextData.slug}`;
+      };
+    });
+
     const player = await getPlayer();
     if (!player?.user) {
       meta.textContent = 'Sign in to save your score.';
@@ -430,11 +526,12 @@
     return saved;
   }
 
-  addEventListener('keydown', (e) => { if (e.key === 'Escape' && card) closeCard(); });
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && card) closeCard({ showNext: true }); });
 
   window.startng = Object.freeze({
     version: VERSION, onStartNg: ON_START_NG, choseGuest: CHOSE_GUEST,
     getPlayer, onPlayerChange, signIn, saveRun, getLeaderboard, gameOver, closeCard, share, rooms,
+    getNextGame, showUpNext, closeUpNext,
   });
 
   const init = () => { addChrome(); startTelemetry(); };

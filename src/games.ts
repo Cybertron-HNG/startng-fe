@@ -1,5 +1,6 @@
-import { BoardStat, getLeaderboard, getLiveTicket, me, pingSession, PublishedGame, submitScore } from "./api";
+import { BoardStat, getLeaderboard, getLiveTicket, listGames, me, pingSession, PublishedGame, submitScore } from "./api";
 import { CharacterStyle, styleFor } from "./character";
+import { getNext } from "./features/discovery/api";
 
 // A homepage card for a game from GET /games (games published with POST /games/publish).
 // The API only knows the name, so the title and colours are worked out from it:
@@ -148,9 +149,48 @@ function whoami(): Promise<object> {
   });
 }
 
+let catalogPromise: Promise<Map<string, PublishedGame>> | null = null;
+function getCatalog(): Promise<Map<string, PublishedGame>> {
+  catalogPromise ??= listGames()
+    .then((list) => new Map(list.map((g) => [g.name, g])))
+    .catch(() => new Map());
+  return catalogPromise;
+}
+
 // What /connect answers. Every reply echoes the request's requestId.
 type Message = { type: string; requestId?: unknown; score?: unknown; stats?: unknown; limit?: unknown; sessionId?: unknown; event?: unknown; kit?: unknown };
 const handlers: Record<string, (msg: Message, game: string) => Promise<object>> = {
+  // { type: "startng:next" } -> { type: "startng:nextData", ok, next: { slug, title, url, by, cover, tournament } | error }
+  // "Up next": offer another start.ng game when a run ends, inside the game (kit.js).
+  "startng:next": async (_msg, game) => {
+    try {
+      const res = await getNext(game);
+      const nextSlug = res.games?.[0];
+      if (!nextSlug) return { type: "startng:nextData", ok: false, error: "No next game found" };
+      const catalog = await getCatalog();
+      const info = catalog.get(nextSlug);
+      const title = info
+        ? info.name.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")
+        : nextSlug.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+      const url = info ? playableUrl(info.url) : `https://${nextSlug}.start.ng`;
+      const by = info?.by ?? "";
+      const cover = info?.cover_url ?? null;
+      return {
+        type: "startng:nextData",
+        ok: true,
+        next: {
+          slug: nextSlug,
+          title,
+          url,
+          by,
+          cover,
+          tournament: res.tournament ?? null,
+        },
+      };
+    } catch (err) {
+      return { type: "startng:nextData", ok: false, error: errorText(err, "Could not load next game") };
+    }
+  },
   // { type: "startng:whoami" }
   //   -> { type: "startng:user", user: { id, name, account, style, face } | null, guest: { name, style, face } }
   // face is a picture of the character's face (a PNG data URL) for games that show a profile card.
