@@ -20,6 +20,7 @@ import "./share_cards";
 import "./challenges";
 import "./creator_hub"; // T2 creator hub (Hamzat, for Tega)
 import "./live"; // Ziki #37 live: playing now and the homepage strip (Daniel)
+import "./player_pulse"; // Ziki #58 Player Pulse: what players say, in Your games (Daniel)
 import "./wardrobe"; // wardrobe rewards: coins, rarity items and the shop (Kaka)
 import "./support"; // F10 Help button and problem reports (Hamzat)
 import "./tags"; // tags and category pages (Chloe)

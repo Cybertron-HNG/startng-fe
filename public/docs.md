@@ -259,7 +259,7 @@ It adds a "← start.ng" button (top left) and a small "Made on start.ng" badge 
 
 | Call | What it does |
 |---|---|
-| `startng.gameOver({ score, stats, title, onPlayAgain })` | Saves the run and shows the end-of-round card: the score, the player's rank, anything they unlocked, **Play again** and **Share on X**. Pass `stats` if your `startng.json` lists them, otherwise just `score`. Resolves to the save reply (see "Leaderboards"), or `null` if nothing was saved. |
+| `startng.gameOver({ score, stats, title, onPlayAgain, pulse })` | Saves the run and shows the end-of-round card: the score, the player's rank, anything they unlocked, **Play again** and **Share on X**. Signed-in players are also asked **How was that?** (Loved it, Too hard, Too easy, and an optional note), which you see under your game in Your games as "What players say"; pass `pulse: false` to leave the question out. Pass `stats` if your `startng.json` lists them, otherwise just `score`. Resolves to the save reply (see "Leaderboards"), or `null` if nothing was saved. |
 | `startng.getPlayer()` | Who is playing: `{ user, guest }`, or `null` when start.ng didn't answer. |
 | `startng.onPlayerChange(fn)` | Calls `fn` with the player whenever they sign in or out. |
 | `startng.signIn()` | Sends the player to start.ng to sign in, then back to your game. |
