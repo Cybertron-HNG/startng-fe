@@ -20,3 +20,14 @@
 .feature-checklist .todo { color: #b3261e; }
 .feature-checklist .maybe { color: var(--muted); }
 .featured-shelf { margin-bottom: 28px; }
+/* Laptop and phone icons: top-right of a card's picture, and under the name on a game's page */
+.card-badges > span:has(> .device-icons) { margin-left: auto; font-size: .8rem; line-height: 1; }
+/* .art span (and the legendary card's) styles the letter of a card without a cover: keep it off the icons */
+.game .art .device-icons .device { font-size: inherit; color: var(--ink); text-shadow: none; }
+.game .art .device-icons .device.off { color: var(--muted); }
+.device-icons { display: inline-flex; align-items: center; gap: 4px; padding: 3px 6px; border-radius: 6px; background: var(--card); color: var(--ink); pointer-events: auto; }
+.device-icons svg { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.device { display: inline-flex; align-items: center; gap: 6px; }
+.device.off { color: var(--muted); }
+.device-icons.big { flex-wrap: wrap; gap: 8px 18px; margin: 10px 0 0; padding: 0; background: none; font-size: .92rem; }
+.device-icons.big svg { width: 20px; height: 20px; }
