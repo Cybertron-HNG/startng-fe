@@ -4,14 +4,12 @@
 import { lazy, Suspense } from "react";
 import { registerAdminTab, registerPagePart, type AdminTabProps } from "../registry";
 import CategoriesHome from "./CategoriesHome";
-import CategoriesRow from "./CategoriesRow";
 import GameTags from "./GameTags";
 
 const TagsTab = lazy(() => import("./TagsTab"));
 const FEATURE = "tags";
 
 registerPagePart({ feature: FEATURE, key: "categories-home", page: "home", order: 50, Component: CategoriesHome });
-registerPagePart({ feature: FEATURE, key: "categories-row", page: "games", Component: CategoriesRow });
 registerPagePart({ feature: FEATURE, key: "game-tags", page: "game", order: 150, Component: GameTags });
 registerAdminTab({
   feature: FEATURE,

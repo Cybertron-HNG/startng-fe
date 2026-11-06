@@ -166,6 +166,26 @@ mark { background: linear-gradient(transparent 62%, var(--lime) 62%, var(--lime)
 @media (max-width: 760px) { .site-footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .site-footer-brand { grid-column: 1 / -1; } }
 @media (max-width: 600px) { .site-footer { padding: 0 16px 92px; } .site-footer-grid { padding-top: 32px; } .site-footer-base { flex-direction: column; } }
 
+/* the ball that rolls the games out; nothing is listed until it is pressed */
+.roll-row { display: grid; place-items: center; padding: 22px 0 34px; }
+.roll-ball { display: grid; place-items: center; gap: 4px; width: 168px; aspect-ratio: 1; border-radius: 50%; border: 2px solid var(--ink); background: var(--lime); color: var(--on-lime); font: 800 1.15rem inherit; letter-spacing: .02em; box-shadow: 8px 8px 0 var(--ink); cursor: pointer; transition: transform .2s cubic-bezier(.2, .9, .3, 1.2), box-shadow .2s, background .15s; }
+.roll-ball svg { width: 34px; height: 34px; }
+.roll-ball:hover, .roll-ball:focus-visible { transform: translateY(-4px) rotate(-5deg) scale(1.03); box-shadow: 11px 12px 0 var(--ink); background: var(--lime); filter: brightness(.97); outline: none; }
+.roll-ball.on { transform: rotate(12deg) scale(.94); box-shadow: 4px 4px 0 var(--ink); }
+.roll-ball.on:hover, .roll-ball.on:focus-visible { transform: rotate(12deg) scale(1); box-shadow: 7px 7px 0 var(--ink); }
+@media (max-width: 600px) { .roll-ball { width: 132px; font-size: 1rem; } .roll-ball svg { width: 26px; height: 26px; } }
+/* the games roll out as the normal cards, staggered a little so they land like dealt cards */
+.grid.roll-in > .game { animation: card-roll .5s cubic-bezier(.2, .9, .3, 1.15) both; }
+.grid.roll-in > .game:nth-child(2n) { animation-delay: 45ms; }
+.grid.roll-in > .game:nth-child(3n) { animation-delay: 90ms; }
+.grid.roll-in > .game:nth-child(5n) { animation-delay: 135ms; }
+@keyframes card-roll { from { opacity: 0; transform: translateY(18px) rotate(-2deg) scale(.96); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .grid.roll-in > .game { animation: none; } }
+/* the hero's swapping word: a lime chip that flips in like a calendar (src/App.tsx) */
+.hero h1 mark.swap { display: inline-block; padding: 0 .1em; margin: 0 -.02em; border-radius: .1em; }
+.hero h1 .swap-word { display: inline-block; transform-origin: 50% 72%; animation: word-flip .52s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes word-flip { from { transform: rotateX(-88deg) translateY(.14em); opacity: 0; } 60% { opacity: 1; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .hero h1 .swap-word { animation: none; } .roll-ball { transition: none; } }
 /* sign-in popup */
 .overlay { position: fixed; inset: 0; background: var(--scrim); backdrop-filter: blur(4px); display: grid; place-items: center; padding: 16px; z-index: 60; overflow-y: auto; overscroll-behavior: contain; }
 /* A pop-up taller than the screen scrolls inside the overlay (auto margins keep its top reachable), and the page behind stays put. */
