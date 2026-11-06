@@ -131,15 +131,49 @@ export default {
 
     if (await isHidden(env.GAMES_BUCKET, name)) return unavailable(env.SITE_URL || `https://${baseDomain}`, request.method);
 
-    const object = await env.GAMES_BUCKET.get(key);
+    // A Range request (audio and video, which iPhone Safari won't play without one) needs the file's size first, so
+    // it costs one head() more. Other requests are a single get(), as before.
+    let range = null;
+    if (request.headers.has("range")) {
+      const meta = env.GAMES_BUCKET.head ? await env.GAMES_BUCKET.head(key) : await env.GAMES_BUCKET.get(key);
+      if (!meta) return notFound();
+      // If-Range: the player has part of an older version; send the whole new file instead of mixing the two.
+      const ifRange = request.headers.get("if-range");
+      range = ifRange && ifRange !== meta.httpEtag ? null : parseRange(request.headers.get("range"), meta.size);
+      if (range === "unsatisfiable") {
+        return new Response(null, { status: 416, headers: { "content-range": `bytes */${meta.size}`, "accept-ranges": "bytes" } });
+      }
+    }
+
+    const object = await env.GAMES_BUCKET.get(key, range ? { range } : undefined);
     if (!object) return notFound();
 
     const headers = new Headers();
     headers.set("content-type", contentTypeFor(key, object));
     headers.set("x-content-type-options", "nosniff");
     headers.set("cache-control", env.CACHE_CONTROL || "public, max-age=60");
+    headers.set("accept-ranges", "bytes");
     if (object.httpEtag) headers.set("etag", object.httpEtag);
+    if (range) headers.set("content-range", `bytes ${range.offset}-${range.offset + range.length - 1}/${object.size}`);
 
-    return new Response(request.method === "HEAD" ? null : object.body, { status: 200, headers });
+    return new Response(request.method === "HEAD" ? null : object.body, { status: range ? 206 : 200, headers });
   },
 };
+
+// The part of a file a Range header asks for ("bytes=0-99", "bytes=100-", "bytes=-500"), for a file of `size` bytes:
+// { offset, length }, "unsatisfiable" (416), or null to send the whole file (no range, a malformed one, or several
+// ranges, which browsers don't need for media).
+export function parseRange(header, size) {
+  const m = /^bytes=(\d*)-(\d*)$/.exec((header || "").trim());
+  if (!m || (m[1] === "" && m[2] === "")) return null;
+  if (m[1] === "") {
+    const last = Number(m[2]);
+    if (last === 0 || size === 0) return "unsatisfiable";
+    return { offset: Math.max(0, size - last), length: Math.min(last, size) };
+  }
+  const start = Number(m[1]);
+  if (start >= size) return "unsatisfiable";
+  const end = m[2] === "" ? size - 1 : Math.min(Number(m[2]), size - 1);
+  if (end < start) return null;
+  return { offset: start, length: end - start + 1 };
+}
