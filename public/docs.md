@@ -860,7 +860,7 @@ When players share something from start.ng itself (a tournament result, and soon
 For your own game:
 
 - Keep your Share-on-X button (it's one of the game standards) pointing at your game's page, `https://start.ng/games/<your-game>`. That link already shows your `cover.png` as its preview.
-- To read a card yourself: `GET /share/{kind}/{id}` (public, no sign-in) returns `{url, text, image_url, square_image_url, title, path}`. `image_url` is 1200x630 (X and link previews); `square_image_url` is 1080x1080 (WhatsApp and Instagram).
+- To read a card yourself: `GET /share/{kind}/{id}` (public, no sign-in) returns `{url, text, image_url, square_image_url, title, path}`, or `null` while there's nothing to share yet (for example a tournament that hasn't finished). `image_url` is 1200x630 (X and link previews); `square_image_url` is 1080x1080 (WhatsApp and Instagram).
 
 ## Good to know
 
