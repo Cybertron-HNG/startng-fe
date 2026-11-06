@@ -108,6 +108,9 @@ function contentTypeFor(key, object) {
   return CONTENT_TYPES[ext] || object.httpMetadata?.contentType || "application/octet-stream";
 }
 
+// Sent on every game response over https: browsers then use https for a year, even for a typed or old http:// link.
+export const HSTS = "max-age=31536000; includeSubDomains";
+
 export default {
   async fetch(request, env) {
     const baseDomain = env.BASE_DOMAIN || "start.ng";
@@ -120,26 +123,39 @@ export default {
     // Reserved names are never served from the bucket. Send them on to wherever they live now.
     if (reserved.includes(name)) return fetch(request);
 
-    if (request.method !== "GET" && request.method !== "HEAD") {
-      return new Response("Method not allowed", { status: 405, headers: { allow: "GET, HEAD" } });
+    // A game only connects to start.ng (sign-in, scores) from an https:// address, so send http:// to the same
+    // address on https://. *.localhost stays on http for dev-server.js.
+    if (url.protocol === "http:" && !url.hostname.endsWith("localhost")) {
+      url.protocol = "https:";
+      return new Response(null, { status: 301, headers: { location: url.href } });
     }
-    // Only a single label is a game (a.b.start.ng is not).
-    if (!NAME_RE.test(name)) return notFound();
 
-    const key = keyForPath(name, url.pathname);
-    if (!key) return notFound();
-
-    if (await isHidden(env.GAMES_BUCKET, name)) return unavailable(env.SITE_URL || `https://${baseDomain}`, request.method);
-
-    const object = await env.GAMES_BUCKET.get(key);
-    if (!object) return notFound();
-
-    const headers = new Headers();
-    headers.set("content-type", contentTypeFor(key, object));
-    headers.set("x-content-type-options", "nosniff");
-    headers.set("cache-control", env.CACHE_CONTROL || "public, max-age=60");
-    if (object.httpEtag) headers.set("etag", object.httpEtag);
-
-    return new Response(request.method === "HEAD" ? null : object.body, { status: 200, headers });
+    const response = await serve(request, env, url, name, baseDomain);
+    if (url.protocol === "https:") response.headers.set("strict-transport-security", HSTS);
+    return response;
   },
 };
+
+async function serve(request, env, url, name, baseDomain) {
+  if (request.method !== "GET" && request.method !== "HEAD") {
+    return new Response("Method not allowed", { status: 405, headers: { allow: "GET, HEAD" } });
+  }
+  // Only a single label is a game (a.b.start.ng is not).
+  if (!NAME_RE.test(name)) return notFound();
+
+  const key = keyForPath(name, url.pathname);
+  if (!key) return notFound();
+
+  if (await isHidden(env.GAMES_BUCKET, name)) return unavailable(env.SITE_URL || `https://${baseDomain}`, request.method);
+
+  const object = await env.GAMES_BUCKET.get(key);
+  if (!object) return notFound();
+
+  const headers = new Headers();
+  headers.set("content-type", contentTypeFor(key, object));
+  headers.set("x-content-type-options", "nosniff");
+  headers.set("cache-control", env.CACHE_CONTROL || "public, max-age=60");
+  if (object.httpEtag) headers.set("etag", object.httpEtag);
+
+  return new Response(request.method === "HEAD" ? null : object.body, { status: 200, headers });
+}
