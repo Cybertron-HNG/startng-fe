@@ -131,15 +131,34 @@ export default {
 
     if (await isHidden(env.GAMES_BUCKET, name)) return unavailable(env.SITE_URL || `https://${baseDomain}`, request.method);
 
+    const cacheControl = env.CACHE_CONTROL || "public, max-age=60";
+    // The browser already has this file (If-None-Match with its etag): say so with a 304 and no body. Files stay
+    // cached for only a minute, so a new version shows quickly, and after that minute this check is all a repeat
+    // visit costs instead of the whole file again. It is one head(), which reads no file.
+    const ifNoneMatch = request.headers.get("if-none-match");
+    if (ifNoneMatch) {
+      const meta = env.GAMES_BUCKET.head ? await env.GAMES_BUCKET.head(key) : await env.GAMES_BUCKET.get(key);
+      if (!meta) return notFound();
+      if (meta.httpEtag && etagMatches(ifNoneMatch, meta.httpEtag)) {
+        return new Response(null, { status: 304, headers: { etag: meta.httpEtag, "cache-control": cacheControl } });
+      }
+    }
+
     const object = await env.GAMES_BUCKET.get(key);
     if (!object) return notFound();
 
     const headers = new Headers();
     headers.set("content-type", contentTypeFor(key, object));
     headers.set("x-content-type-options", "nosniff");
-    headers.set("cache-control", env.CACHE_CONTROL || "public, max-age=60");
+    headers.set("cache-control", cacheControl);
     if (object.httpEtag) headers.set("etag", object.httpEtag);
 
     return new Response(request.method === "HEAD" ? null : object.body, { status: 200, headers });
   },
 };
+
+// If-None-Match is a list of etags ("a", W/"b") or *. It's a match when any of them is this file's etag, weak or not.
+export function etagMatches(header, etag) {
+  const strip = (t) => t.trim().replace(/^W\//, "");
+  return header.split(",").some((t) => t.trim() === "*" || strip(t) === strip(etag));
+}
