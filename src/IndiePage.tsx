@@ -7,7 +7,7 @@ import { hostOf, indiePath } from "./indie";
 
 const listed = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString(undefined, { month: "short", year: "numeric" }); };
 import { PAGES, setSeo } from "./seo";
-import { withHandle } from "./share";
+import ShareButton from "./features/share_cards/ShareButton";
 
 // start.ng/creators/<id>-<name>: the page of a game by an independent creator, which is hosted outside
 // start.ng. Search engines and shared links land here (the API serves this address with the text
@@ -16,7 +16,6 @@ export default function IndiePage({ id, user, onSignIn }: { id: number; user: Us
   const [game, setGame] = useState<IndieGame | null | undefined>(undefined); // undefined: loading, null: no such game
   const [error, setError] = useState("");
   const [removing, setRemoving] = useState(false);
-  const [copied, setCopied] = useState(false);
   const favs = useFavorites(user);
   const [more, setMore] = useState<IndieGame[]>([]); // other independent games, for "More from independent creators"
   const [moreFailed, setMoreFailed] = useState(false); // the request failed (not the same as "there are no others")
@@ -70,16 +69,7 @@ export default function IndiePage({ id, user, onSignIn }: { id: number; user: Us
   const g = game;
   const others = more.filter((o) => o.id !== g.id).slice(0, 4);
   const pageUrl = `${location.origin}${indiePath(g)}`;
-  const tweet = `https://twitter.com/intent/tweet?${new URLSearchParams({ text: withHandle(`Come play ${g.name} on start.ng!`), url: pageUrl })}`;
 
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(pageUrl);
-      analytics.share("indie_game", String(g.id), "copy_link");
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch { /* no clipboard (older browsers): the address bar has the link */ }
-  }
 
   async function remove() {
     if (!confirm(`Remove ${g.name} from start.ng?`)) return;
@@ -123,8 +113,16 @@ export default function IndiePage({ id, user, onSignIn }: { id: number; user: Us
       <div className="game-page-rows">
         <div className="game-page-share">
           <span>Share it</span>
-          <a className="ghost btn" href={tweet} target="_blank" rel="noreferrer" onClick={() => analytics.share("indie_game", String(g.id), "x")}>Share on X</a>
-          <button type="button" className="ghost" onClick={copy}>{copied ? "Link copied" : "Copy link"}</button>
+          <ShareButton
+            kind="indie_game"
+            id={String(g.id)}
+            ghost
+            fallback={{
+              title: g.name,
+              text: `Come play ${g.name} on start.ng!`,
+              url: pageUrl,
+            }}
+          />
         </div>
         {g.categories && g.categories.length > 0 && (
           <div className="game-page-share" role="group" aria-label="Categories">

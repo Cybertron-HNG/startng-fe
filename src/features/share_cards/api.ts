@@ -2,7 +2,7 @@
 const API_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
 
 /** Every kind of card (KINDS in startng-be app/features/share_cards/service.py). */
-export type ShareKind = "challenge" | "tournament_result" | "unlock" | "league_move" | "private_tournament" | "creator" | "profile";
+export type ShareKind = "challenge" | "tournament_result" | "unlock" | "league_move" | "private_tournament" | "creator" | "profile" | "game" | "indie_game";
 
 export type ShareInfo = {
   url: string; // start.ng/s/<kind>/<id>: what goes in the post

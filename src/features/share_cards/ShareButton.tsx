@@ -29,21 +29,30 @@ async function cardFile(info: ShareInfo): Promise<File | null> {
 type Props = {
   kind: ShareKind;
   id: string;
+  fallback?: {
+    title: string;
+    text: string;
+    url: string;
+  };
   label?: string; // the phone button's words
   intro?: ReactNode; // shown before the buttons, and only when there's something to share ("Your result on Tuesday")
+  ghost?: boolean; // use ghost button styling (used on game and indie game pages)
   onShared?: () => void;
 };
 
-export default function ShareButton({ kind, id, label = "Share", intro, onShared }: Props) {
+export default function ShareButton({ kind, id, fallback, label = "Share", intro, ghost = false, onShared }: Props) {
   const on = useFeature(FEATURE);
   const [info, setInfo] = useState<ShareInfo | null>(null);
   const [copied, setCopied] = useState(false);
-  const [ready, setReady] = useState(false); // phones: the card picture is fetched (or couldn't be)
-  const file = useRef<File | null>(null); // fetched ahead: a phone only shares straight after the tap
   const phone = isPhone();
+  const [ready, setReady] = useState(!phone || !!fallback); // phones: the card picture is fetched (or couldn't be)
+  const file = useRef<File | null>(null); // fetched ahead: a phone only shares straight after the tap
 
   useEffect(() => {
+    file.current = null;
+    if (!phone || !!fallback) setReady(true);
     if (!on) return;
+
     let live = true;
     getShare(kind, id)
       .then(async (s) => {
@@ -52,20 +61,29 @@ export default function ShareButton({ kind, id, label = "Share", intro, onShared
         if (s && phone) file.current = await cardFile(s);
         if (live) setReady(true);
       })
-      .catch(() => live && setInfo(null));
+      .catch(() => {
+        if (live) {
+          setInfo(null);
+          setReady(true);
+        }
+      });
     return () => { live = false; };
-  }, [on, kind, id, phone]);
+  }, [on, kind, id, phone, fallback]);
 
-  if (!on || !info) return null;
-  const post = `${info.text} ${info.url}`;
+  const data = info ?? fallback ?? null;
+  if (!data) return null;
+
+  const post = `${data.text} ${data.url}`;
   const shared = (method: "x" | "copy_link" | "whatsapp" | "share_menu") => {
-    analytics.share("share_card", `${kind}/${id}`, method);
+    const category = kind === "game" ? "game" : kind === "indie_game" ? "indie_game" : "share_card";
+    const itemId = category === "share_card" ? `${kind}/${id}` : id;
+    analytics.share(category, itemId, method);
     onShared?.();
   };
 
   async function copy() {
     try {
-      await navigator.clipboard.writeText(info!.url);
+      await navigator.clipboard.writeText(data!.url);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
       shared("copy_link");
@@ -73,19 +91,47 @@ export default function ShareButton({ kind, id, label = "Share", intro, onShared
   }
 
   function shareOnPhone() {
-    const data: ShareData = file.current ? { files: [file.current], text: post } : { title: info!.title, text: info!.text, url: info!.url };
-    navigator.share(data)
+    const shareData: ShareData = file.current
+      ? { files: [file.current], text: post }
+      : { title: data!.title, text: data!.text, url: data!.url };
+    navigator.share(shareData)
       .then(() => shared("share_menu"))
       .catch((err) => { if (err?.name !== "AbortError") copy(); }); // cancelled: nothing to do
   }
 
-  const buttons = phone ? <button type="button" onClick={shareOnPhone} disabled={!ready}>{label}</button> : (
+  const phoneBtnClass = ghost ? "btn ghost" : "";
+  const xBtnClass = ghost ? "btn ghost" : "btn";
+  const waBtnClass = "btn ghost";
+  const copyBtnClass = "ghost";
+  const xLabel = kind === "game" || kind === "indie_game" ? "Share on X" : "Post on X";
+
+  const buttons = phone ? (
+    <button type="button" className={phoneBtnClass} onClick={shareOnPhone} disabled={!ready}>
+      {label}
+    </button>
+  ) : (
     <div className="share-row">
-      <a className="btn" href={`https://twitter.com/intent/tweet?${new URLSearchParams({ text: withHandle(info.text), url: info.url })}`}
-        target="_blank" rel="noreferrer" onClick={() => shared("x")}>Post on X</a>
-      <a className="btn ghost" href={`https://wa.me/?${new URLSearchParams({ text: post })}`} target="_blank" rel="noreferrer"
-        onClick={() => shared("whatsapp")}>WhatsApp</a>
-      <button type="button" className="ghost" onClick={copy}>{copied ? "Copied" : "Copy link"}</button>
+      <a
+        className={xBtnClass}
+        href={`https://twitter.com/intent/tweet?${new URLSearchParams({ text: withHandle(data.text), url: data.url })}`}
+        target="_blank"
+        rel="noreferrer"
+        onClick={() => shared("x")}
+      >
+        {xLabel}
+      </a>
+      <a
+        className={waBtnClass}
+        href={`https://wa.me/?${new URLSearchParams({ text: post })}`}
+        target="_blank"
+        rel="noreferrer"
+        onClick={() => shared("whatsapp")}
+      >
+        WhatsApp
+      </a>
+      <button type="button" className={copyBtnClass} onClick={copy}>
+        {copied ? "Link copied" : "Copy link"}
+      </button>
     </div>
   );
   return intro ? <div className="share-block"><p>{intro}</p>{buttons}</div> : buttons;
