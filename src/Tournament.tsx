@@ -106,7 +106,9 @@ export function TournamentBanner({ tournament }: { tournament: Tournament | null
           <p className="eyebrow">Today's tournament · {left}</p>
           <h2>{tournament.games.length} games. 24 hours. One winner.</h2>
           <p className="tournament-banner-sub">
-            Share to enter, then play. {tournament.entrants} {tournament.entrants === 1 ? "player has" : "players have"} entered.
+            {tournament.entered
+              ? `Entered · ${tournament.my_runs ?? 0} ${(tournament.my_runs ?? 0) === 1 ? "run" : "runs"} counted. ${tournament.entrants} ${tournament.entrants === 1 ? "player has" : "players have"} entered.`
+              : `Playing any tournament game enters you automatically, or share on X to enter now. ${tournament.entrants} ${tournament.entrants === 1 ? "player has" : "players have"} entered.`}
           </p>
           <NextTournament at={tournament.next_starts_at} />
         </div>
@@ -243,15 +245,17 @@ export function TournamentPage({ user, state, onSignIn, onPlay }: {
             <div className="tournament-enter">
               {t.entered ? (
                 <>
-                  <p className="ok">You're in. Your runs on these games count until the end.</p>
+                  <p className="ok">Entered · {t.my_runs ?? 0} {(t.my_runs ?? 0) === 1 ? "run" : "runs"} counted</p>
+                  <p className="note">Your runs on these games count until the end.</p>
                   {t.me && <p className="note">You're <b>#{t.me.place}</b> with <b>{t.me.points}</b> {t.me.points === 1 ? "point" : "points"}.</p>}
                 </>
               ) : (
                 <>
+                  <p className="note">Playing any tournament game enters you automatically, or share on X to enter now.</p>
                   <button type="button" onClick={shareAndEnter} disabled={entering}>
                     {entering ? "Entering…" : user ? "Share on X to enter" : "Sign in to enter"}
                   </button>
-                  <p className="note">Share the tournament on X to enter. Runs before you enter don't count.</p>
+                  <p className="note">Optional bonus: share to let your friends know you're competing.</p>
                 </>
               )}
               {enterError && <p className="error">{enterError}</p>}

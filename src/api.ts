@@ -364,6 +364,7 @@ export type Tournament = {
   games: TournamentGame[];
   entrants: number;
   entered: boolean;
+  my_runs?: number;
   standings: Standing[];
   me: Standing | null;
   winner: Standing | null;
