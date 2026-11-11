@@ -61,6 +61,7 @@ Today these pages are written by the API:
 | `/games`, `/games?page=2` | `GET /pages/games` | games view in `src/App.tsx` |
 | `/games/<name>` | `GET /pages/games/{name}` | `src/GamePage.tsx` |
 | `/creators/<id>-<name>` | `GET /pages/creators/{id}` | `src/IndiePage.tsx` |
+| `/by/<id>-<name>` | `GET /by/{id}/page` | `src/features/creator_hub/CreatorPage.tsx` |
 
 ### The content must match
 1. **Nothing for Google only.** Every word, heading, link and number the API writes must be on the React page when it loads, with no sign-in and no clicks beyond opening a dropdown. No hidden text, no extra keywords, no text in a colour or size people can't read.
