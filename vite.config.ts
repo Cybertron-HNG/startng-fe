@@ -8,7 +8,7 @@ import AboutView from "./src/AboutView";
 import { QUESTIONS } from "./src/home-copy";
 import { Markdown, slug } from "./src/markdown";
 import { SiteFooterView } from "./src/SiteFooterView";
-import { DEFAULT_SITE_URL, headTags, jsonLd, PAGES, SITEMAP_PATHS, STATIC_PAGES } from "./src/seo";
+import { DEFAULT_SITE_URL, headTags, jsonLd, gamesJsonLd, leaderboardJsonLd, PAGES, SITEMAP_PATHS, STATIC_PAGES } from "./src/seo";
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
@@ -107,6 +107,14 @@ function seoPages(site: string): Plugin {
       if (!about.includes("<!--/seo-->")) throw new Error("about.html has no seo block");
       writeFileSync(resolve(out, "about.html"), about.replace("<!--/seo-->", () => `<script type="application/ld+json">${JSON.stringify(faq).replace(/</g, "\\u003c")}</script>
     <!--/seo-->`));
+      const games = readFileSync(resolve(out, "games.html"), "utf8");
+      if (games.includes("<!--/seo-->")) {
+        writeFileSync(resolve(out, "games.html"), games.replace("<!--/seo-->", () => `${gamesJsonLd(site)}\n    <!--/seo-->`));
+      }
+      const leaderboard = readFileSync(resolve(out, "leaderboard.html"), "utf8");
+      if (leaderboard.includes("<!--/seo-->")) {
+        writeFileSync(resolve(out, "leaderboard.html"), leaderboard.replace("<!--/seo-->", () => `${leaderboardJsonLd(site)}\n    <!--/seo-->`));
+      }
       fill("hangout.html", PAGES.hangout.path, hangoutText());
       mkdirSync(out, { recursive: true });
       writeFileSync(resolve(out, "robots.txt"), `User-agent: *\nAllow: /\nDisallow: /approve/\nDisallow: /connect\n\nSitemap: ${site}/sitemap.xml\n`);
