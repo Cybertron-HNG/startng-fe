@@ -40,6 +40,11 @@ export const followState = (userId: number) => call<FollowState>(`/follows/${use
 export const follow = (userId: number) => call<FollowState>(`/follows/${userId}`, { method: "PUT" });
 export const unfollow = (userId: number) => call<void>(`/follows/${userId}`, { method: "DELETE" });
 export const myPeople = (kind: ListKind) => call<People>(`/me/${kind}`);
+/** A game's creator and whether you follow them, for the Follow button on the game's page (Ziki #42). */
+export type GameCreator = { game: string; creator: Player; state: FollowState };
+export const gameCreator = (game: string) => call<GameCreator>(`/follows/game/${encodeURIComponent(game)}`);
+/** The newest games from creators you follow (names, newest first), for the homepage row. following 0: show nothing. */
+export const followingGames = () => call<{ following: number; games: { name: string }[] }>("/me/following/games");
 export const makeInvite = () => call<Invite>("/friend-invites", { method: "POST" });
 export const previewInvite = (code: string) => call<InvitePreview>(`/friend-invites/${encodeURIComponent(code)}`);
 export const acceptInvite = (code: string) =>
