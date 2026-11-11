@@ -98,6 +98,7 @@ function Dot({ color }: { color: string | null }) {
 /** The homepage strip: today's games, time left and a way in. */
 export function TournamentBanner({ tournament }: { tournament: Tournament | null | undefined }) {
   const left = useTimeLeft(tournament?.ends_at);
+  const running = Boolean(tournament?.ends_at && new Date(tournament.ends_at).getTime() > Date.now());
   if (!tournament) return null;
   return (
     <section className="container">
@@ -108,7 +109,7 @@ export function TournamentBanner({ tournament }: { tournament: Tournament | null
           <p className="tournament-banner-sub">
             Share to enter, then play. {tournament.entrants} {tournament.entrants === 1 ? "player has" : "players have"} entered.
           </p>
-          <NextTournament at={tournament.next_starts_at} />
+          {!running && <NextTournament at={tournament.next_starts_at} />}
         </div>
         <div className="tournament-banner-games" aria-hidden="true">
           {tournament.games.map((g) => {
@@ -238,7 +239,7 @@ export function TournamentPage({ user, state, onSignIn, onPlay }: {
                 Ends at <b>{endsAtText(t.ends_at)}</b> your time. {t.entrants} {t.entrants === 1 ? "player has" : "players have"} entered.
               </p>
               <p className="note">{POINTS_NOTE} Most points wins the day.</p>
-              <NextTournament at={t.next_starts_at} />
+              {!(t.ends_at && new Date(t.ends_at).getTime() > Date.now()) && <NextTournament at={t.next_starts_at} />}
             </div>
             <div className="tournament-enter">
               {t.entered ? (
