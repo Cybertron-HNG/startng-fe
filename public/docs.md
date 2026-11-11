@@ -266,10 +266,12 @@ It adds a "← start.ng" button (top left) and a small "Made on start.ng" badge 
 | `startng.saveRun(stats)` | Saves a run without showing the card. |
 | `startng.getLeaderboard(limit)` | The top players, for everyone. |
 | `startng.share({ score })` | Opens an X post with the result and a link to your game. |
+| `startng.shareClip({ score })` | Shares the last ~10 seconds of gameplay as a short video clip (for WhatsApp Status, TikTok, Instagram or download). Automatically offered on the end-of-round card on new personal bests. |
+| `startng.hasClip()` | Returns true if a gameplay clip is currently held in the 10-second rolling ring buffer. |
 
 The back button, the badge and the card's **Share on X** button are the three game standards, so a game that loads the Kit and calls `startng.gameOver()` (or `startng.share()`) at the end of a round meets all three. If you turn the button or the badge off, add your own link back to https://start.ng or the start.ng name instead.
 
-Options go on the script tag: `data-back="off"` (no back button), `data-badge="off"` (no badge) and `data-position="right"` (back button top right). The Kit also sends start.ng a ping every 30 seconds while the game is on screen, so creators will be able to see how long people play. It sends nothing else.
+Options go on the script tag: `data-back="off"` (no back button), `data-badge="off"` (no badge), `data-clip="off"` (turns off automatic moment recording) and `data-position="right"` (back button top right). The Kit also sends start.ng a ping every 30 seconds while the game is on screen, so creators will be able to see how long people play. It sends nothing else.
 
 The code below is the manual way, if you want full control. Games that already use it keep working.
 
