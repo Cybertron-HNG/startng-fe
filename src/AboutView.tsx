@@ -20,6 +20,7 @@ export default function AboutView({ themeToggle }: { themeToggle?: ReactNode }) 
         <nav aria-label="Pages">
           <a href="/games">Games</a>
           <a href="/tournament">Tournament</a>
+          <a href="/friends">Friends</a>
           <a href="/creators">Creators</a>
           <a href="/docs">Docs</a>
         </nav>

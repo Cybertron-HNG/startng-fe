@@ -14,6 +14,7 @@ export function SiteFooterView({ categories = false }: { categories?: boolean })
           <ul>
             <li><a href="/games">All games</a></li>
             <li><a href="/tournament">Daily tournament</a></li>
+            <li><a href="/friends">Friend tournaments</a></li>
             <li><a href="/leaderboard">Leaderboard</a></li>
             {categories && <li><a href="/categories">Categories</a></li>}
             <li><a href="/hangout">The Hangout</a></li>
