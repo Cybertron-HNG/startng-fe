@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BoardStat, getLeaderboard, LeaderboardEntry } from "./api";
+import { BoardStat, getLeaderboard, getYourPlace, LeaderboardEntry, YourPlace } from "./api";
 import { useFeature } from "./features/flags";
 import { Game } from "./games";
 
@@ -23,6 +23,7 @@ export const shortName = (name: string, max = 14) => {
 export default function BoardTable({ game, playerId }: { game: Game; playerId: number | null }) {
   const [entries, setEntries] = useState<LeaderboardEntry[] | null>(null);
   const [error, setError] = useState("");
+  const [place, setPlace] = useState<YourPlace | null>(null);
   const profilesOn = useFeature("profiles"); // names link to player pages (src/features/profiles)
   // The game's own columns (startng.json); first one ranks, the rest break ties.
   const stats = game.board ?? [{ key: "score", label: "Score", order: "highest" as const, format: "number" as const }];
@@ -34,6 +35,19 @@ export default function BoardTable({ game, playerId }: { game: Game; playerId: n
       .then((rows) => setEntries(rows.slice(0, 10)))
       .catch(() => setError("Couldn't load the leaderboard. Try again in a moment."));
   }, [game.slug]);
+
+  // The signed-in player's own place, shown under the top 10 when they're not in it.
+  useEffect(() => {
+    if (playerId === null) return setPlace(null);
+    getYourPlace(localStorage.getItem("token"), game.slug).then(setPlace).catch(() => setPlace(null));
+  }, [game.slug, playerId]);
+
+  const first = stats[0];
+  const outside = place?.rank != null && place.you && place.rank > 10 ? place : null;
+  const ahead = outside?.above[outside.above.length - 1];
+  const gap = outside && ahead && first
+    ? Math.abs((ahead.stats?.[first.key] ?? (first.key === "score" ? ahead.score : 0)) - (outside.you!.stats?.[first.key] ?? (first.key === "score" ? outside.you!.score : 0)))
+    : null;
 
   return (
     <>
@@ -59,6 +73,13 @@ export default function BoardTable({ game, playerId }: { game: Game; playerId: n
             </div>
           ))}
         </div>
+      )}
+      {outside && (
+        <p className="board-place">
+          <strong>You're #{outside.rank}</strong>
+          {ahead && gap !== null && <> · {formatStat(first, gap)} {first.format === "time" ? "" : first.label.toLowerCase()} behind {shortName(ahead.name)} (#{ahead.rank})</>}
+          {outside.total > 0 && <span className="num"> of {outside.total}</span>}
+        </p>
       )}
     </>
   );
