@@ -1,9 +1,9 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
 
-const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 /** Makes an element a proper pop-up while `open`: focus moves into it, Escape calls onClose, Tab stays inside, and
- *  closing gives focus back to what had it before (the "Try on" or "Buy" button). Put the returned ref on the
+ *  closing gives focus back to what had it before (the button that opened the dialog). Put the returned ref on the
  *  role="dialog" element, with tabIndex={-1}. */
 export function useDialog<T extends HTMLElement = HTMLDivElement>(open: boolean, onClose: () => void) {
   const ref = useRef<T>(null);

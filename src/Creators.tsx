@@ -1,5 +1,5 @@
 import IndieCategoryPicker from "./features/tags/IndieCategoryPicker";
-import { ChangeEvent, FormEvent, RefObject, useCallback, useEffect, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from "react";
 import {
   COVER_TYPES, IndieGame, indieCoverUrl, listIndieGames, MAX_COVER_BYTES, submitIndieGame, User,
 } from "./api";
@@ -12,6 +12,7 @@ import { withHandle } from "./share";
 import { analytics } from "./analytics";
 import { NotFoundSection } from "./NotFound";
 import { SkeletonCards } from "./Skeleton";
+import { useDialog } from "./useDialog";
 
 // Games by independent creators: made and hosted outside start.ng. The homepage shows the newest 4
 // under a banner; /creators shows them all. Cards open the game's own page on start.ng
@@ -21,37 +22,6 @@ const HOME_COUNT = 4;
 const PER_PAGE = 20; // the same page size as /games
 const pageFromUrl = () => Math.max(1, Number.parseInt(new URLSearchParams(location.search).get("page") ?? "1", 10) || 1);
 const token = () => localStorage.getItem("token");
-
-const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
-
-/** Makes a popup behave like a dialog: focus moves in when it opens, Tab stays inside, Escape closes, and focus goes back to where it was. */
-function useDialog(onClose: () => void): RefObject<HTMLDivElement> {
-  const ref = useRef<HTMLDivElement>(null);
-  const close = useRef(onClose);
-  close.current = onClose;
-  useEffect(() => {
-    const dialog = ref.current;
-    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const items = () => Array.from(dialog?.querySelectorAll<HTMLElement>(FOCUSABLE) ?? []);
-    (items()[0] ?? dialog)?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") return close.current();
-      if (e.key !== "Tab") return;
-      const all = items();
-      if (all.length === 0) return e.preventDefault();
-      const first = all[0], last = all[all.length - 1];
-      if (!dialog?.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
-      else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      opener?.focus();
-    };
-  }, []);
-  return ref;
-}
 
 function useIndieGames(user: User | null, limit?: number, sort: "newest" | "popular" = "newest") {
   const [games, setGames] = useState<IndieGame[] | null>(null);
@@ -104,7 +74,7 @@ function SubmitGame({ user, onSignIn, onClose, onAdded }: {
   const [busy, setBusy] = useState(false);
   const [added, setAdded] = useState<IndieGame | null>(null);
   const close = () => (added ? onAdded(added) : onClose());
-  const dialog = useDialog(close);
+  const dialog = useDialog(true, close);
 
   function pickCover(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];

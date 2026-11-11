@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { admin, REPORT_REASONS, ReportReason, reportGame } from "./api";
+import { useDialog } from "./useDialog";
 
 // "Report this game" on a game's page (signed-in players), and "Flag game" for admins. Either one hides the game
 // from start.ng until an admin looks at it.
@@ -15,6 +16,7 @@ export default function ReportDialog({ game, title, mode, onClose, onDone }: {
   const [state, setState] = useState<"idle" | "sending" | "sent">("idle");
   const [error, setError] = useState("");
   const flag = mode === "flag";
+  const dialogRef = useDialog<HTMLFormElement>(true, () => (state === "sent" ? onDone() : onClose()));
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -35,7 +37,7 @@ export default function ReportDialog({ game, title, mode, onClose, onDone }: {
 
   return (
     <div className="overlay" onClick={state === "sent" ? onDone : onClose}>
-      <form className="card report" role="dialog" aria-modal="true" aria-labelledby="report-title" onClick={(e) => e.stopPropagation()} onSubmit={submit}>
+      <form ref={dialogRef} tabIndex={-1} className="card report" role="dialog" aria-modal="true" aria-labelledby="report-title" onClick={(e) => e.stopPropagation()} onSubmit={submit}>
         <div className="card-head">
           <h3 id="report-title">{flag ? `Flag ${title}` : `Report ${title}`}</h3>
           <button type="button" className="link close" aria-label="Close" onClick={state === "sent" ? onDone : onClose}>✕</button>
@@ -45,7 +47,7 @@ export default function ReportDialog({ game, title, mode, onClose, onDone }: {
             <p className="note">
               {flag ? "Flagged. The game is hidden from start.ng until an admin puts it back." : "Thanks. Our team will look at it and take it down if it breaks the rules."}
             </p>
-            <button type="button" onClick={onDone}>Done</button>
+            <button type="button" autoFocus onClick={onDone}>Done</button>
           </>
         ) : (
           <>

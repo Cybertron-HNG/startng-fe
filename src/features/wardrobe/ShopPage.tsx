@@ -6,7 +6,7 @@ import { buy, changed, getShop, getWallet, getWardrobe, type Item, type Shop } f
 import { dressed, useWorn, withItem } from "./dress";
 import ItemTile from "./ItemTile";
 import WardrobeTab from "./WardrobeTab";
-import { useDialog } from "./useDialog";
+import { useDialog } from "../../useDialog";
 import "./wardrobe.css";
 import { coins } from "./words";
 
