@@ -20,7 +20,7 @@ function docsText(site: string): string {
     .map((s) => `<a href="#${slug(s)}">${esc(s.replace(/`/g, ""))}</a>`).join("");
   return (
     '<header class="container nav"><a class="logo" href="/"><b>start<span>.ng</span></b></a>' +
-    '<nav aria-label="Pages"><a href="/games">Games</a><a href="/creators">Creators</a><a href="/docs" aria-current="page">Docs</a></nav></header>' +
+    '<nav aria-label="Pages"><a href="/games">Games</a><a href="/tournament">Tournament</a><a href="/creators">Creators</a><a href="/docs" aria-current="page">Docs</a></nav></header>' +
     '<main class="container docs"><aside class="docs-side"><div class="ai-box"><b>Building with AI?</b><span>Give it this page as plain text:</span>' +
     `<code>${esc(`${site}/docs.md`.replace(/^https?:\/\//, ""))}</code>` +
     '<a class="btn ghost" href="/docs.md" download="startng-docs.md">Download as .md</a></div>' +
@@ -44,7 +44,7 @@ function hangoutText(): string {
 function notFoundText(): string {
   return (
     '<header class="container nav"><a class="logo" href="/"><b>start<span>.ng</span></b></a>' +
-    '<nav aria-label="Pages"><a href="/games">Games</a><a href="/creators">Creators</a><a href="/docs">Docs</a></nav></header>' +
+    '<nav aria-label="Pages"><a href="/games">Games</a><a href="/tournament">Tournament</a><a href="/creators">Creators</a><a href="/docs">Docs</a></nav></header>' +
     '<main><section class="container hero"><p class="eyebrow">404</p><h1>Page not <mark>found.</mark></h1>' +
     '<p class="lead">There\'s nothing at this address.<br />Looking for a game? Each one lives at its own address, like <code>yourgame.start.ng</code>.</p>' +
     '<div class="actions"><a class="btn" href="/">Go to the homepage</a><a class="btn ghost" href="/games">Browse games</a></div></section></main>' +
