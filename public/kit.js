@@ -211,6 +211,23 @@
 
   // Opens an X post with the player's result and a link to the game (start.ng's
   // third game standard: "Share your result on X").
+
+  async function shareScore({ score, rank } = {}) {
+    const game = document.title || 'this game';
+    const player = await getPlayer();
+    const gameSlug = location.pathname.split('/').filter(Boolean).pop() || 'game';
+    const shareUrl = player?.user ? `${START_NG}/s/score/${gameSlug}-${player.user.id}` : `${START_NG}/games/${gameSlug}`;
+    const text = rank ? `I scored ${score ?? ''} (#${rank}) on ${game} on start.ng. Can you beat me?` : `I scored ${score ?? ''} on ${game} on start.ng. Can you beat me?`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: `${game} Score`, text, url: shareUrl });
+        return;
+      } catch (e) {
+        if (e.name !== 'AbortError') console.debug(e);
+      }
+    }
+    share({ score, text });
+  }
   function share({ score, text } = {}) {
     const game = document.title || 'this game';
     const line = text ?? (score != null ? `I scored ${score} in ${game} on start.ng. Can you beat it?` : `Play ${game} on start.ng`);
@@ -396,13 +413,14 @@
 
     const again = el('button', { type: 'button', class: 'primary' }, 'Play again');
     again.onclick = () => { closeCard(); onPlayAgain?.(); };
+    const scoreCardBtn = el('button', { type: 'button', class: 'score-card-btn', hidden: '' }, 'Share score card 🏆');
     const shareBtn = el('button', { type: 'button' }, 'Share on X');
     shareBtn.onclick = () => share({ score });
     // Challenge a friend (B1) and Play next (A1) are owned by other features;
     // they appear once those contracts exist.
     const challenge = el('button', { type: 'button', hidden: '' }, 'Challenge a friend');
     const next = el('button', { type: 'button', hidden: '' }, 'Play next');
-    buttons.append(again, shareBtn, challenge, next);
+    buttons.append(again, scoreCardBtn, shareBtn, challenge, next);
 
     box.append(el('h2', {}, title), el('div', { class: 'score' }, String(score ?? '')), meta, unlocks, buttons);
     card.append(box);
@@ -425,6 +443,10 @@
     }
     const r = saved.result ?? {};
     meta.textContent = r.improved ? `New personal best! You're #${r.rank}.` : `Saved. Your best is still ${r.best} (#${r.rank}).`;
+    if (saved?.ok && player?.user) {
+      scoreCardBtn.onclick = () => shareScore({ score: r.best ?? score, rank: r.rank });
+      scoreCardBtn.removeAttribute('hidden');
+    }
     // D1 adds new awards to the score reply as unlocked: [...].
     for (const item of r.unlocked ?? saved.unlocked ?? []) unlocks.append(el('li', {}, `Unlocked: ${item.name ?? item.key ?? item}`));
     return saved;
@@ -434,7 +456,7 @@
 
   window.startng = Object.freeze({
     version: VERSION, onStartNg: ON_START_NG, choseGuest: CHOSE_GUEST,
-    getPlayer, onPlayerChange, signIn, saveRun, getLeaderboard, gameOver, closeCard, share, rooms,
+    getPlayer, onPlayerChange, signIn, saveRun, getLeaderboard, gameOver, closeCard, share, shareScore, rooms,
   });
 
   const init = () => { addChrome(); startTelemetry(); };
