@@ -27,6 +27,8 @@ async function call<T>(path: string, init?: RequestInit): Promise<T> {
 /** From your best run on a game (or one run, from the Kit's end-of-round card). */
 export const createChallenge = (from: { game: string } | { run_id: number }) =>
   call<Challenge>("", { method: "POST", headers: headers(true), body: JSON.stringify(from) });
+/** Whether you have a run on a game to challenge with: its page only offers "Challenge a friend" then. */
+export const canChallenge = (game: string) => call<{ can: boolean }>(`/can/${encodeURIComponent(game)}`, { headers: headers() });
 export const getChallenge = (code: string) => call<Challenge>(`/${encodeURIComponent(code)}`, { headers: headers() });
 export const acceptChallenge = (code: string) => call<Challenge>(`/${encodeURIComponent(code)}/accept`, { method: "POST", headers: headers() });
 export const deleteChallenge = (code: string) => call<void>(`/${encodeURIComponent(code)}`, { method: "DELETE", headers: headers() });
