@@ -45,6 +45,7 @@ export default function YourStats({ game }: YourGameProps) {
       <dl>
         <div><dt>Plays, 7 days</dt><dd>{s.plays_7.toLocaleString()}</dd></div>
         <div><dt>Plays, 30 days</dt><dd>{s.plays_30.toLocaleString()}</dd></div>
+        <div><dt>From embeds</dt><dd>{(s.embed_plays_30 ?? 0).toLocaleString()}</dd></div>
         <div><dt>All time</dt><dd>{s.plays_all.toLocaleString()}</dd></div>
         <div><dt>People, 30 days</dt><dd>{s.visitors_30.toLocaleString()}</dd></div>
         <div><dt>Players who scored</dt><dd>{s.players_30.toLocaleString()}</dd></div>
@@ -52,6 +53,9 @@ export default function YourStats({ game }: YourGameProps) {
         <div><dt>Scores sent</dt><dd>{s.runs_30.toLocaleString()}</dd></div>
         <div><dt>Average session</dt><dd>{s.avg_session_seconds === null ? "unknown" : length(s.avg_session_seconds)}</dd></div>
       </dl>
+      {s.embed_plays_30 != null && s.embed_plays_30 > 0 && (
+        <p className="note">{s.embed_plays_30.toLocaleString()} plays from embeds this month</p>
+      )}
       <Trend stats={s} />
       {s.avg_session_seconds === null && <p className="note">Session length shows for games that use the start.ng Kit.</p>}
     </details>

@@ -12,6 +12,7 @@ export type GameStats = {
   game: string; title: string; hidden: string | null; plays_7: number; plays_30: number; plays_all: number; visitors_30: number;
   players_30: number; repeat_players_30: number; runs_30: number; avg_session_seconds: number | null; change_7: number;
   trend: { day: string; plays: number }[];
+  embed_plays_30?: number;
 };
 export type Dashboard = { games: GameStats[]; best_game: string | null; plays_7: number; plays_30: number; visitors_30: number };
 

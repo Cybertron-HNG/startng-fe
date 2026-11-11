@@ -21,7 +21,8 @@
   // start.ng's connect page only answers games served from *.start.ng.
   const ON_START_NG = location.hostname.endsWith('.start.ng') || LOCAL;
   // The start.ng homepage opens games with ?guest when the player chose "play as guest".
-  const CHOSE_GUEST = new URLSearchParams(location.search).has('guest');
+  const IS_EMBED = new URLSearchParams(location.search).has('embed');
+  const CHOSE_GUEST = new URLSearchParams(location.search).has('guest') || IS_EMBED;
   const script = document.currentScript;
   const option = (name) => script?.dataset?.[name];
 
@@ -138,7 +139,7 @@
     beat = setInterval(() => tell({ type: 'startng:session', event: 'heartbeat', sessionId }), 30000);
   }
   function startTelemetry() {
-    tell({ type: 'startng:session', event: 'start', sessionId, kit: VERSION });
+    tell({ type: 'startng:session', event: 'start', sessionId, kit: VERSION, embed: IS_EMBED });
     startBeats();
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') startBeats();
@@ -168,7 +169,13 @@
       padding: 7px 12px; border-radius: 999px; background: var(--card); color: var(--ink);
       border: 1px solid var(--line); text-decoration: none; font-weight: 700; -webkit-tap-highlight-color: transparent; }
     .pill:hover { border-color: var(--ink); }
-    .pill:focus-visible, button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+    .pill:focus-visible, button:focus-visible, a.btn-link:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+    .play-startng { top: max(10px, env(safe-area-inset-top)); right: max(10px, env(safe-area-inset-right)); background: var(--lime); color: #292a23; border-color: transparent; text-decoration: none; }
+    .play-startng:hover { background: #c5ea5d; }
+    a.btn-link { border: 1px solid var(--line); border-radius: 10px; padding: 12px; background: var(--card); color: var(--ink); font-weight: 700; font-size: 15px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+    a.btn-link:hover { border-color: var(--ink); }
+    a.btn-link.primary { background: var(--ink); color: var(--on-solid); border-color: var(--ink); }
+    a.btn-link.primary:hover { background: var(--solid-hover); }
     .back { top: max(10px, env(safe-area-inset-top)); left: max(10px, env(safe-area-inset-left)); }
     .back.right { left: auto; right: max(10px, env(safe-area-inset-right)); }
     .badge { bottom: max(10px, env(safe-area-inset-bottom)); right: max(10px, env(safe-area-inset-right));
@@ -198,7 +205,10 @@
   }
 
   function addChrome() {
-    if (option('back') !== 'off') {
+    if (IS_EMBED) {
+      const playLink = el('a', { class: 'pill play-startng', href: `${START_NG}/games/${gameName()}`, target: '_blank', rel: 'noopener', 'aria-label': 'Play on start.ng' }, 'Play on start.ng ↗');
+      root.append(playLink);
+    } else if (option('back') !== 'off') {
       const back = el('a', { class: 'pill back', href: `${START_NG}/`, 'aria-label': 'Back to start.ng' }, '← start.ng');
       if (option('position') === 'right') back.classList.add('right');
       root.append(back);
@@ -410,6 +420,12 @@
     again.focus();
 
     if (!ON_START_NG) return null;
+    if (IS_EMBED) {
+      meta.textContent = 'Played as guest. Play on start.ng to sign in, save scores and join tournaments.';
+      const playOnStartNgBtn = el('a', { class: 'btn-link primary', href: `${START_NG}/games/${gameName()}`, target: '_blank', rel: 'noopener' }, 'Play on start.ng ↗');
+      buttons.insertBefore(playOnStartNgBtn, shareBtn);
+      return null;
+    }
     const player = await getPlayer();
     if (!player?.user) {
       meta.textContent = 'Sign in to save your score.';
@@ -433,7 +449,7 @@
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && card) closeCard(); });
 
   window.startng = Object.freeze({
-    version: VERSION, onStartNg: ON_START_NG, choseGuest: CHOSE_GUEST,
+    version: VERSION, onStartNg: ON_START_NG, choseGuest: CHOSE_GUEST, isEmbed: IS_EMBED,
     getPlayer, onPlayerChange, signIn, saveRun, getLeaderboard, gameOver, closeCard, share, rooms,
   });
 

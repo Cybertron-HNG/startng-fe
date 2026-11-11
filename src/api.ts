@@ -61,6 +61,7 @@ export type PublishedGame = {
   live_commit?: string | null; // the first 7 characters of the commit that's live (null: not known yet)
   updates_paused_until?: string | null; // set while GitHub's limit has paused all checking
   hidden?: "reported" | "flagged" | "blocked" | (string & {}) | null; // only for the owner: why it's hidden (features add reasons)
+  allow_embed?: boolean;
 };
 
 /** The feature flags that are on (see src/features/flags.ts). ["*"] means all of them. */

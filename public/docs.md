@@ -465,6 +465,24 @@ Fall back to something sensible for any missing or unknown value: start.ng may a
 
 A game that has never saved a score and has no `startng.json` has no leaderboard. Once it has one, its card on start.ng gets a **Leaderboard** button showing your columns.
 
+
+### Embedding games on your website or blog
+
+You can embed any game hosted on start.ng directly on your own website, blog, portfolio, or community page using an `<iframe>`:
+
+```html
+<iframe src="https://<game-slug>.start.ng/?embed" width="100%" height="560" allow="fullscreen; autoplay" loading="lazy"></iframe>
+```
+
+- **Guest mode & safety**: Inside an embed, visitors play right away as guests. The Kit displays a **Play on start.ng ↗** button linking back to your game's page on start.ng so players can sign in, save scores, and compete in tournaments.
+- **Opting out**: Embedding is enabled by default for games using the Kit. To disable embeds for your game, add `"embed": false` to your `startng.json`:
+
+```json
+{
+  "embed": false
+}
+```
+
 ### Your own columns: `startng.json`
 
 Add a file called **`startng.json`** next to your `index.html` (or at the top of your repo):
