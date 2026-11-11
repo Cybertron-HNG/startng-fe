@@ -138,10 +138,10 @@ function StandingsTable({ rows, playerId, label }: { rows: Standing[]; playerId:
       </div>
       {rows.map((s) => (
         <div key={s.player_id} role="row" className={`board-row ${s.player_id === playerId ? "me" : ""}`}>
-          <span className="rk">{s.place}</span>
-          <span className="nm" title={s.name}><Dot color={s.color} />{shortName(s.name)}{s.player_id === playerId && <em> (you)</em>}</span>
-          <span className="num">{s.firsts}</span>
-          <span className="num sc">{s.points}</span>
+          <span className="rk" role="cell">{s.place}</span>
+          <span className="nm" role="cell" title={s.name}><Dot color={s.color} />{shortName(s.name)}{s.player_id === playerId && <em> (you)</em>}</span>
+          <span className="num" role="cell">{s.firsts}</span>
+          <span className="num sc" role="cell">{s.points}</span>
         </div>
       ))}
     </div>
@@ -390,11 +390,11 @@ export function LeaderboardPage({ user }: { user: User | null }) {
           </div>
           {rows.map((r) => (
             <div key={r.player_id} role="row" className={`board-row ${r.player_id === playerId ? "me" : ""}`}>
-              <span className="rk">{r.rank}</span>
-              <span className="nm" title={r.name}><Dot color={r.color} />{shortName(r.name)}{r.player_id === playerId && <em> (you)</em>}</span>
-              <span className="num">{r.wins}</span>
-              <span className="num">{r.firsts}</span>
-              <span className="num sc">{r.points}</span>
+              <span className="rk" role="cell">{r.rank}</span>
+              <span className="nm" role="cell" title={r.name}><Dot color={r.color} />{shortName(r.name)}{r.player_id === playerId && <em> (you)</em>}</span>
+              <span className="num" role="cell">{r.wins}</span>
+              <span className="num" role="cell">{r.firsts}</span>
+              <span className="num sc" role="cell">{r.points}</span>
             </div>
           ))}
         </div>
