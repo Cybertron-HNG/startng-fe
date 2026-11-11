@@ -55,6 +55,7 @@ export type PublishedGame = {
   leaderboard: BoardStat[] | null; // null: this game has no leaderboard
   description?: string | null; // one line from the game's startng.json, for its page on start.ng
   plays?: number; // opened from start.ng in the last 7 days (the homepage shows the most played)
+  size_bytes?: number | null; // total uncompressed download size of the game files
   update_problem?: UpdateProblem | null;
   // Only for the owner (myGames): how start.ng is keeping the game up to date from its repo.
   checked_at?: string | null; // when the repo was last checked for a push (null: not yet)

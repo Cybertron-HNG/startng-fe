@@ -3,7 +3,7 @@ import { analytics } from "./analytics";
 import BoardTable from "./BoardTable";
 import { FavoriteButton } from "./Favorites";
 import { User } from "./api";
-import { Game, isInAppGame } from "./games";
+import { formatDataSize, Game, isInAppGame } from "./games";
 import PageParts from "./features/PageParts";
 import ReportDialog from "./Report";
 import { PAGES, setSeo } from "./seo";

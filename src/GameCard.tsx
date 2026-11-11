@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import type { User } from "./api";
 import { cardPartsFor, type CardSlot } from "./features/registry";
 import { useFeatures } from "./features/flags";
-import type { Game } from "./games";
+import { isHeavyData, type Game } from "./games";
 
 // A game's card on the homepage and /games. Features add to it through slots (src/features/registry.ts,
 // registerCardPart) instead of editing this file: badges on the picture, stats under the title, actions by Play.
@@ -30,6 +30,11 @@ export default function GameCard({ game: g, legendary = false, link, user, onSig
         <div className="art" style={{ background: `linear-gradient(135deg, ${g.colors[0]}, ${g.colors[1]})` }}>
           {g.cover ? <img src={g.cover} alt="" loading="lazy" decoding="async" /> : <span>{g.title.charAt(0)}</span>}
           {slot("badges")}
+          {isHeavyData(g.size_bytes) && (
+            <span className="badge data-heavy-badge" title="Requires over 10 MB to download">
+              10+ MB
+            </span>
+          )}
         </div>
         <div className="info">
           <h3>{g.title}</h3>
