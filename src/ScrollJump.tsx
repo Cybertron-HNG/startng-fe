@@ -33,7 +33,10 @@ export default function ScrollJump() {
       className="scroll-jump"
       aria-label={label}
       title={label}
-      onClick={() => scrollTo({ top: nearTop ? document.documentElement.scrollHeight : 0, behavior: "smooth" })}
+      onClick={() => {
+        const behavior: ScrollBehavior = matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+        scrollTo({ top: nearTop ? document.documentElement.scrollHeight : 0, behavior });
+      }}
     >
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style={{ transform: nearTop ? "rotate(180deg)" : undefined }}>
         <path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
