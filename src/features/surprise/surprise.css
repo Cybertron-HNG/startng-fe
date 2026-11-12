@@ -1,0 +1,3 @@
+/* "Surprise me" (Ziki #18): one row, wraps on phones. Doubled class: .container's margin: 0 auto mustn't win. */
+.surprise-me { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.surprise-me.surprise-me { margin-top: 12px; margin-bottom: 32px; }
