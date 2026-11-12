@@ -401,6 +401,12 @@ input:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
 /* the jump-to-top / jump-to-bottom button (ScrollJump.tsx) */
 .scroll-jump { position: fixed; right: 20px; bottom: 20px; z-index: 5; width: 48px; height: 48px; padding: 0; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: var(--on-solid-accent); box-shadow: 0 6px 18px rgba(41, 42, 35, .25); transition: transform .15s; }
 .scroll-jump:hover { transform: translateY(-2px); }
+/* "Add start.ng to your home screen" on phones (InstallTip.tsx): just above the Help and scroll buttons, under their panels */
+.install-tip { position: fixed; left: 16px; right: 16px; bottom: 80px; z-index: 20; display: flex; align-items: center; gap: 12px; max-width: 480px; margin: 0 auto; padding: 12px 12px 12px 14px; border: 1px solid var(--line); border-radius: 16px; background: var(--card); color: var(--ink); box-shadow: 4px 4px 0 var(--lime); }
+.install-tip img { flex: none; border-radius: 10px; }
+.install-tip p { flex: 1; min-width: 0; margin: 0; display: grid; gap: 2px; font-size: .92rem; }
+.install-tip p span { color: var(--muted); font-size: .82rem; }
+.install-tip button { flex: none; }
 .scroll-jump svg { transition: transform .2s; }
 @media (max-width: 600px) { .scroll-jump { right: 16px; bottom: 16px; width: 44px; height: 44px; } }
 
