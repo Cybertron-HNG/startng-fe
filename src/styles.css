@@ -795,8 +795,6 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .perms legend { font-weight: 700; margin-bottom: 6px; }
 .perms label { display: flex; gap: 10px; align-items: flex-start; font-size: .92rem; }
 .perms code { color: var(--muted); font-size: .78rem; }
-.tournament-next { margin: 8px 0 0; font-size: .9rem; color: var(--muted); }
-.tournament-next b { color: var(--ink); }
 
 /* Admin page: dialogs, game cards, countdowns, activity */
 .card.admin-dialog { max-width: 460px; }
