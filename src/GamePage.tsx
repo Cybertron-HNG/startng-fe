@@ -66,7 +66,18 @@ export default function GamePage({ name, game, loading, user, playerId, favorite
   const g = game;
   const pageUrl = `${location.origin}/games/${g.slug}`;
   const description = g.description ?? `Play ${g.title} free in your browser, right here on start.ng. A game by ${g.by}.`;
-  const tweet = `https://twitter.com/intent/tweet?${new URLSearchParams({ text: withHandle(`Come play ${g.title} on start.ng!`), url: pageUrl })}`;
+  const shareText = `Come play ${g.title} on start.ng!`;
+  const tweet = `https://twitter.com/intent/tweet?${new URLSearchParams({ text: withHandle(shareText), url: pageUrl })}`;
+  const whatsapp = `https://wa.me/?${new URLSearchParams({ text: `${shareText} ${pageUrl}` })}`;
+  const canShare = typeof navigator.share === "function" && matchMedia("(pointer: coarse)").matches; // phones and tablets
+
+  // The phone's share menu (WhatsApp, Telegram, SMS...). Called straight from the tap, so iPhones don't block it.
+  async function shareMenu() {
+    try {
+      await navigator.share({ title: g.title, text: shareText, url: pageUrl });
+      analytics.share("game", g.slug, "share_menu");
+    } catch { /* cancelled, or nothing to share to: the buttons beside it still work */ }
+  }
 
   async function copy() {
     try {
@@ -100,6 +111,8 @@ export default function GamePage({ name, game, loading, user, playerId, favorite
       <div className="game-page-rows">
         <div className="game-page-share">
           <span>Share it</span>
+          {canShare && <button type="button" className="ghost" onClick={shareMenu}>Share</button>}
+          <a className="ghost btn" href={whatsapp} target="_blank" rel="noreferrer" onClick={() => analytics.share("game", g.slug, "whatsapp")}>WhatsApp</a>
           <a className="ghost btn" href={tweet} target="_blank" rel="noreferrer" onClick={() => analytics.share("game", g.slug, "x")}>Share on X</a>
           <button type="button" className="ghost" onClick={copy}>{copied ? "Link copied" : "Copy link"}</button>
         </div>
