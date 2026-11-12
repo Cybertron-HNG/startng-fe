@@ -27,4 +27,5 @@ import "./game_pages"; // a game's about, how to play, FAQ and walkthrough pages
 import "./feature_toggle"; // admin Features tab: switch features on and off (Hamzat)
 import "./jams"; // Ziki #35: monthly game jams (Oluwaseyifunmi)
 import "./events"; // event spotlight: an event with pictures takes over the homepage (Tolu)
+import "./majors"; // partner tournaments with prizes, made from a template (Kaka)
 export {};
