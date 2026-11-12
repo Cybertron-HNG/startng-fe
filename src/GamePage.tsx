@@ -88,6 +88,7 @@ export default function GamePage({ name, game, loading, user, playerId, favorite
           {inTournament && <a className="tag tournament-badge" href="/tournament">In today's tournament →</a>}
           <h1>{g.title}</h1>
           <p className="game-page-by">by {g.by} · <code>{g.host}</code></p>
+          <PageParts page="game-head" user={user} onSignIn={onSignIn} game={g.slug} info={g} />
           <p className="game-page-description">{description}</p>
           <div className="game-page-actions">
             <a className="btn" href={g.url} {...(isInAppGame(g) ? {} : { target: "_blank", rel: "noreferrer" })} onClick={(e) => onPlay(e, g)}>
