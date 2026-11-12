@@ -60,7 +60,9 @@ globalThis.fetch = localOrigin;
 
 http
   .createServer(async (req, res) => {
-    const request = new Request(`http://${req.headers.host}${req.url}`, { method: req.method });
+    // The browser's headers go along too (If-None-Match, for 304s).
+    const headers = Object.entries(req.headers).filter(([, v]) => typeof v === "string");
+    const request = new Request(`http://${req.headers.host}${req.url}`, { method: req.method, headers });
     const response = await worker.fetch(request, env);
     res.writeHead(response.status, Object.fromEntries(response.headers));
     res.end(Buffer.from(await response.arrayBuffer()));
