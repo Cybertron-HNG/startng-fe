@@ -16,8 +16,9 @@ export type SpotlightEvent = {
 };
 
 /** The homepage parts (registerPagePart keys) that stay while an event is spotlighted. Everything else on the homepage's
- *  part list (Game of the Week, the daily challenge, the shelves, categories) steps aside. One line to change. */
-export const EVENT_HOME_KEEPS: readonly string[] = ["event-hero"];
+ *  part list (Game of the Week, the daily challenge, the shelves, categories) steps aside. One line to change.
+ *  "major-banner" (the majors feature) stays: a major is the competition that usually goes with the event. */
+export const EVENT_HOME_KEEPS: readonly string[] = ["event-hero", "major-banner"];
 
 export type EventMode = { ready: boolean; event: SpotlightEvent | null };
 

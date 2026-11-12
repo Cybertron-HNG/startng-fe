@@ -10,7 +10,7 @@ const EventsTab = lazy(() => import("./EventsTab"));
 const FEATURE = "events";
 
 registerPage({ feature: FEATURE, path: /^\/event\/(?<slug>[a-z0-9][a-z0-9-]{1,38}[a-z0-9])\/?$/, shell: "app", load: () => import("./EventPage") });
-registerPagePart({ feature: FEATURE, key: "event-hero", page: "home", order: 5, Component: EventHero });
+registerPagePart({ feature: FEATURE, key: "event-hero", page: "home", order: 4, Component: EventHero });
 registerAdminTab({
   feature: FEATURE,
   key: "events",
