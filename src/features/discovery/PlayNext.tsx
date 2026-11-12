@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import type { PagePartProps } from "../registry";
 import { getNext } from "./api";
+import { gameTitle as title } from "../../gameTitle";
 
 type Suggestion = { name: string; title: string };
 
-const title = (name: string) => name.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 
 /** "Play next" on a game's page: one to three games to try after this one (inside a tournament, that tournament's games). */
 export default function PlayNext({ game, user }: PagePartProps) {

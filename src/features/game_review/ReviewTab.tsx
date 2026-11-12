@@ -2,11 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { toCard } from "../../games";
 import type { AdminTabProps } from "../registry";
 import { approve, queue, reject, type Queue, type Review } from "./api";
+import { gameTitle as titleOf } from "../../gameTitle";
 
 // start.ng/admin#game-review: new games wait here before they're listed. Open the game, then approve or reject it
 // with a reason (its owner is emailed either way).
 
-const titleOf = (name: string) => name.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 const when = (iso: string | null) => (iso ? new Date(iso).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }) : "");
 const HEALTH: Record<string, string> = { ok: "loads", failing: "failing a check", unhealthy: "not loading", unchecked: "not checked yet" };
 

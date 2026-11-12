@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toCard } from "../../games";
 import type { AdminTabProps } from "../registry";
 import { hiddenCopies, hide, keep, pairs, remove, scan, show, type Hidden, type Pair, type Reason, type Side } from "./api";
+import { gameTitle as titleOf } from "../../gameTitle";
 
 // start.ng/admin#duplicates: games that look like copies of each other, side by side (older first), to hide, delete or keep.
 
@@ -11,7 +12,6 @@ const REASONS: Record<Reason, string> = {
   same_cover: "Same cover",
   similar_name: "Similar name",
 };
-const titleOf = (name: string) => name.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 const day = (iso: string) => new Date(iso).toLocaleDateString(undefined, { dateStyle: "medium" });
 
 function Art({ side }: { side: Side }) {
