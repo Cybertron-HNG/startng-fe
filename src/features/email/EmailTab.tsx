@@ -56,7 +56,7 @@ export default function EmailTab({ access }: AdminTabProps) {
         </div>
       )}
 
-      <div className="segmented" role="group" aria-label="Status">
+      <div className="segmented email-status" role="group" aria-label="Status">
         {["", ...STATUSES].map((s) => (
           <button key={s || "all"} type="button" className={status === s ? "on" : ""} aria-pressed={status === s} onClick={() => setStatus(s)}>{s || "All"}</button>
         ))}
