@@ -11,7 +11,7 @@ import "./majors.css";
 
 // start.ng/admin#majors: make a major from a template, look at the draft, publish it, and see who won.
 
-const MAX_GAMES = 20;
+const MAX_GAMES = 50; // the admin picks how many, 1 to this (MAX_GAMES in startng-be app/features/majors/service.py)
 const MAX_PRIZES = 10;
 
 /** "2026-11-16T12:00" in the admin's own time, for the date picker. */
@@ -172,7 +172,7 @@ export default function MajorsTab({ ask }: AdminTabProps) {
         </fieldset>
 
         <fieldset className="field private-games" disabled={startedEditing}>
-          <span>Pick up to {MAX_GAMES} games ({form.games.length} picked){startedEditing ? " · locked: it has started" : ""}</span>
+          <span>Pick the games: as many as you want, from 1 to {MAX_GAMES} ({form.games.length} picked){startedEditing ? " · locked: it has started" : ""}</span>
           <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search games" aria-label="Search games" />
           <div className="private-game-list">
             {shown.map((g) => (
