@@ -340,7 +340,7 @@ input:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
 .board-table { display: grid; gap: 4px 12px; font-variant-numeric: tabular-nums; overflow-x: auto; }
 .board-row { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; align-items: center; padding: 9px 12px; border-radius: 10px; background: var(--bg); min-width: 0; }
 .board-head { background: none; padding-top: 0; padding-bottom: 2px; font-family: var(--mono); font-size: .68rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
-.board-row:nth-child(2) .rk { background: var(--lime); }
+.board-row:nth-child(2) .rk { background: var(--lime); color: var(--on-lime); } /* readable in dark mode too */
 .board-row.me { box-shadow: inset 0 0 0 2px var(--ink); } /* inside the row: the table scrolls sideways, which would clip an outline */
 .board-row .rk { font-family: var(--mono); font-size: .8rem; text-align: center; border-radius: 6px; padding: 2px 0; }
 .board-row .nm { display: flex; align-items: center; gap: 8px; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -348,6 +348,18 @@ input:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
 .board-row .dot { flex: none; width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, .15); }
 .board-row .num { text-align: right; white-space: nowrap; }
 .board-row .sc { font-family: var(--mono); font-weight: 700; }
+/* a game's own leaderboard (BoardTable): the name cell holds the name and, on phones, the game's other stats under it */
+.game-board-table { grid-template-columns: var(--board-cols); }
+.game-board-table .nm-body { display: grid; min-width: 0; }
+.game-board-table .nm-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.game-board-table .nm-extra { display: none; font-family: var(--mono); font-size: .7rem; font-weight: 400; line-height: 1.35; color: var(--muted); white-space: normal; overflow-wrap: anywhere; }
+.game-board-table .nm-extra .pair { white-space: nowrap; } /* "Stars 0" stays together */
+@media (max-width: 600px) {
+  /* only # · Player · the ranking stat, so names have the room; the rest go under the name */
+  .game-board-table { grid-template-columns: 28px minmax(0, 1fr) auto; }
+  .game-board-table .extra { display: none; }
+  .game-board-table .nm-extra { display: block; }
+}
 .board-play { text-align: center; margin-top: 6px; }
 /* "Sign in or play as a guest?" when a signed-out player picks a game */
 .card.choose { gap: 12px; }
