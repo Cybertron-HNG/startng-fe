@@ -31,6 +31,20 @@ Every new feature lives in `src/features/<feature>/` with one owner (the PRD, se
 3. Your API calls live in your folder too (`src/features/<feature>/api.ts`), using `call` and `send` from `src/api.ts`.
    Admin tabs and profile sections are wrapped in an error boundary, so a crash in yours doesn't take down the page.
 
+## Majors: partner tournaments with prizes
+`src/features/majors`; flag `majors` (startng-be `app/features/majors`).
+- **start.ng/majors/<slug>**: a major's page. One card with the partner and its logo, the key facts (time left,
+  players, games, prizes) and the way in; the prizes (with who holds each place right now, then the winners); the
+  games with their top 3 and your own place; the standings with the prize places marked; about the partner with its
+  button; and how it works. Entrants see how many of the games they've played and can show only the ones they haven't.
+- **start.ng/majors**: every major, the one that's on first.
+- A banner on the home and tournament pages while a major is on or coming up (`registerPagePart`).
+- Admin tab **Majors** (permission `majors.manage`): start from a template or from any earlier major, save a draft,
+  open its page to check it, publish it. See who entered, take a player out with a note, and once it ends, the
+  winners with their emails. "Copy as JSON" gives a major as a template file.
+- `nginx.conf` serves `index.html` at `/majors` and `/majors/<slug>`. The page isn't written by the server yet, so a
+  shared link shows start.ng's general preview.
+
 ## Name filter (PRD H2)
 `src/features/moderation`; flag `moderation`. Admin tab **Name filter** (permission `moderation.words`): try a name,
 add blocked or allowed words, see names already on start.ng that fail, and the built-in lists. The filter itself runs
