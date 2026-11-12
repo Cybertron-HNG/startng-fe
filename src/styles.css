@@ -148,6 +148,14 @@ mark { background: linear-gradient(transparent 62%, var(--lime) 62%, var(--lime)
 .about-questions > div { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 14px 18px 16px; }
 .about-questions h3 { margin: 0 0 6px; font-size: 1.05rem; }
 .about-questions p { margin: 0; color: var(--muted); line-height: 1.6; }
+/* /privacy and /terms (src/LegalView.tsx): the About page's layout, with the date at the top and its own sections. */
+.legal-page h2 { margin-top: 40px; font-size: 1.35rem; }
+.legal-page p { max-width: 720px; margin: 0 0 12px; color: var(--text-2); line-height: 1.7; }
+.legal-page ul { max-width: 720px; margin: 0 0 12px; padding-left: 22px; display: grid; gap: 6px; }
+.legal-page li { color: var(--text-2); line-height: 1.7; }
+.legal-page a { text-decoration: underline; text-underline-offset: 3px; }
+.legal-page a:hover { color: var(--muted); }
+.about-page .legal-updated { margin: 0 0 4px; color: var(--muted); font-family: var(--mono); font-size: .78rem; letter-spacing: .04em; text-transform: uppercase; }
 .faq { display: grid; gap: 10px; }
 .faq details { background: var(--card); border: 1px solid var(--line); border-radius: 18px; }
 .faq summary { padding: 14px 18px; font-weight: 600; }
@@ -179,6 +187,9 @@ input { padding: 13px 14px; border-radius: 10px; border: 1px solid var(--line); 
 input:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
 .error { color: var(--danger); margin: 0; }
 .note { margin: 0; font-size: .9rem; opacity: .8; }
+/* The line under the sign-in button about the terms and the privacy policy (src/App.tsx). */
+.sign-in-legal { text-align: center; }
+.sign-in-legal a { text-decoration: underline; text-underline-offset: 2px; }
 .empty { margin: 8px 0 0; padding: 28px; border: 1px dashed var(--line); border-radius: 18px; color: var(--muted); text-align: center; }
 .empty a { color: inherit; font-weight: 600; }
 .google { display: flex; justify-content: center; }

@@ -5,6 +5,7 @@ import react from "@vitejs/plugin-react";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import AboutView from "./src/AboutView";
+import LegalView from "./src/LegalView";
 import { QUESTIONS } from "./src/home-copy";
 import { Markdown, slug } from "./src/markdown";
 import { SiteFooterView } from "./src/SiteFooterView";
@@ -101,6 +102,8 @@ function seoPages(site: string): Plugin {
       // /docs and /hangout: written into the page at build time (they change only with a deploy).
       fill("docs.html", PAGES.docs.path, docsText(site));
       fill("about.html", PAGES.about.path, renderToStaticMarkup(createElement(AboutView)));
+      fill("privacy.html", PAGES.privacy.path, renderToStaticMarkup(createElement(LegalView, { page: "privacy" })));
+      fill("terms.html", PAGES.terms.path, renderToStaticMarkup(createElement(LegalView, { page: "terms" })));
       // The questions as FAQ data for search engines and answer engines (the same words as the page).
       const faq = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: QUESTIONS.map(([name, text]) => ({ "@type": "Question", name, acceptedAnswer: { "@type": "Answer", text } })) };
       const about = readFileSync(resolve(out, "about.html"), "utf8");
