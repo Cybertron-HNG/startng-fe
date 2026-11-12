@@ -1,7 +1,7 @@
 import type { Character } from "./character";
 import { analytics } from "./analytics";
 
-const API_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
+export const API_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
 
 export type User = { id: number; email: string; name: string | null; username: string | null; character: Character | null };
 export type TokenResponse = { access_token: string; user: User };

@@ -27,6 +27,7 @@ import { CreatorsPage, CreatorsSection } from "./Creators";
 import PageParts from "./features/PageParts";
 import { useFeature } from "./features/flags";
 import { LeaderboardPage, TournamentBanner, TournamentPage, useTournament } from "./Tournament";
+import { useEventMode } from "./eventMode";
 import { ABOUT, QUESTIONS } from "./home-copy";
 
 // Set when a game sent the user here to sign in: we send them back afterwards.
@@ -176,6 +177,7 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
   const favs = useFavorites(user);
   // Today's tournament: the homepage banner, the badge on game pages, and /tournament.
   const tournament = useTournament(user, view === "home" || gamePage || tournamentPage);
+  const eventMode = useEventMode(); // an event spotlighted by an admin takes over the top of the homepage (eventMode.ts)
 
   // The Hangout is always first; the rest come from the API (newest first). The homepage shows the
   // most played this week; ties keep the newest first.
@@ -409,7 +411,7 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
         </section>
         )}
 
-        {view === "home" && <TournamentBanner tournament={tournament.tournament} />}
+        {view === "home" && eventMode.ready && !eventMode.event && <TournamentBanner tournament={tournament.tournament} />}
         {view === "home" && <PageParts page="home" user={user} onSignIn={() => setSignInOpen(true)} games={community} />}
 
         {(view === "home" || allGames) && (

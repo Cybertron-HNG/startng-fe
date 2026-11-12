@@ -1,0 +1,79 @@
+/* Event spotlight (the events feature). The hero is the home page's one big moment while an event is on: the picture fills the card,
+   the date is a lime block on it, and the whole card is one link. Always dark, because it sits on a picture, in both themes. */
+.evt-hero { position: relative; isolation: isolate; overflow: hidden; margin: 8px 0 40px; min-height: clamp(300px, 32vw, 380px); display: grid; align-items: end;
+  border: 1.5px solid var(--ink); border-radius: 24px; background: var(--code-bg); box-shadow: 8px 8px 0 var(--lime); color: var(--on-art); }
+.evt-hero-img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; transition: transform .7s cubic-bezier(.16, 1, .3, 1); }
+.evt-hero::before { content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--code-bg) 10%, transparent) 0%, color-mix(in srgb, var(--code-bg) 50%, transparent) 40%, color-mix(in srgb, var(--code-bg) 93%, transparent) 100%),
+              linear-gradient(90deg, color-mix(in srgb, var(--code-bg) 60%, transparent), transparent 70%); }
+.evt-hero:hover .evt-hero-img { transform: scale(1.035); }
+.evt-hero-body { display: grid; justify-items: start; gap: 10px; padding: clamp(20px, 3vw, 32px); }
+.evt-date { position: absolute; top: clamp(16px, 2.4vw, 24px); right: clamp(16px, 2.4vw, 24px); display: grid; place-items: center; align-content: center; width: 68px; height: 76px; border-radius: 16px; background: var(--lime); color: var(--on-lime); line-height: 1; }
+.evt-date b { font-size: 2.2rem; letter-spacing: -.04em; }
+.evt-date span { margin-top: 4px; font-family: var(--mono); font-size: .76rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.evt-hero h2 { margin: 0; max-width: 20ch; font-size: clamp(2rem, 4.8vw, 3.2rem); line-height: 1; letter-spacing: -.04em; text-wrap: balance; color: var(--on-art); }
+.evt-hero-tag { margin: 0; max-width: 48ch; font-size: clamp(1rem, 1.8vw, 1.15rem); line-height: 1.4; color: color-mix(in srgb, var(--on-art) 90%, transparent); }
+.evt-meta { list-style: none; margin: 2px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 24px; color: var(--on-art); }
+.evt-meta li { display: flex; gap: 8px; align-items: flex-start; line-height: 1.4; }
+.evt-meta svg { flex: none; margin-top: 1px; color: var(--lime); }
+.evt-meta em { margin-left: 10px; padding: 1px 9px; border-radius: 999px; background: var(--lime); color: var(--on-lime); font-style: normal; font-size: .8rem; font-weight: 800; white-space: nowrap; }
+.evt-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+.evt-go { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 12px; background: var(--lime); color: var(--on-lime); font-weight: 800; text-decoration: none; }
+.evt-go::after { content: ""; position: absolute; inset: 0; } /* the whole card is the link */
+.evt-go:focus-visible { outline: 3px solid var(--on-art); outline-offset: 3px; }
+.evt-ticket { position: relative; z-index: 1; display: inline-flex; align-items: center; padding: 10.5px 18px; border: 1.5px solid var(--on-art); border-radius: 12px; background: color-mix(in srgb, var(--code-bg) 40%, transparent);
+  color: var(--on-art); font-weight: 700; text-decoration: none; transition: background .15s, color .15s; }
+.evt-ticket:hover { background: var(--on-art); color: var(--code-bg); }
+.evt-ticket:focus-visible { outline: 3px solid var(--on-art); outline-offset: 3px; }
+@media (max-width: 760px) {
+  .evt-hero { min-height: 400px; box-shadow: 6px 6px 0 var(--lime); }
+  .evt-date { width: 60px; height: 68px; }
+  .evt-date b { font-size: 1.9rem; }
+  .evt-hero h2 { max-width: 12ch; margin-top: 76px; } /* clears the date block, which sits in the top corner */
+  .evt-go, .evt-ticket { flex: 1 1 auto; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) { .evt-hero-img { transition: none; } .evt-hero:hover .evt-hero-img { transform: none; } }
+
+/* the event's own page: /event/<slug> */
+.evt-page { max-width: 920px; padding-top: 28px; padding-bottom: 72px; display: grid; gap: 40px; align-content: start; }
+.evt-page h1 { margin: 0; font-size: clamp(2.3rem, 6vw, 3.8rem); line-height: 1; letter-spacing: -.04em; text-wrap: balance; }
+.evt-page h2 { margin: 0 0 12px; font-size: 1.5rem; letter-spacing: -.03em; }
+.evt-page-tag { margin: 12px 0 0; font-size: 1.3rem; line-height: 1.4; color: var(--muted); }
+.evt-ended { display: inline-block; margin: 16px 0 0; padding: 6px 12px; border-radius: 10px; background: var(--warn-bg); color: var(--warn-ink); border: 1px solid var(--warn-line); font-weight: 700; }
+.evt-cover { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 20px; border: 1px solid var(--line); background: var(--line); display: block; }
+.evt-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; padding-top: 22px; border-top: 1.5px solid var(--ink); }
+.evt-facts > div { display: grid; gap: 4px; align-content: start; min-width: 0; }
+.evt-facts svg { color: var(--ink); }
+.evt-facts h2 { margin: 6px 0 0; font-size: .95rem; letter-spacing: 0; color: var(--muted); }
+.evt-facts p { margin: 0; font-size: 1.1rem; font-weight: 700; line-height: 1.35; overflow-wrap: anywhere; }
+.evt-facts .evt-sub { font-weight: 400; color: var(--muted); }
+.evt-count { color: var(--ink); }
+.evt-facts-cta { gap: 12px !important; align-content: center !important; justify-items: start; }
+.evt-facts-cta .btn { display: inline-flex; align-items: center; gap: 8px; }
+.evt-link { font-weight: 700; color: var(--ink); }
+.evt-about p { max-width: 68ch; margin: 0 0 14px; font-size: 1.08rem; line-height: 1.65; color: var(--text-2); }
+.evt-on { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0 32px; }
+.evt-on > div { padding: 14px 0; border-top: 1px solid var(--line); }
+.evt-on dt { font-weight: 800; }
+.evt-on dd { margin: 4px 0 0; color: var(--muted); line-height: 1.5; }
+.evt-gallery { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.evt-gallery img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 14px; border: 1px solid var(--line); background: var(--line); display: block; }
+.evt-partners { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+.evt-partners li { padding: 8px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); font-weight: 700; }
+.evt-partners a { color: var(--ink); }
+
+/* the admin Events tab */
+.evt-admin-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
+.evt-badge { padding: 2px 10px; border-radius: 999px; background: var(--lime); color: var(--on-lime); font-weight: 800; font-size: .8rem; }
+.evt-form { display: grid; gap: 14px; max-width: 720px; padding: 20px; border: 1px solid var(--line); border-radius: 16px; background: var(--card); }
+.evt-form label { display: grid; gap: 6px; font-weight: 600; font-size: .95rem; }
+.evt-form textarea { min-height: 150px; resize: vertical; font: inherit; }
+.evt-form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+.evt-rows { display: grid; gap: 8px; }
+.evt-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto; gap: 8px; align-items: center; }
+.evt-pics { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.evt-pics li { display: grid; gap: 6px; }
+.evt-pics img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 10px; border: 1px solid var(--line); }
+.evt-pics .cover { outline: 3px solid var(--lime); outline-offset: 1px; }
+.evt-pic-actions { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: .85rem; }
+@media (max-width: 600px) { .evt-row { grid-template-columns: 1fr; } }
