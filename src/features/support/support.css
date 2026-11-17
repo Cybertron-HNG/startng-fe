@@ -1,17 +1,26 @@
 /* F10: the Help button on every page and its panel. Bottom left, so it doesn't sit on the scroll button. */
 .help-button {
-  position: fixed; left: 20px; bottom: 20px; z-index: 6; display: inline-flex; align-items: center; gap: 8px;
-  padding: 10px 16px 10px 10px; border-radius: 999px; background: var(--ink); color: var(--on-solid-accent, var(--lime));
-  font-weight: 700; box-shadow: 0 6px 18px rgba(41, 42, 35, .25);
+  position: fixed; left: 20px; bottom: 20px; z-index: 6; display: inline-flex; align-items: center; gap: 9px;
+  padding: 9px 16px 9px 9px; border-radius: 999px; border: 1px solid var(--ink); background: var(--lime); color: var(--on-lime);
+  font-weight: 800; box-shadow: 4px 4px 0 var(--ink); transition: transform .15s, box-shadow .15s;
 }
-.help-button span { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--lime); color: #292a23; font-size: .95rem; }
+.help-button:hover, .help-button:focus-visible { transform: translateY(-2px); box-shadow: 6px 7px 0 var(--ink); background: var(--lime); outline: none; }
+.help-badge { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--ink); color: var(--lime); }
+.help-head-main { display: flex; align-items: flex-start; gap: 10px; }
+.help-pad { display: grid; place-items: center; flex: none; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--ink); background: var(--lime); color: var(--on-lime); }
 .help-panel {
   position: fixed; left: 20px; bottom: 76px; z-index: 30; width: min(400px, calc(100vw - 32px)); max-height: min(620px, calc(100vh - 110px));
   overflow-y: auto; background: var(--card); color: var(--ink); border: 1px solid var(--line); border-radius: 18px; padding: 14px 16px 16px;
   box-shadow: 6px 6px 0 var(--lime), 0 16px 40px rgba(0, 0, 0, .18);
 }
-.help-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-.help-head b { font-size: 1.1rem; }
+.help-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.help-head b { display: block; font-size: 1.05rem; letter-spacing: -.02em; }
+.help-kicker { margin: 4px 0 0; font-size: .8rem; color: var(--muted); line-height: 1.4; }
+.help-faq { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+.help-faq a { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); font-weight: 700; font-size: .92rem; }
+.help-faq a:hover { border-color: var(--ink); background: var(--card); }
+.help-faq a i { font-style: normal; color: var(--muted); }
+.help-faq-empty { padding: 10px 12px; color: var(--muted); font-size: .88rem; }
 .help-close { background: none; border: 0; color: var(--muted); font-size: 1.5rem; line-height: 1; padding: 0 4px; }
 .help-tabs { margin-bottom: 12px; }
 .help-tabs button { font-size: .85rem; padding: 7px 12px; }

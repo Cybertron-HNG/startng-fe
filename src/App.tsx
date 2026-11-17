@@ -91,6 +91,16 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
   // Published games from the API; null while loading.
   const [games, setGames] = useState<Game[] | null>(null);
   const [approval, setApproval] = useState<Approval | null>(approveCode ? { step: "loading" } : null);
+  // /games: whether the visitor gathered the games into one ball.
+  const [ball, setBall] = useState(false);
+  // Home: "Good vibes. / Good games." swaps its last words every two seconds.
+  const [flip, setFlip] = useState(false);
+
+  useEffect(() => {
+    if (view !== "home") return;
+    const id = window.setInterval(() => setFlip((f) => !f), 2000);
+    return () => window.clearInterval(id);
+  }, [view]);
   // The game whose shared leaderboard is open, if any.
   const [board, setBoard] = useState<Game | null>(null);
   // The signed-in builder's newest game, for the example address in the hero.
@@ -392,7 +402,11 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
         {view === "home" && (
         <section className="container hero">
           <p className="eyebrow">Big imagination. Played everywhere.</p>
-          <h1>Good vibes.<br /><mark>Good games.</mark></h1>
+          <h1>
+            Good <mark className="swap"><span key={flip ? "games" : "vibes"} className="swap-word">{flip ? "games" : "vibes"}</span></mark>.
+            <br />
+            Good <mark className="swap"><span key={flip ? "vibes" : "games"} className="swap-word">{flip ? "vibes" : "games"}</span></mark>.
+          </h1>
           <p className="lead">
             Games made by builders in the community.{" "}<br />
             {example ? (
@@ -437,6 +451,27 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
             </div>
           )}
           {allGames && <PageParts page="games" user={user} onSignIn={() => setSignInOpen(true)} query={q.trim()} />}
+          {allGames && !searching && !filters.active && (
+            <div className="roll-row">
+              <button
+                type="button"
+                className={ball ? "roll-ball on" : "roll-ball"}
+                onClick={() => setBall((was) => !was)}
+                aria-expanded={ball}
+                aria-controls="games-view"
+                aria-label={ball ? "Roll the games back up" : "Roll out all the games"}
+                title={ball ? "Roll the games back up" : "Roll out all the games"}
+              >
+                <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3.5" y="3.5" width="17" height="17" rx="4" />
+                  <circle cx="8.5" cy="8.5" r="1.3" fill="currentColor" stroke="none" />
+                  <circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none" />
+                  <circle cx="15.5" cy="15.5" r="1.3" fill="currentColor" stroke="none" />
+                </svg>
+                <span>Roll</span>
+              </button>
+            </div>
+          )}
           {allGames && <FilterBar filters={filters} />}
           {games && filters.active && !searching && cards.length === 0 && (
             <p className="empty">
@@ -453,18 +488,22 @@ export default function App({ view = "home", gameName, indieId, featurePage }: {
               No games match “{q.trim()}”. <button type="button" className="link" onClick={() => search("")}>Clear search</button>
             </p>
           )}
-          <div className="grid" aria-busy={games === null}>
-            {shown.map((g) => (
-              <GameCard key={g.slug} game={g} legendary={g.slug === HANGOUT.slug} link={cardLink(g)} user={user} onSignIn={() => setSignInOpen(true)}
-                favorite={<FavoriteButton user={user} on={favs.has(gameKey(g))} name={g.title} onToggle={() => favs.toggle(gameKey(g))} onSignIn={() => setSignInOpen(true)} />}
-                board={g.board && <button type="button" className="link board-btn" onClick={() => setBoard(g)}>Leaderboard</button>}
-                play={<a className="play" {...cardLink(g)}>{isInAppGame(g) ? "Play" : "View"}</a>} />
-            ))}
-            {games === null && <SkeletonCards count={Math.max(0, (allGames ? 8 : HOME_GAMES) - shown.length)} />}
+          <div id="games-view">
+          {(!allGames || searching || filters.active || ball) && (
+            <div className={allGames && ball && !searching && !filters.active ? "grid roll-in" : "grid"} aria-busy={games === null}>
+              {shown.map((g) => (
+                <GameCard key={g.slug} game={g} legendary={g.slug === HANGOUT.slug} link={cardLink(g)} user={user} onSignIn={() => setSignInOpen(true)}
+                  favorite={<FavoriteButton user={user} on={favs.has(gameKey(g))} name={g.title} onToggle={() => favs.toggle(gameKey(g))} onSignIn={() => setSignInOpen(true)} />}
+                  board={g.board && <button type="button" className="link board-btn" onClick={() => setBoard(g)}>Leaderboard</button>}
+                  play={<a className="play" {...cardLink(g)}>{isInAppGame(g) ? "Play" : "View"}</a>} />
+              ))}
+              {games === null && <SkeletonCards count={Math.max(0, (allGames ? 8 : HOME_GAMES) - shown.length)} />}
+            </div>
+          )}
           </div>
-          {allGames ? (
+          {allGames && (ball || searching || filters.active) ? (
             <Pagination page={current} pages={pages} onPage={goToPage} hrefFor={(n) => urlFor("/games", q, n)} />
-          ) : (
+          ) : !allGames && (
             cards.length > HOME_GAMES && (
               <div className="see-all">
                 <a className="btn" href="/games">See all {cards.length} games →</a>
