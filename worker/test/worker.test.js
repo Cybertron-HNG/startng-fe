@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import worker, { keyForPath, gameNameFromHost } from "../src/index.js";
+import worker, { keyForPath, gameNameFromHost, etagMatches } from "../src/index.js";
 
 // Fake bucket: a plain object of key -> content.
 function fakeBucket(files) {
@@ -127,4 +127,34 @@ test("the hidden marker itself can't be fetched as a game", async () => {
   const hiddenEnv = { ...env, GAMES_BUCKET: fakeBucket({ ...files, "_hidden/dave": "" }) };
   const r = await worker.fetch(new Request("https://_hidden.start.ng/dave"), hiddenEnv);
   assert.equal(r.status, 404);
+});
+test("a file the browser already has gets a 304 with no body", async () => {
+  let reads = 0;
+  const bucket = fakeBucket(files);
+  const counting = { ...bucket, head: async (key) => { const o = await bucket.get(key); return o && { httpEtag: o.httpEtag } }, get: (key) => { reads++; return bucket.get(key); } };
+  const ask = (path, headers) => worker.fetch(new Request("https://dave.start.ng" + path, { headers }), { ...env, GAMES_BUCKET: counting });
+  for (const inm of ["\"abc\"", "W/\"abc\"", "\"old\", \"abc\"", "*"]) {
+    const r = await ask("/game.js", { "if-none-match": inm });
+    assert.equal(r.status, 304, inm);
+    assert.equal(await r.text(), "", inm);
+    assert.equal(r.headers.get("etag"), "\"abc\"");
+    assert.equal(r.headers.get("cache-control"), "public, max-age=60");
+  }
+  assert.equal(reads, 0, "a 304 reads no file");
+  // A new version (another etag): the whole file, as before.
+  const fresh = await ask("/game.js", { "if-none-match": "\"old\"" });
+  assert.equal(fresh.status, 200);
+  assert.equal(await fresh.text(), "1");
+  assert.equal((await ask("/nope.js", { "if-none-match": "\"abc\"" })).status, 404);
+  // Without If-None-Match nothing changes: one read and a 200.
+  reads = 0;
+  assert.equal((await ask("/game.js", {})).status, 200);
+  assert.equal(reads, 1);
+});
+
+test("etagMatches", () => {
+  assert.equal(etagMatches("\"a\"", "\"a\""), true);
+  assert.equal(etagMatches("W/\"a\"", "\"a\""), true);
+  assert.equal(etagMatches("\"b\" , \"a\"", "W/\"a\""), true);
+  assert.equal(etagMatches("\"b\"", "\"a\""), false);
 });
