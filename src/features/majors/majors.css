@@ -45,11 +45,55 @@
 .major-about .btn { flex: none; }
 .major-rules { margin: 0; padding-left: 20px; display: grid; gap: 6px; color: var(--muted); line-height: 1.5; }
 
-/* The banner on the home and tournament pages: the daily tournament's banner, with the prizes where its covers go. */
-.major-banner { grid-template-areas: "text prizes" "cta prizes"; }
-.major-banner-prizes { grid-area: prizes; list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; max-width: 320px; }
-.major-banner-prizes li { display: flex; gap: 10px; align-items: baseline; padding: 8px 12px; border-radius: 10px; background: var(--bg); font-size: .88rem; }
-.major-banner-prizes b { font-family: var(--mono); font-size: .78rem; }
+/* The card on the home and tournament pages: always dark, like the Game of the Week card. The partner's picture fills the right
+   side and fades into the card; the prizes are ticket stubs. The whole card is one link to the major. */
+.major-card-home { position: relative; isolation: isolate; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+  margin: 8px 0 40px; min-height: 0; border: 1.5px solid var(--ink); border-radius: 24px; background: var(--code-bg); color: var(--on-art);
+  box-shadow: 8px 8px 0 var(--lime); text-decoration: none; transition: transform .15s; }
+.major-card-home:hover { transform: translateY(-2px); }
+.major-card-home:focus-visible { outline: 3px solid var(--ink); outline-offset: 6px; }
+.major-art { position: absolute; z-index: -2; top: 0; right: 0; width: 62%; height: 100%; object-fit: cover; transition: transform .7s cubic-bezier(.16, 1, .3, 1); }
+.major-card-home:hover .major-art { transform: scale(1.04); }
+/* the fade: solid card colour on the left, the picture showing through on the right, and a soft lime glow at the bottom */
+.major-card-home.has-art::before { content: ""; position: absolute; z-index: -1; inset: 0;
+  background: linear-gradient(90deg, var(--code-bg) 38%, color-mix(in srgb, color-mix(in srgb, var(--major-tint) 30%, var(--code-bg)) 72%, transparent) 58%, color-mix(in srgb, var(--major-tint) 22%, transparent) 100%),
+              radial-gradient(55% 75% at 100% 0%, color-mix(in srgb, var(--major-tint) 45%, transparent), transparent 70%),
+              radial-gradient(50% 70% at 70% 115%, color-mix(in srgb, var(--lime) 22%, transparent), transparent 70%); }
+.major-card-text { display: grid; align-content: center; justify-items: start; gap: 12px; padding: 28px 34px; min-width: 0; }
+/* the time left and the partner sit in the top-right corner, over the picture, on small dark pills so they stay readable */
+.major-card-corner { position: absolute; top: 18px; right: 18px; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; max-width: 50%; }
+.major-card-corner > span { padding: 6px 12px; border-radius: 999px; background: color-mix(in srgb, var(--code-bg) 72%, transparent); backdrop-filter: blur(6px); }
+.major-card-home h2 { margin: 0; font-size: clamp(2.2rem, 5.4vw, 3.6rem); line-height: 1; letter-spacing: -.04em; text-wrap: balance; color: var(--on-art); }
+.major-card-tagline b { color: var(--on-art); font-weight: 800; }
+.major-card-tagline { margin: 0; max-width: 44ch; font-size: 1.05rem; line-height: 1.5; color: color-mix(in srgb, var(--on-art) 82%, transparent); }
+/* prizes as real tickets: a body and a tear-off stub split by a perforation, with half-circle notches cut out of the top and
+   bottom edge where the perforation runs (two masks, one per half of the ticket). 1st place is lime and tilted, like the flyer. */
+.major-tickets { list-style: none; margin: 6px 0 0; padding: 4px 0; display: flex; flex-wrap: wrap; gap: 10px; }
+.major-ticket { --stub: 30px; --notch: 6px; display: grid; grid-template-columns: auto var(--stub); min-width: 96px; border-radius: 8px;
+  background: color-mix(in srgb, var(--on-art) 92%, transparent); color: var(--code-bg);
+  -webkit-mask: radial-gradient(circle var(--notch) at calc(100% - var(--stub)) 0, transparent 98%, black) top / 100% 51% no-repeat,
+                radial-gradient(circle var(--notch) at calc(100% - var(--stub)) 100%, transparent 98%, black) bottom / 100% 51% no-repeat;
+          mask: radial-gradient(circle var(--notch) at calc(100% - var(--stub)) 0, transparent 98%, black) top / 100% 51% no-repeat,
+                radial-gradient(circle var(--notch) at calc(100% - var(--stub)) 100%, transparent 98%, black) bottom / 100% 51% no-repeat; }
+.major-ticket.place-1 { background: var(--lime); color: var(--on-lime); transform: rotate(-3deg); }
+.major-ticket.place-3 { background: color-mix(in srgb, var(--lime) 35%, var(--on-art)); }
+.major-ticket-main { display: grid; gap: 1px; padding: 8px 10px 9px 12px; }
+.major-ticket-main small { font-family: var(--mono); font-size: .6875rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; opacity: .78; }
+.major-ticket-main b { font-size: 1.35rem; line-height: 1.05; letter-spacing: -.03em; }
+.major-ticket-main span { max-width: 20ch; font-size: .8rem; line-height: 1.3; }
+.major-ticket-stub { display: grid; place-items: center; border-left: 2px dashed color-mix(in srgb, currentColor 45%, transparent); margin: 6px 0;
+  font-family: var(--mono); font-size: .72rem; font-weight: 700; letter-spacing: .1em; writing-mode: vertical-rl; transform: rotate(180deg); }
+.major-card-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-top: 2px; }
+.major-card-foot .btn { background: var(--lime); color: var(--on-lime); font-weight: 800; }
+.major-card-foot .btn { transition: background .15s, color .15s; }
+.major-card-foot .btn:hover { background: var(--on-art); color: var(--code-bg); } /* only the button itself, not the whole card */
+.major-when { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: .8rem; letter-spacing: .06em; color: var(--on-art); }
+.major-when i { width: 9px; height: 9px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 4px color-mix(in srgb, var(--lime) 25%, transparent); animation: major-live 1.6s ease-out infinite; }
+@keyframes major-live { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--lime) 45%, transparent); } 100% { box-shadow: 0 0 0 9px transparent; } }
+.major-with { display: inline-flex; align-items: center; gap: 6px; font-size: .9rem; color: color-mix(in srgb, var(--on-art) 82%, transparent); }
+.major-with img { border-radius: 6px; }
+.major-with b { color: var(--on-art); }
+@media (prefers-reduced-motion: reduce) { .major-when i { animation: none; } .major-art, .major-card-home { transition: none; } .major-card-home:hover .major-art { transform: none; } }
 
 /* start.ng/majors */
 .major-list { display: grid; gap: 14px; }
@@ -57,7 +101,7 @@
 .major-card:hover { border-color: var(--ink); box-shadow: 5px 5px 0 var(--lime); }
 .major-card h2 { margin: 4px 0 0; font-size: 1.5rem; letter-spacing: -.03em; }
 .major-card p { margin: 0; }
-.major-with { color: var(--muted); font-size: .9rem; }
+.major-list .major-with { color: var(--muted); font-size: .9rem; } /* the /majors list only, not the homepage card's corner pill */
 
 /* The admin tab */
 .major-form { display: grid; gap: 14px; margin-bottom: 28px; }
@@ -73,8 +117,21 @@
 .major-entry.out { opacity: .6; }
 
 @media (max-width: 760px) {
-  .major-banner { grid-template-areas: "text" "prizes" "cta"; }
-  .major-banner-prizes { max-width: none; }
+  .major-card-home { grid-template-columns: 1fr; min-height: 0; box-shadow: 6px 6px 0 var(--lime); }
+  .major-art { position: relative; z-index: -2; width: 100%; height: 190px; }
+  .major-card-home.has-art::before { background: linear-gradient(180deg, color-mix(in srgb, var(--code-bg) 5%, transparent) 0, color-mix(in srgb, var(--code-bg) 30%, transparent) 110px, var(--code-bg) 190px); }
+  .major-card-home.has-art .major-card-text { margin-top: -40px; }
+  .major-card-corner { top: 12px; right: 12px; left: 12px; max-width: none; flex-wrap: nowrap; justify-content: space-between; }
+  .major-card-corner > span { padding: 5px 10px; font-size: .8rem; white-space: nowrap; }
+  .major-with-word { display: none; } /* "with" goes on phones so both pills fit on one row */
+  .major-tickets { flex-wrap: nowrap; gap: 8px; }
+  .major-ticket { --stub: 24px; min-width: 0; flex: 1 1 0; }
+  .major-ticket-main { padding: 7px 6px 8px 10px; }
+  .major-ticket-main b { font-size: 1.15rem; }
+  .major-ticket.place-1 { transform: rotate(-2deg); }
+  .major-card-foot { justify-self: stretch; }
+  .major-card-text { padding: 24px 22px 26px; }
+  .major-card-foot .btn { flex: 1 1 100%; text-align: center; }
   .major-about { flex-direction: column; align-items: flex-start; }
 }
 @media (max-width: 600px) {
