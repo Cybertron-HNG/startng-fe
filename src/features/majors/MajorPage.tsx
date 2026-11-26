@@ -35,7 +35,7 @@ export default function MajorPage({ user, onSignIn, params }: PageProps) {
     return () => window.clearInterval(timer);
   }, [load, user?.id]);
   useEffect(() => {
-    if (m) setSeo({ title: `${m.title} · with ${m.partner.name} · start.ng`, description: m.tagline, path: `/majors/${slug}`, noindex: !m.published });
+    if (m) setSeo({ title: m.share_title, description: m.share_text, image: m.share_image, imageAlt: m.share_title, path: `/majors/${slug}`, noindex: !m.published });
     else if (m === null) setSeo({ ...PAGES.notFound, title: "No major here · start.ng", description: "There is no major at this address.", path: `/majors/${slug}` });
   }, [m, slug]);
 
