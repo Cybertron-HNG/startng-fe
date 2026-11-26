@@ -52,9 +52,10 @@ export function colorsFor(name: string): [string, string] {
 
 export function toCard(game: PublishedGame): Game {
   const url = playableUrl(game.url);
+  const title = game.name.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
   return {
     slug: game.name,
-    title: game.name.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
+    title,
     url,
     host: new URL(url).host,
     by: game.by,
@@ -62,7 +63,7 @@ export function toCard(game: PublishedGame): Game {
     cover: game.cover_url,
     board: game.leaderboard ?? null,
     plays: game.plays ?? 0,
-    description: game.description ?? null,
+    description: game.description || (game.name === "hangout" ? HANGOUT.description : `Play ${title} free in your browser on start.ng, a game by ${game.by || "a builder"}.`),
   };
 }
 
