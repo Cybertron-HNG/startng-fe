@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import type { AdminTabProps } from "../registry";
 import { approve, mark, queue, sendBack, type FixRequest } from "./api";
+import { gameTitle as titleOf } from "../../gameTitle";
 
 // start.ng/admin#needs-fixing: mark a broken game (it's hidden until fixed), and review games their owners say are fixed.
 
 const when = (iso: string | null) => (iso ? new Date(iso).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }) : "");
-const titleOf = (name: string) => name.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 
 export default function NeedsFixingTab({ ask }: AdminTabProps) {
   const [rows, setRows] = useState<FixRequest[] | null>(null);

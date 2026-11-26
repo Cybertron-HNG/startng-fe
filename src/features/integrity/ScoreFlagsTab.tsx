@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { AdminTabProps } from "../registry";
 import { flagsApi, type Flag, type FlagStatus } from "./api";
+import { gameTitle as titleOf } from "../../gameTitle";
 
 const when = (iso: string | null) => (iso ? new Date(iso).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }) : "");
-const titleOf = (name: string) => name.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 const STATUSES: [FlagStatus, string][] = [["open", "Waiting"], ["cleared", "Cleared"], ["confirmed", "Kept out"]];
 const EMPTY: Record<FlagStatus, string> = {
   open: "Nothing waiting. All clear.",

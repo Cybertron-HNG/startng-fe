@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import type { YourGameProps } from "../registry";
 import { mine } from "./api";
+import { gameTitle as titleOf } from "../../gameTitle";
 
 // On the owner's game in Your games, when admins hid it as a copy of another game.
-const titleOf = (name: string) => name.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 
 export default function CopyNotice({ game }: YourGameProps) {
   const [of, setOf] = useState<string | null | undefined>(undefined);
