@@ -5,7 +5,7 @@ export type Prize = { place: number; prize: string };
 export type Partner = { name: string; url: string | null; logo_url: string | null };
 export type State = "upcoming" | "running" | "ended";
 export type Summary = {
-  slug: string; title: string; tagline: string; partner: Partner; prizes: Prize[];
+  slug: string; title: string; tagline: string; partner: Partner; image_url: string | null; prizes: Prize[];
   starts_at: string; ends_at: string; state: State; entrants: number; games: string[];
 };
 export type Run = { rank: number; player_id: number; name: string; color: string | null; stats: Record<string, number>; points: number };
@@ -20,7 +20,7 @@ export type Major = Summary & {
 /** A major as the admin form sends it. It is also the template: copy it, change the words, and it's the next one. */
 export type MajorBody = {
   slug: string; title: string; tagline: string; about: string | null;
-  partner_name: string; partner_url: string | null; partner_logo_url: string | null;
+  partner_name: string; partner_url: string | null; partner_logo_url: string | null; image_url?: string | null;
   cta_label: string | null; cta_url: string | null; prizes: Prize[]; games: string[];
   starts_at: string | null; ends_at: string | null;
 };

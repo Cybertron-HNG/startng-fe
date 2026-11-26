@@ -23,7 +23,7 @@ const localInput = (iso: string | null, fallbackHours: number) => {
 
 type Form = Omit<MajorBody, "starts_at" | "ends_at" | "prizes"> & { start: string; end: string; prizes: string[] };
 const toForm = (b: MajorBody): Form => ({
-  ...b, about: b.about ?? "", partner_url: b.partner_url ?? "", partner_logo_url: b.partner_logo_url ?? "",
+  ...b, about: b.about ?? "", partner_url: b.partner_url ?? "", partner_logo_url: b.partner_logo_url ?? "", image_url: b.image_url ?? "",
   cta_label: b.cta_label ?? "", cta_url: b.cta_url ?? "",
   prizes: [...b.prizes].sort((a, c) => a.place - c.place).map((p) => p.prize),
   start: localInput(b.starts_at, 24), end: localInput(b.ends_at, 24 * 15),
@@ -31,12 +31,13 @@ const toForm = (b: MajorBody): Form => ({
 const toBody = (f: Form): MajorBody => ({
   slug: f.slug.trim(), title: f.title.trim(), tagline: f.tagline.trim(), about: f.about?.trim() || null,
   partner_name: f.partner_name.trim(), partner_url: f.partner_url?.trim() || null, partner_logo_url: f.partner_logo_url?.trim() || null,
+  image_url: f.image_url?.trim() || null,
   cta_label: f.cta_label?.trim() || null, cta_url: f.cta_url?.trim() || null,
   prizes: f.prizes.map((prize, i) => ({ place: i + 1, prize: prize.trim() })), games: f.games,
   starts_at: new Date(f.start).toISOString(), ends_at: new Date(f.end).toISOString(),
 });
 const BLANK: MajorBody = {
-  slug: "", title: "", tagline: "", about: null, partner_name: "", partner_url: null, partner_logo_url: null,
+  slug: "", title: "", tagline: "", about: null, partner_name: "", partner_url: null, partner_logo_url: null, image_url: null,
   cta_label: null, cta_url: null, prizes: [{ place: 1, prize: "" }, { place: 2, prize: "" }, { place: 3, prize: "" }],
   games: [], starts_at: null, ends_at: null,
 };
@@ -150,6 +151,7 @@ export default function MajorsTab({ ask }: AdminTabProps) {
           <label className="field"><span>Partner</span><input value={form.partner_name} onChange={(e) => set("partner_name", e.target.value)} minLength={2} maxLength={60} required placeholder="Tech Ember Fest" /></label>
           <label className="field"><span>Partner's website</span><input type="url" value={form.partner_url ?? ""} onChange={(e) => set("partner_url", e.target.value)} maxLength={300} placeholder="https://" /></label>
           <label className="field"><span>Partner's logo (a picture address)</span><input type="url" value={form.partner_logo_url ?? ""} onChange={(e) => set("partner_logo_url", e.target.value)} maxLength={300} placeholder="https://" /></label>
+          <label className="field"><span>Homepage card picture (a picture address, optional)</span><input type="url" value={form.image_url ?? ""} onChange={(e) => set("image_url", e.target.value)} maxLength={300} placeholder="https://" /><small className="note">A wide photo in the partner's colours. It sits on the right of the homepage card and fades into it.</small></label>
         </div>
         <label className="field"><span>About the partner or the event</span><textarea value={form.about ?? ""} onChange={(e) => set("about", e.target.value)} maxLength={1200} placeholder="Two or three sentences: what it is, when and where." /></label>
         <div className="major-form-row">
