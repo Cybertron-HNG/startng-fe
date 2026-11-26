@@ -15,12 +15,14 @@ export type Winner = { place: number; prize: string; player_id: number; name: st
 export type Major = Summary & {
   about: string | null; cta_label: string | null; cta_url: string | null; published: boolean;
   entered: boolean; removed: boolean; played: number; game_boards: GameBoard[]; standings: Standing[]; me: Standing | null; winners: Winner[];
+  /** What link previews and search engines are given, the same as the server-written page (startng-be majors/server_page.py). */
+  share_title: string; share_text: string; share_image: string;
 };
 
 /** A major as the admin form sends it. It is also the template: copy it, change the words, and it's the next one. */
 export type MajorBody = {
   slug: string; title: string; tagline: string; about: string | null;
-  partner_name: string; partner_url: string | null; partner_logo_url: string | null; image_url?: string | null;
+  partner_name: string; partner_url: string | null; partner_logo_url: string | null; image_url?: string | null; share_image_url?: string | null;
   cta_label: string | null; cta_url: string | null; prizes: Prize[]; games: string[];
   starts_at: string | null; ends_at: string | null;
 };
