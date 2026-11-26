@@ -1,0 +1,9 @@
+/* "What players say" in Your games (Player Pulse). Uses the site's colour tokens, so light and dark mode both work. */
+.player-pulse { margin-top: 8px; }
+.player-pulse summary { cursor: pointer; display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; }
+.player-pulse dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 8px 0; }
+.player-pulse dl div { margin: 0; }
+.player-pulse dt { font-size: 0.85em; color: var(--muted); }
+.player-pulse dd { margin: 0; font-weight: 700; }
+.pulse-notes { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; overflow-wrap: anywhere; }
+.pulse-notes span { color: var(--muted); margin-right: 4px; }
