@@ -100,6 +100,7 @@ curl -i https://dave.start.ng/save        # 200, the save page
 curl -i https://dave.start.ng/style.css   # 200, text/css
 curl -i https://dave.start.ng/game.js     # 200, text/javascript
 curl -i https://nope.start.ng/            # 404
+curl -I http://dave.start.ng/save         # 301 to https://dave.start.ng/save
 curl -i https://api.start.ng/health       # still the backend, not the bucket
 ```
 Then open `https://dave.start.ng` in a browser: the page should say "It works".
@@ -112,6 +113,9 @@ Then open `https://dave.start.ng` in a browser: the page should say "It works".
 - A game start.ng's admins hid has an empty `_hidden/<name>` object in the bucket (written by startng-be). Every
   path of that game then gets a 410 "This game isn't available" page (`no-store`). `SITE_URL` sets where its link goes
   (default `https://<BASE_DOMAIN>`). The check is one `head()` per request.
+- `http://<name>.start.ng/...` gives a 301 to the same `https://` address: a game only connects to start.ng (sign-in,
+  scores) over https. `*.localhost` stays on http for `dev-server.js`. Every https game response sends
+  `Strict-Transport-Security: max-age=31536000; includeSubDomains`, so browsers skip http after the first visit.
 - Missing folder or file gives 404. Only GET and HEAD are allowed.
 - Names in `RESERVED_NAMES` are passed on to the normal origin, never read from the bucket.
 

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import worker, { keyForPath, gameNameFromHost } from "../src/index.js";
+import worker, { keyForPath, gameNameFromHost, HSTS } from "../src/index.js";
 
 // Fake bucket: a plain object of key -> content.
 function fakeBucket(files) {
@@ -127,4 +127,30 @@ test("the hidden marker itself can't be fetched as a game", async () => {
   const hiddenEnv = { ...env, GAMES_BUCKET: fakeBucket({ ...files, "_hidden/dave": "" }) };
   const r = await worker.fetch(new Request("https://_hidden.start.ng/dave"), hiddenEnv);
   assert.equal(r.status, 404);
+});
+test("http:// game addresses go to the same https:// address", async () => {
+  for (const p of ["/", "/save/", "/style.css?v=2", "/nope"]) {
+    const r = await get("http://dave.start.ng" + p);
+    assert.equal(r.status, 301);
+    assert.equal(r.headers.get("location"), "https://dave.start.ng" + p);
+  }
+  // Before the method check, so a POST is sent on too instead of getting a 405 over http.
+  assert.equal((await get("http://dave.start.ng/", { method: "POST" })).status, 301);
+  // dev-server.js serves *.localhost over http.
+  const local = await worker.fetch(new Request("http://dave.localhost:8787/"), { ...env, BASE_DOMAIN: "localhost" });
+  assert.equal(local.status, 200);
+  assert.equal(local.headers.get("strict-transport-security"), null);
+});
+
+test("every https:// game response tells browsers to stay on https", async () => {
+  const hiddenEnv = { ...env, GAMES_BUCKET: fakeBucket({ ...files, "_hidden/dave": "" }) };
+  const responses = [
+    await get("https://dave.start.ng/"),
+    await get("https://nope.start.ng/"),
+    await get("https://dave.start.ng/", { method: "POST" }),
+    await worker.fetch(new Request("https://dave.start.ng/"), hiddenEnv),
+  ];
+  assert.deepEqual(responses.map((r) => r.status), [200, 404, 405, 410]);
+  for (const r of responses) assert.equal(r.headers.get("strict-transport-security"), HSTS);
+  assert.equal(HSTS, "max-age=31536000; includeSubDomains");
 });
