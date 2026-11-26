@@ -77,6 +77,16 @@
                 radial-gradient(circle var(--notch) at calc(100% - var(--stub)) 100%, transparent 98%, black) bottom / 100% 51% no-repeat; }
 .major-ticket.place-1 { background: var(--lime); color: var(--on-lime); transform: rotate(-3deg); }
 .major-ticket.place-3 { background: color-mix(in srgb, var(--lime) 35%, var(--on-art)); }
+/* hover: each ticket lifts and tips a different way, like picking one off a pile; it settles back when the pointer leaves.
+   Only on devices that really hover (no sticky lift after a tap on a phone), and not for people who ask for less motion. */
+/* Each ticket stays on its own layer all the time (will-change, backface-visibility) and the text is always grayscale-smoothed,
+   so the letters don't change weight when the movement starts and stops. No scale: scaling redraws text blurry mid-move. */
+.major-ticket { transition: transform .45s cubic-bezier(.16, 1, .3, 1); will-change: transform; backface-visibility: hidden; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .major-ticket:hover { transform: translateY(-7px) rotate(4deg); }
+  .major-ticket.place-1:hover { transform: translateY(-7px) rotate(-7deg); }
+  .major-ticket.place-3:hover { transform: translateY(-7px) rotate(-4deg); }
+}
 .major-ticket-main { display: grid; gap: 1px; padding: 8px 10px 9px 12px; }
 .major-ticket-main small { font-family: var(--mono); font-size: .6875rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; opacity: .78; }
 .major-ticket-main b { font-size: 1.35rem; line-height: 1.05; letter-spacing: -.03em; }
