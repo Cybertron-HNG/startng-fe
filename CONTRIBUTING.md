@@ -53,7 +53,7 @@ A feature that works but looks like a different app will be sent back.
 
 The same rules are in `startng-be`'s `CONTRIBUTING.md`. Some pages are written twice. The API writes them as plain HTML for Google, AI tools and link previews (`startng-be` `app/routers/pages.py`, put in place by `nginx.conf`), and then React draws the real page. Google compares the two. If what it is served differs from what people see, it treats that as cloaking and ranks the whole site lower, or drops it. So the two versions must match.
 
-Today these pages are written by the API:
+Today these pages are written twice:
 
 | Address | API route | React |
 | --- | --- | --- |
@@ -61,6 +61,11 @@ Today these pages are written by the API:
 | `/games`, `/games?page=2` | `GET /pages/games` | games view in `src/App.tsx` |
 | `/games/<name>` | `GET /pages/games/{name}` | `src/GamePage.tsx` |
 | `/creators/<id>-<name>` | `GET /pages/creators/{id}` | `src/IndiePage.tsx` |
+| `/about` | written at build time (`vite.config.ts`) | `src/AboutView.tsx` |
+| `/privacy` | written at build time (`vite.config.ts`) | `src/LegalView.tsx` |
+| `/terms` | written at build time (`vite.config.ts`) | `src/LegalView.tsx` |
+
+The last three are written by the build rather than by the API, so their words are in this repo only, but the rule is the same: `<p>`, headings, links and class names in the served HTML must match what React draws.
 
 ### The content must match
 1. **Nothing for Google only.** Every word, heading, link and number the API writes must be on the React page when it loads, with no sign-in and no clicks beyond opening a dropdown. No hidden text, no extra keywords, no text in a colour or size people can't read.
